@@ -6,21 +6,29 @@ import { getStorage, FirebaseStorage } from 'firebase/storage';
 // Determine environment prefix based on build tool
 // Vite uses VITE_, Create React App uses REACT_APP_
 const getEnvVar = (name: string): string => {
-  // Try Vite prefix first (for Vite projects)
-  // @ts-ignore - import.meta.env is available in Vite
-  const viteEnv = typeof import.meta !== 'undefined' && import.meta.env;
-  if (viteEnv) {
-    const viteValue = viteEnv[`VITE_${name}`];
-    if (viteValue) return viteValue;
-  }
-  
-  // Fallback to CRA prefix (for Create React App projects)
-  const craValue = typeof process !== 'undefined' && process.env?.[`REACT_APP_${name}`];
+  // Check for CRA prefix first (since this is a CRA project)
+  // In CRA, process.env is available at build time and injected into the bundle
+  const envKey = `REACT_APP_${name}`;
+  const craValue = process.env[envKey];
   if (craValue) return craValue;
+  
+  // Fallback to Vite prefix (for Vite projects)
+  // Note: This code path won't execute in CRA, but kept for compatibility
+  // @ts-ignore - import.meta.env is available in Vite but not in CRA
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const viteEnv = (globalThis as any).import?.meta?.env;
+    if (viteEnv) {
+      const viteValue = viteEnv[`VITE_${name}`];
+      if (viteValue) return viteValue;
+    }
+  } catch {
+    // Ignore - we're in CRA, not Vite
+  }
   
   throw new Error(
     `Missing required environment variable: ${name}. ` +
-    `Please set VITE_${name} (for Vite) or REACT_APP_${name} (for CRA) in your .env.local file.`
+    `Please set REACT_APP_${name} (for CRA) or VITE_${name} (for Vite) in your .env.local file.`
   );
 };
 
