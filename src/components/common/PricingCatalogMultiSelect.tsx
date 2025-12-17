@@ -20,7 +20,7 @@ export const PricingCatalogMultiSelect: React.FC<PricingCatalogMultiSelectProps>
   items,
 }) => {
   // Use CANONICAL function - Single Source of Truth
-  const filteredItems = getCatalogItemsForPark(items, parkId, category);
+  const filteredItems = React.useMemo(() => getCatalogItemsForPark(items, parkId, category), [items, parkId, category]);
 
   const handleToggle = (itemId: string) => {
     if (selectedIds.includes(itemId)) {

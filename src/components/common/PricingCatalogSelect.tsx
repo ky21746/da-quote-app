@@ -33,19 +33,7 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
   }
   
   // Get filtered items using CANONICAL function
-  const filteredItems = useMemo(() => {
-    const result = getCatalogItemsForPark(items, parkId, category);
-    // DEBUG: Log filtering details
-    console.log(`[PricingCatalogSelect] ${label}:`, {
-      parkId,
-      category,
-      totalItems: items.length,
-      filteredCount: result.length,
-      filteredItems: result.map(i => ({ id: i.id, name: i.itemName, parkId: i.parkId, appliesTo: i.appliesTo, active: i.active })),
-      allLodgingItems: items.filter(i => i.category === 'Lodging').map(i => ({ id: i.id, name: i.itemName, parkId: i.parkId, appliesTo: i.appliesTo, active: i.active }))
-    });
-    return result;
-  }, [items, parkId, category, label]);
+  const filteredItems = useMemo(() => getCatalogItemsForPark(items, parkId, category), [items, parkId, category]);
 
   // Get currently selected item (even if inactive/filtered out)
   const selectedItem = value ? getPricingItemById(items, value) : null;

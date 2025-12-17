@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db, COLLECTIONS } from '../lib/firebase';
 import { PricingItem } from '../types/ui';
 
 interface PricingCatalogContextType {
@@ -11,14 +13,17 @@ interface PricingCatalogContextType {
 
 const PricingCatalogContext = createContext<PricingCatalogContextType | undefined>(undefined);
 
-// Storage key
+// Storage key for localStorage fallback
 const STORAGE_KEY = 'da_pricing_catalog_v1';
 
-// Initial mock seed data - fallback if localStorage is empty
+// Firestore document reference
+const PRICING_CATALOG_DOC = doc(db, COLLECTIONS.PRICING_CATALOG, 'main');
+
+// Initial seed data - ONLY used if Firestore is empty AND localStorage is empty
 const initialSeedItems: PricingItem[] = [
   {
     id: 'item_1',
-    parkId: 'MURCHISON', // Must match PARKS[0].id
+    parkId: 'MURCHISON',
     category: 'Aviation',
     itemName: 'Helicopter Transfer',
     basePrice: 10000,
@@ -28,7 +33,7 @@ const initialSeedItems: PricingItem[] = [
   },
   {
     id: 'item_2',
-    parkId: null, // Global item
+    parkId: null,
     category: 'Vehicle',
     itemName: 'Safari Vehicle (4x4)',
     basePrice: 300,
@@ -38,7 +43,7 @@ const initialSeedItems: PricingItem[] = [
   },
   {
     id: 'item_3',
-    parkId: null, // Global item
+    parkId: null,
     category: 'Park Fees',
     itemName: 'Park Entry Fee',
     basePrice: 45,
@@ -48,7 +53,7 @@ const initialSeedItems: PricingItem[] = [
   },
   {
     id: 'item_4',
-    parkId: 'MURCHISON', // Must match PARKS[0].id
+    parkId: 'MURCHISON',
     category: 'Lodging',
     itemName: 'Nile Safari Lodge',
     basePrice: 250,
@@ -56,10 +61,112 @@ const initialSeedItems: PricingItem[] = [
     appliesTo: 'Park',
     active: true,
   },
+  {
+    id: 'item_5',
+    parkId: null,
+    category: 'Activities',
+    itemName: 'Game Drive',
+    basePrice: 150,
+    costType: 'per_person',
+    appliesTo: 'Global',
+    active: true,
+  },
+  {
+    id: 'item_6',
+    parkId: 'MURCHISON',
+    category: 'Activities',
+    itemName: 'Boat Cruise',
+    basePrice: 80,
+    costType: 'per_person',
+    appliesTo: 'Park',
+    active: true,
+  },
+  {
+    id: 'item_7',
+    parkId: null,
+    category: 'Extras',
+    itemName: 'Travel Insurance',
+    basePrice: 50,
+    costType: 'per_person',
+    appliesTo: 'Global',
+    active: true,
+  },
+  {
+    id: 'item_8',
+    parkId: 'MURCHISON',
+    category: 'Extras',
+    itemName: 'Photography Guide',
+    basePrice: 200,
+    costType: 'fixed_group',
+    appliesTo: 'Park',
+    active: true,
+  },
+  {
+    id: 'item_9',
+    parkId: null,
+    category: 'Logistics',
+    itemName: 'Airport Transfer',
+    basePrice: 100,
+    costType: 'fixed_group',
+    appliesTo: 'Global',
+    active: true,
+  },
+  {
+    id: 'item_10',
+    parkId: 'MURCHISON',
+    category: 'Logistics',
+    itemName: 'Park Entry Transfer',
+    basePrice: 150,
+    costType: 'fixed_group',
+    appliesTo: 'Park',
+    active: true,
+  },
 ];
 
 /**
- * Load items from localStorage
+ * Load items from Firestore (primary source)
+ */
+async function loadItemsFromFirestore(): Promise<PricingItem[]> {
+  try {
+    const docSnap = await getDoc(PRICING_CATALOG_DOC);
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const items = data.items as PricingItem[];
+      
+      // Validation: If Firestore returns empty items array → throw explicit error
+      if (!Array.isArray(items) || items.length === 0) {
+        throw new Error('Firestore returned empty items array');
+      }
+      
+      // Validation: Check for missing parkId in park-specific items
+      items.forEach((item) => {
+        if (item.appliesTo === 'Park' && !item.parkId) {
+          throw new Error(`Missing parkId for park-specific item: ${item.itemName} (id: ${item.id})`);
+        }
+      });
+      
+      // Save to localStorage as fallback
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      
+      return items;
+    }
+    
+    // Document does not exist - create it with seed data
+    await setDoc(PRICING_CATALOG_DOC, {
+      items: initialSeedItems,
+      updatedAt: serverTimestamp(),
+    });
+    
+      return initialSeedItems;
+    } catch (error) {
+      // Fallback to localStorage
+      return loadItemsFromStorage();
+    }
+}
+
+/**
+ * Load items from localStorage (fallback only)
  */
 function loadItemsFromStorage(): PricingItem[] {
   try {
@@ -72,45 +179,78 @@ function loadItemsFromStorage(): PricingItem[] {
     }
     
     return initialSeedItems;
-  } catch (error) {
-    console.error('Failed to load pricing catalog from localStorage:', error);
+  } catch {
     return initialSeedItems;
   }
 }
 
 /**
- * Save items to localStorage
+ * Save items to Firestore (primary) and localStorage (fallback)
  */
-function saveItemsToStorage(items: PricingItem[]): void {
+async function saveItemsToFirestore(items: PricingItem[]): Promise<void> {
   try {
+    await setDoc(PRICING_CATALOG_DOC, {
+      items,
+      updatedAt: serverTimestamp(),
+    });
+    
+    // Also save to localStorage as fallback
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    // DEBUG: Verify save
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const parsed = saved ? JSON.parse(saved) : [];
-    console.log('[PricingCatalogContext] Saved to localStorage:', parsed.length, 'items');
-    console.log('[PricingCatalogContext] Saved Lodging items:', parsed.filter((i: PricingItem) => i.category === 'Lodging').map((i: PricingItem) => ({ id: i.id, name: i.itemName, parkId: i.parkId, appliesTo: i.appliesTo })));
   } catch (error) {
-    console.error('Failed to save pricing catalog to localStorage:', error);
+    // Fallback to localStorage only
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // Silent fail
+    }
   }
 }
 
 export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Load from localStorage on mount
-  const [items, setItems] = useState<PricingItem[]>(() => {
-    const loaded = loadItemsFromStorage();
-    // DEBUG: Log loaded items
-    console.log('[PricingCatalogContext] Loaded items:', loaded.length);
-    console.log('[PricingCatalogContext] Lodging items:', loaded.filter(i => i.category === 'Lodging').map(i => ({ id: i.id, name: i.itemName, parkId: i.parkId, appliesTo: i.appliesTo, active: i.active })));
-    return loaded;
-  });
+  const [items, setItems] = useState<PricingItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Save to localStorage whenever items change
-  // CRITICAL: This ensures persistence on every state change
+  // Load from Firestore on mount (primary source)
   useEffect(() => {
-    saveItemsToStorage(items);
-  }, [items]);
+    let isMounted = true;
+    
+    const loadData = async () => {
+      try {
+        const loaded = await loadItemsFromFirestore();
+        if (isMounted) {
+          setItems(loaded);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        // Fallback to localStorage
+        const fallback = loadItemsFromStorage();
+        if (isMounted) {
+          setItems(fallback);
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    loadData();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Save to Firestore whenever items change (but not on initial load)
+  useEffect(() => {
+    if (!isLoading && items.length > 0) {
+      saveItemsToFirestore(items);
+    }
+  }, [items, isLoading]);
 
   const addItem = (itemData: Omit<PricingItem, 'id'>) => {
+    // Validation: Check for missing parkId in park-specific items
+    if (itemData.appliesTo === 'Park' && !itemData.parkId) {
+      throw new Error('Missing parkId for park-specific item');
+    }
+    
     // Generate unique ID
     const newId = `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
@@ -127,14 +267,9 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
       active: itemData.active ?? true,
     };
     
-    // DEBUG: Log new item being added
-    console.log('[PricingCatalogContext] Adding new item:', newItem);
-    
-    // Add to state (will trigger localStorage save via useEffect)
+    // Add to state (will trigger Firestore save via useEffect)
     setItems((prev) => {
       const updated = [...prev, newItem];
-      console.log('[PricingCatalogContext] Updated items count:', updated.length);
-      console.log('[PricingCatalogContext] New item in list:', updated.find(i => i.id === newId));
       return updated;
     });
   };
@@ -158,9 +293,19 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
   const resetToSeed = () => {
     // Clear localStorage and reset to seed
     localStorage.removeItem(STORAGE_KEY);
-    // Set items - useEffect will save to localStorage
+    // Set items - useEffect will save to Firestore
     setItems(initialSeedItems);
   };
+
+  // Show loading state while fetching from Firestore
+  if (isLoading) {
+    return <div className="p-4 text-center text-gray-600">Loading pricing catalog...</div>;
+  }
+
+  // Validation: If items array is empty after load → throw explicit error
+  if (items.length === 0) {
+    throw new Error('Pricing catalog items array is empty after load');
+  }
 
   return (
     <PricingCatalogContext.Provider

@@ -58,3 +58,8 @@ export const storage: FirebaseStorage = getStorage(firebaseApp);
 // Export the app instance as well
 export { firebaseApp };
 
+// Firestore collections
+export const COLLECTIONS = {
+  PRICING_CATALOG: 'pricingCatalog',
+} as const;
+
