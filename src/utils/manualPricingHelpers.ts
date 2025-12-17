@@ -194,11 +194,11 @@ export function calculateLineTotal(
     case 'per_person_per_day':
       return basePrice * travelers * days;
 
+    case 'per_night':
+      return basePrice * nights;
+
     case 'per_night_per_person':
       return basePrice * travelers * nights;
-
-    case 'per_night_fixed':
-      return basePrice * nights;
 
     default:
       return 0;

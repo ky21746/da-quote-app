@@ -1,24 +1,22 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTrip } from '../../context/TripContext';
+import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { Button, ProgressStepper } from '../common';
 import { ParkCard } from '../../types/ui';
-import {
-  getParkName,
-  getArrivalOption,
-  getLodgingOption,
-  getTransportOption,
-  getActivityOptions,
-  getExtraOptions,
-  getLogisticsArrivalOption,
-  getLogisticsVehicleOption,
-  getLogisticsInternalOptions,
-} from '../../data/catalogHelpers';
+import { getPricingItemById, getPricingItemsByIds } from '../../utils/pricingCatalogHelpers';
+import { PARKS } from '../../constants/parks';
 
 export const ReviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { draft } = useTrip();
+  const { items: pricingItems } = usePricingCatalog();
+
+  const getParkName = (parkId?: string): string => {
+    if (!parkId) return 'Not selected';
+    return PARKS.find((p) => p.id === parkId)?.label || parkId;
+  };
 
   const progressSteps = [
     'Basic Setup',
@@ -42,15 +40,15 @@ export const ReviewPage: React.FC = () => {
 
   const renderParkReview = (card: ParkCard, index: number) => {
     const parkName = getParkName(card.parkId);
-    const arrivalOption = getArrivalOption(card.arrival);
-    const lodgingOption = getLodgingOption(card.lodging);
-    const transportOption = getTransportOption(card.transport);
-    const activityOptions = getActivityOptions(card.activities);
-    const extraOptions = getExtraOptions(card.extras);
+    const arrivalItem = card.arrival ? getPricingItemById(pricingItems, card.arrival) : undefined;
+    const lodgingItem = card.lodging ? getPricingItemById(pricingItems, card.lodging) : undefined;
+    const transportItem = card.transport ? getPricingItemById(pricingItems, card.transport) : undefined;
+    const activityItems = getPricingItemsByIds(pricingItems, card.activities);
+    const extraItems = getPricingItemsByIds(pricingItems, card.extras);
     const logistics = card.logistics;
-    const logisticsArrival = logistics ? getLogisticsArrivalOption(logistics.arrival) : undefined;
-    const logisticsVehicle = logistics ? getLogisticsVehicleOption(logistics.vehicle) : undefined;
-    const logisticsInternal = logistics ? getLogisticsInternalOptions(logistics.internalMovements) : [];
+    const logisticsArrival = logistics?.arrival ? getPricingItemById(pricingItems, logistics.arrival) : undefined;
+    const logisticsVehicle = logistics?.vehicle ? getPricingItemById(pricingItems, logistics.vehicle) : undefined;
+    const logisticsInternal = getPricingItemsByIds(pricingItems, logistics?.internalMovements || []);
 
     return (
       <div key={card.id} className="mb-6 p-4 border border-gray-300 rounded-lg bg-white">
@@ -69,58 +67,55 @@ export const ReviewPage: React.FC = () => {
         {/* Selected Components */}
         <div className="space-y-4">
           {/* Arrival / Aviation */}
-          {arrivalOption ? (
+          {arrivalItem ? (
             <div className="text-sm">
               <span className="font-medium text-gray-700">Arrival / Aviation:</span>{' '}
-              <span className="text-gray-600">{arrivalOption.name}</span>
-              {arrivalOption.price && (
-                <span className="text-gray-500 ml-2">({arrivalOption.price})</span>
-              )}
+              <span className="text-gray-600">{arrivalItem.itemName}</span>
+              <span className="text-gray-500 ml-2">
+                (USD {arrivalItem.basePrice.toFixed(2)} - {arrivalItem.costType.replace(/_/g, ' ')})
+              </span>
             </div>
           ) : (
             <div className="text-sm text-gray-400">Arrival / Aviation: Not selected</div>
           )}
 
           {/* Lodging */}
-          {lodgingOption ? (
+          {lodgingItem ? (
             <div className="text-sm">
               <span className="font-medium text-gray-700">Lodging:</span>{' '}
-              <span className="text-gray-600">{lodgingOption.name}</span>
-              {lodgingOption.tier && (
-                <span className="text-gray-500 ml-2">({lodgingOption.tier})</span>
-              )}
-              {lodgingOption.price && (
-                <span className="text-gray-500 ml-2">- {lodgingOption.price}</span>
-              )}
+              <span className="text-gray-600">{lodgingItem.itemName}</span>
+              <span className="text-gray-500 ml-2">
+                (USD {lodgingItem.basePrice.toFixed(2)} - {lodgingItem.costType.replace(/_/g, ' ')})
+              </span>
             </div>
           ) : (
             <div className="text-sm text-gray-400">Lodging: Not selected</div>
           )}
 
           {/* Transportation */}
-          {transportOption ? (
+          {transportItem ? (
             <div className="text-sm">
               <span className="font-medium text-gray-700">Transportation:</span>{' '}
-              <span className="text-gray-600">{transportOption.name}</span>
-              {transportOption.price && (
-                <span className="text-gray-500 ml-2">({transportOption.price})</span>
-              )}
+              <span className="text-gray-600">{transportItem.itemName}</span>
+              <span className="text-gray-500 ml-2">
+                (USD {transportItem.basePrice.toFixed(2)} - {transportItem.costType.replace(/_/g, ' ')})
+              </span>
             </div>
           ) : (
             <div className="text-sm text-gray-400">Transportation: Not selected</div>
           )}
 
           {/* Activities */}
-          {activityOptions.length > 0 ? (
+          {activityItems.length > 0 ? (
             <div className="text-sm">
               <span className="font-medium text-gray-700">Activities:</span>
               <ul className="ml-4 mt-1 space-y-1">
-                {activityOptions.map((activity) => (
+                {activityItems.map((activity) => (
                   <li key={activity.id} className="text-gray-600">
-                    {activity.name}
-                    {activity.price && (
-                      <span className="text-gray-500 ml-2">({activity.price})</span>
-                    )}
+                    {activity.itemName}
+                    <span className="text-gray-500 ml-2">
+                      (USD {activity.basePrice.toFixed(2)} - {activity.costType.replace(/_/g, ' ')})
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -130,16 +125,16 @@ export const ReviewPage: React.FC = () => {
           )}
 
           {/* Extras */}
-          {extraOptions.length > 0 ? (
+          {extraItems.length > 0 ? (
             <div className="text-sm">
               <span className="font-medium text-gray-700">Extras:</span>
               <ul className="ml-4 mt-1 space-y-1">
-                {extraOptions.map((extra) => (
+                {extraItems.map((extra) => (
                   <li key={extra.id} className="text-gray-600">
-                    {extra.name}
-                    {extra.price && (
-                      <span className="text-gray-500 ml-2">({extra.price})</span>
-                    )}
+                    {extra.itemName}
+                    <span className="text-gray-500 ml-2">
+                      (USD {extra.basePrice.toFixed(2)} - {extra.costType.replace(/_/g, ' ')})
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -156,10 +151,10 @@ export const ReviewPage: React.FC = () => {
                 {logisticsArrival ? (
                   <div>
                     <span className="font-medium text-gray-700">Arrival Between Parks:</span>{' '}
-                    <span className="text-gray-600">{logisticsArrival.name}</span>
-                    {logisticsArrival.price && (
-                      <span className="text-gray-500 ml-2">({logisticsArrival.price})</span>
-                    )}
+                    <span className="text-gray-600">{logisticsArrival.itemName}</span>
+                    <span className="text-gray-500 ml-2">
+                      (USD {logisticsArrival.basePrice.toFixed(2)} - {logisticsArrival.costType.replace(/_/g, ' ')})
+                    </span>
                   </div>
                 ) : (
                   <div className="text-gray-400">Arrival Between Parks: Not selected</div>
@@ -168,10 +163,10 @@ export const ReviewPage: React.FC = () => {
                 {logisticsVehicle ? (
                   <div>
                     <span className="font-medium text-gray-700">Vehicle & Driver:</span>{' '}
-                    <span className="text-gray-600">{logisticsVehicle.name}</span>
-                    {logisticsVehicle.price && (
-                      <span className="text-gray-500 ml-2">({logisticsVehicle.price})</span>
-                    )}
+                    <span className="text-gray-600">{logisticsVehicle.itemName}</span>
+                    <span className="text-gray-500 ml-2">
+                      (USD {logisticsVehicle.basePrice.toFixed(2)} - {logisticsVehicle.costType.replace(/_/g, ' ')})
+                    </span>
                   </div>
                 ) : (
                   <div className="text-gray-400">Vehicle & Driver: Not selected</div>
@@ -183,10 +178,10 @@ export const ReviewPage: React.FC = () => {
                     <ul className="ml-4 mt-1 space-y-1">
                       {logisticsInternal.map((movement) => (
                         <li key={movement.id} className="text-gray-600">
-                          {movement.name}
-                          {movement.price && (
-                            <span className="text-gray-500 ml-2">({movement.price})</span>
-                          )}
+                          {movement.itemName}
+                          <span className="text-gray-500 ml-2">
+                            (USD {movement.basePrice.toFixed(2)} - {movement.costType.replace(/_/g, ' ')})
+                          </span>
                         </li>
                       ))}
                     </ul>

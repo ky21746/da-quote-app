@@ -3,23 +3,31 @@ import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { Button, Select } from '../common';
 import { PricingItem, PricingCategory } from '../../types/ui';
 import { AddPricingItemModal } from './AddPricingItemModal';
-import { MOCK_PARKS } from '../../data/mockCatalog';
+import { PARKS } from '../../constants/parks';
 
 export const PricingCatalogPage: React.FC = () => {
-  const { items, addItem, updateItem, deleteItem } = usePricingCatalog();
+  const { items, addItem, updateItem, deleteItem, resetToSeed } = usePricingCatalog();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PricingItem | null>(null);
 
-  // Filters
+  // Filters - default to 'all' to show all items including newly added ones
   const [parkFilter, setParkFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [activeFilter, setActiveFilter] = useState<string>('active');
+  const [activeFilter, setActiveFilter] = useState<string>('all');
 
   // Filter items
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
-      // Park filter
-      if (parkFilter !== 'all' && item.parkId !== parkFilter) return false;
+      // Park filter - handle null/undefined for Global items
+      if (parkFilter !== 'all') {
+        if (parkFilter === 'global') {
+          // Show only Global items
+          if (item.appliesTo !== 'Global') return false;
+        } else {
+          // Show only items for this specific park
+          if (item.parkId !== parkFilter) return false;
+        }
+      }
       
       // Category filter
       if (categoryFilter !== 'all' && item.category !== categoryFilter) return false;
@@ -48,6 +56,11 @@ export const PricingCatalogPage: React.FC = () => {
     setEditingItem(null);
   };
 
+  const handleAddClick = () => {
+    setEditingItem(null);
+    setIsModalOpen(true);
+  };
+
   const handleSave = (itemData: Omit<PricingItem, 'id'>) => {
     if (editingItem) {
       updateItem(editingItem.id, itemData);
@@ -68,7 +81,8 @@ export const PricingCatalogPage: React.FC = () => {
 
   const parkOptions = [
     { value: 'all', label: 'All Parks' },
-    ...MOCK_PARKS.map((park) => ({ value: park.id, label: park.name })),
+    { value: 'global', label: 'Global Items' },
+    ...PARKS.map((park) => ({ value: park.id, label: park.label })),
   ];
 
   return (
@@ -76,9 +90,17 @@ export const PricingCatalogPage: React.FC = () => {
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Admin → Pricing Catalog</h1>
-          <Button onClick={() => setIsModalOpen(true)} variant="primary">
-            + Add Pricing Item
-          </Button>
+          <div className="flex gap-2 items-center">
+            <button
+              onClick={() => resetToSeed()}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-sm"
+            >
+              Reset to Seed
+            </button>
+            <Button onClick={handleAddClick} variant="primary">
+              + Add Pricing Item
+            </Button>
+          </div>
         </div>
 
         {/* Filter Bar */}
@@ -137,7 +159,7 @@ export const PricingCatalogPage: React.FC = () => {
                         <span className="text-blue-600 font-medium">Global</span>
                       ) : (
                         <span className="text-gray-600">
-                          {MOCK_PARKS.find((p) => p.id === item.parkId)?.name || 'Unknown'}
+                          {item.parkId ? (PARKS.find((p) => p.id === item.parkId)?.label || item.parkId) : 'Unknown'}
                         </span>
                       )}
                     </td>

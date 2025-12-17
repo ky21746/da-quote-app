@@ -3,6 +3,8 @@ export * from './Input';
 export * from './Select';
 export * from './ProgressStepper';
 export * from './MultiSelect';
+export * from './PricingCatalogSelect';
+export * from './PricingCatalogMultiSelect';
 export * from './LodgingSelector';
 export * from './VehicleSelector';
 export * from './DomesticFlightSelector';

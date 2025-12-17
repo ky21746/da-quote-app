@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PricingItem, PricingCategory, ManualCostType } from '../../types/ui';
 import { Button, Input, Select } from '../common';
-import { MOCK_PARKS } from '../../data/mockCatalog';
+import { PARKS } from '../../constants/parks';
 
 interface AddPricingItemModalProps {
   isOpen: boolean;
@@ -16,20 +16,67 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
   onSave,
   editingItem,
 }) => {
-  const [formData, setFormData] = useState<Omit<PricingItem, 'id'>>({
-    parkId: editingItem?.parkId,
-    category: editingItem?.category || 'Aviation',
-    itemName: editingItem?.itemName || '',
-    basePrice: editingItem?.basePrice || 0,
-    costType: editingItem?.costType || 'fixed_group',
-    appliesTo: editingItem?.appliesTo || 'Global',
-    notes: editingItem?.notes || '',
-    active: editingItem?.active ?? true,
-  });
+  // Reset form when modal opens/closes or editingItem changes
+  const getInitialFormData = (): Omit<PricingItem, 'id'> => {
+    if (editingItem) {
+      return {
+        parkId: editingItem.parkId,
+        category: editingItem.category,
+        itemName: editingItem.itemName,
+        basePrice: editingItem.basePrice,
+        costType: editingItem.costType,
+        appliesTo: editingItem.appliesTo,
+        notes: editingItem.notes || '',
+        active: editingItem.active,
+      };
+    }
+    return {
+      parkId: null,
+      category: 'Aviation',
+      itemName: '',
+      basePrice: 0,
+      costType: 'fixed_group',
+      appliesTo: 'Global',
+      notes: '',
+      active: true,
+    };
+  };
 
-  const [appliesTo, setAppliesTo] = useState<'Global' | 'Park-specific'>(
+  const [formData, setFormData] = useState<Omit<PricingItem, 'id'>>(getInitialFormData);
+  const [appliesTo, setAppliesTo] = useState<'Global' | 'Park'>(
     editingItem?.appliesTo || 'Global'
   );
+
+  // Reset form when modal opens/closes or editingItem changes
+  useEffect(() => {
+    if (isOpen) {
+      if (editingItem) {
+        setFormData({
+          parkId: editingItem.parkId || null,
+          category: editingItem.category,
+          itemName: editingItem.itemName,
+          basePrice: editingItem.basePrice,
+          costType: editingItem.costType,
+          appliesTo: editingItem.appliesTo,
+          notes: editingItem.notes || '',
+          active: editingItem.active,
+        });
+        setAppliesTo(editingItem.appliesTo);
+      } else {
+        setFormData({
+          parkId: null,
+          category: 'Aviation',
+          itemName: '',
+          basePrice: 0,
+          costType: 'fixed_group',
+          appliesTo: 'Global',
+          notes: '',
+          active: true,
+        });
+        setAppliesTo('Global');
+      }
+    }
+  }, [isOpen, editingItem]);
 
   const categoryOptions: Array<{ value: PricingCategory; label: string }> = [
     { value: 'Aviation', label: 'Aviation' },
@@ -38,6 +85,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
     { value: 'Activities', label: 'Activities' },
     { value: 'Park Fees', label: 'Park Fees' },
     { value: 'Extras', label: 'Extras' },
+    { value: 'Logistics', label: 'Logistics' },
   ];
 
   const costTypeOptions: Array<{ value: ManualCostType; label: string }> = [
@@ -45,34 +93,54 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
     { value: 'fixed_per_day', label: 'Fixed – Per Day' },
     { value: 'per_person', label: 'Per Person' },
     { value: 'per_person_per_day', label: 'Per Person Per Day' },
+    { value: 'per_night', label: 'Per Night' },
     { value: 'per_night_per_person', label: 'Per Night Per Person' },
-    { value: 'per_night_fixed', label: 'Per Night – Fixed' },
   ];
 
   const parkOptions = [
     { value: '', label: 'Select park...' },
-    ...MOCK_PARKS.map((park) => ({ value: park.id, label: park.name })),
+    ...PARKS.map((park) => ({ value: park.id, label: park.label })),
   ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation
+    // Strict validation
     if (!formData.itemName.trim()) {
+      alert('Item name is required');
       return;
     }
     if (formData.basePrice <= 0) {
+      alert('Base price must be greater than 0');
       return;
     }
-    if (appliesTo === 'Park-specific' && !formData.parkId) {
+    if (!formData.costType) {
+      alert('Cost type is required');
+      return;
+    }
+    if (!formData.category) {
+      alert('Category is required');
+      return;
+    }
+    if (appliesTo === 'Park' && !formData.parkId) {
+      alert('Park is required for Park items');
       return;
     }
 
-    onSave({
-      ...formData,
+    // Prepare item data
+    const itemData: Omit<PricingItem, 'id'> = {
+      parkId: appliesTo === 'Park' ? formData.parkId : null,
+      category: formData.category,
+      itemName: formData.itemName.trim(),
+      basePrice: formData.basePrice,
+      costType: formData.costType,
       appliesTo,
-      parkId: appliesTo === 'Park-specific' ? formData.parkId : undefined,
-    });
+      notes: formData.notes?.trim() || undefined,
+      active: formData.active,
+    };
+
+    // Save and close
+    onSave(itemData);
     onClose();
   };
 
@@ -92,25 +160,26 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
                 label="Applies To"
                 value={appliesTo}
                 onChange={(value) => {
-                  setAppliesTo(value as 'Global' | 'Park-specific');
+                  setAppliesTo(value as 'Global' | 'Park');
                   if (value === 'Global') {
-                    setFormData({ ...formData, parkId: undefined });
+                    setFormData({ ...formData, parkId: null });
                   }
                 }}
                 options={[
                   { value: 'Global', label: 'Global' },
-                  { value: 'Park-specific', label: 'Park-specific' },
+                  { value: 'Park', label: 'Park' },
                 ]}
                 required
               />
 
-              {appliesTo === 'Park-specific' && (
+              {appliesTo === 'Park' && (
                 <Select
                   label="Park"
                   value={formData.parkId || ''}
-                  onChange={(value) =>
-                    setFormData({ ...formData, parkId: value || undefined })
-                  }
+                  onChange={(value) => {
+                    // CRITICAL: parkId must be string matching PARKS[].id
+                    setFormData({ ...formData, parkId: value || null });
+                  }}
                   options={parkOptions}
                   required
                 />

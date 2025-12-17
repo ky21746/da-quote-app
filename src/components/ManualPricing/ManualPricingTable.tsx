@@ -23,8 +23,8 @@ export const ManualPricingTable: React.FC<ManualPricingTableProps> = ({
     { value: 'fixed_per_day', label: 'Fixed – Per Day' },
     { value: 'per_person', label: 'Per Person' },
     { value: 'per_person_per_day', label: 'Per Person Per Day' },
+    { value: 'per_night', label: 'Per Night' },
     { value: 'per_night_per_person', label: 'Per Night Per Person' },
-    { value: 'per_night_fixed', label: 'Per Night – Fixed' },
   ];
 
   return (

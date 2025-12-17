@@ -78,20 +78,20 @@ export interface ScenarioResults {
 }
 
 export interface ParkLogistics {
-  arrival?: string;
-  vehicle?: string;
-  internalMovements: string[];
+  arrival?: string; // pricingItemId
+  vehicle?: string; // pricingItemId
+  internalMovements: string[]; // pricingItemIds
   notes?: string;
 }
 
 export interface ParkCard {
   id: string;
-  parkId?: string;
-  arrival?: string;
-  lodging?: string;
-  transport?: string;
-  activities: string[];
-  extras: string[];
+  parkId?: string; // Park ID string (must match PARKS[].id)
+  arrival?: string; // pricingItemId
+  lodging?: string; // pricingItemId
+  transport?: string; // pricingItemId
+  activities: string[]; // pricingItemIds
+  extras: string[]; // pricingItemIds
   logistics?: ParkLogistics;
 }
 
@@ -107,8 +107,8 @@ export type ManualCostType =
   | 'fixed_per_day'
   | 'per_person'
   | 'per_person_per_day'
-  | 'per_night_per_person'
-  | 'per_night_fixed';
+  | 'per_night'
+  | 'per_night_per_person';
 
 export type PricingCategory =
   | 'Aviation'
@@ -116,18 +116,19 @@ export type PricingCategory =
   | 'Vehicle'
   | 'Activities'
   | 'Park Fees'
-  | 'Extras';
+  | 'Extras'
+  | 'Logistics';
 
 export interface PricingItem {
   id: string;
-  parkId?: string; // undefined = Global
+  parkId?: string | null; // null or undefined = Global, MUST match park.id from Trip Builder
   category: PricingCategory;
   itemName: string;
   basePrice: number;
   costType: ManualCostType;
-  appliesTo: 'Park-specific' | 'Global';
-  notes?: string;
+  appliesTo: 'Global' | 'Park'; // 'Global' = applies to all parks, 'Park' = park-specific
   active: boolean;
+  notes?: string;
 }
 
 export interface ManualPricingLineItem {

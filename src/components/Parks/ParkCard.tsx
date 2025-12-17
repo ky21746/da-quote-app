@@ -1,18 +1,8 @@
 import React, { useState } from 'react';
 import { ParkCard as ParkCardType } from '../../types/ui';
-import { Select, MultiSelect, Input } from '../common';
-import {
-  MOCK_PARKS,
-  MOCK_ARRIVAL,
-  MOCK_LODGING,
-  MOCK_TRANSPORT,
-  MOCK_ACTIVITIES,
-  MOCK_EXTRAS,
-  MOCK_LOGISTICS_ARRIVAL,
-  MOCK_LOGISTICS_VEHICLE,
-  MOCK_LOGISTICS_INTERNAL,
-  getFilteredOptions,
-} from '../../data/mockCatalog';
+import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
+import { usePricingCatalog } from '../../context/PricingCatalogContext';
+import { PARKS } from '../../constants/parks';
 
 interface ParkCardProps {
   card: ParkCardType;
@@ -22,17 +12,7 @@ interface ParkCardProps {
 
 export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) => {
   const [isLogisticsOpen, setIsLogisticsOpen] = useState(false);
-  
-  const filteredArrival = getFilteredOptions(MOCK_ARRIVAL, card.parkId);
-  const filteredLodging = getFilteredOptions(MOCK_LODGING, card.parkId);
-  const filteredTransport = getFilteredOptions(MOCK_TRANSPORT, card.parkId);
-  const filteredActivities = getFilteredOptions(MOCK_ACTIVITIES, card.parkId);
-  const filteredExtras = getFilteredOptions(MOCK_EXTRAS, card.parkId);
-  
-  // Logistics options (filtered by parkId)
-  const filteredLogisticsArrival = getFilteredOptions(MOCK_LOGISTICS_ARRIVAL, card.parkId);
-  const filteredLogisticsVehicle = getFilteredOptions(MOCK_LOGISTICS_VEHICLE, card.parkId);
-  const filteredLogisticsInternal = getFilteredOptions(MOCK_LOGISTICS_INTERNAL, card.parkId);
+  const { items: pricingItems } = usePricingCatalog();
   
   const logistics = card.logistics || {
     internalMovements: [],
@@ -40,31 +20,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
 
   const parkOptions = [
     { value: '', label: 'Select a park...' },
-    ...MOCK_PARKS.map((park) => ({ value: park.id, label: park.name })),
-  ];
-
-  const arrivalOptions = [
-    { value: '', label: 'Select arrival...' },
-    ...filteredArrival.map((opt) => ({
-      value: opt.id,
-      label: `${opt.name}${opt.price ? ` - ${opt.price}` : ''}`,
-    })),
-  ];
-
-  const lodgingOptions = [
-    { value: '', label: 'Select lodging...' },
-    ...filteredLodging.map((opt) => ({
-      value: opt.id,
-      label: `${opt.name}${opt.tier ? ` (${opt.tier})` : ''}${opt.price ? ` - ${opt.price}` : ''}`,
-    })),
-  ];
-
-  const transportOptions = [
-    { value: '', label: 'Select transport...' },
-    ...filteredTransport.map((opt) => ({
-      value: opt.id,
-      label: `${opt.name}${opt.price ? ` - ${opt.price}` : ''}`,
-    })),
+    ...PARKS.map((park) => ({ value: park.id, label: park.label })),
   ];
 
   return (
@@ -85,6 +41,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
         value={card.parkId || ''}
         onChange={(value) => {
           // When park changes, reset all dependent fields including logistics
+          // CRITICAL: parkId must be string matching PARKS[].id
           onUpdate({
             parkId: value || undefined,
             arrival: undefined,
@@ -104,43 +61,53 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
       {card.parkId && (
         <div className="space-y-4 mt-4">
           {/* Arrival / Aviation */}
-          <Select
+          <PricingCatalogSelect
             label="Arrival / Aviation"
-            value={card.arrival || ''}
-            onChange={(value) => onUpdate({ arrival: value || undefined })}
-            options={arrivalOptions}
+            value={card.arrival}
+            onChange={(pricingItemId) => onUpdate({ arrival: pricingItemId })}
+            category="Aviation"
+            parkId={card.parkId}
+            items={pricingItems}
           />
 
           {/* Lodging */}
-          <Select
+          <PricingCatalogSelect
             label="Lodging"
-            value={card.lodging || ''}
-            onChange={(value) => onUpdate({ lodging: value || undefined })}
-            options={lodgingOptions}
+            value={card.lodging}
+            onChange={(pricingItemId) => onUpdate({ lodging: pricingItemId })}
+            category="Lodging"
+            parkId={card.parkId}
+            items={pricingItems}
           />
 
           {/* Local Transportation */}
-          <Select
+          <PricingCatalogSelect
             label="Local Transportation"
-            value={card.transport || ''}
-            onChange={(value) => onUpdate({ transport: value || undefined })}
-            options={transportOptions}
+            value={card.transport}
+            onChange={(pricingItemId) => onUpdate({ transport: pricingItemId })}
+            category="Vehicle"
+            parkId={card.parkId}
+            items={pricingItems}
           />
 
           {/* Activities (Multi-select) */}
-          <MultiSelect
+          <PricingCatalogMultiSelect
             label="Activities"
             selectedIds={card.activities}
-            options={filteredActivities}
-            onChange={(activities) => onUpdate({ activities })}
+            onChange={(pricingItemIds) => onUpdate({ activities: pricingItemIds })}
+            category="Activities"
+            parkId={card.parkId}
+            items={pricingItems}
           />
 
           {/* Extras (Multi-select) */}
-          <MultiSelect
+          <PricingCatalogMultiSelect
             label="Extras"
             selectedIds={card.extras}
-            options={filteredExtras}
-            onChange={(extras) => onUpdate({ extras })}
+            onChange={(pricingItemIds) => onUpdate({ extras: pricingItemIds })}
+            category="Extras"
+            parkId={card.parkId}
+            items={pricingItems}
           />
 
           {/* Logistics Section (Collapsible) */}
@@ -158,60 +125,54 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             {isLogisticsOpen && (
               <div className="space-y-4 mt-4 pl-2">
                 {/* Arrival / Movement Between Parks */}
-                <Select
+                <PricingCatalogSelect
                   label="Arrival / Movement Between Parks"
-                  value={logistics.arrival || ''}
-                  onChange={(value) =>
+                  value={logistics.arrival}
+                  onChange={(pricingItemId) =>
                     onUpdate({
                       logistics: {
                         ...logistics,
-                        arrival: value || undefined,
+                        arrival: pricingItemId,
                       },
                     })
                   }
-                  options={[
-                    { value: '', label: 'Select arrival/movement...' },
-                    ...filteredLogisticsArrival.map((opt) => ({
-                      value: opt.id,
-                      label: `${opt.name}${opt.price ? ` - ${opt.price}` : ''}`,
-                    })),
-                  ]}
+                  category="Logistics"
+                  parkId={card.parkId}
+                  items={pricingItems}
                 />
 
                 {/* Vehicle & Driver */}
-                <Select
+                <PricingCatalogSelect
                   label="Vehicle & Driver"
-                  value={logistics.vehicle || ''}
-                  onChange={(value) =>
+                  value={logistics.vehicle}
+                  onChange={(pricingItemId) =>
                     onUpdate({
                       logistics: {
                         ...logistics,
-                        vehicle: value || undefined,
+                        vehicle: pricingItemId,
                       },
                     })
                   }
-                  options={[
-                    { value: '', label: 'Select vehicle...' },
-                    ...filteredLogisticsVehicle.map((opt) => ({
-                      value: opt.id,
-                      label: `${opt.name}${opt.price ? ` - ${opt.price}` : ''}`,
-                    })),
-                  ]}
+                  category="Logistics"
+                  parkId={card.parkId}
+                  items={pricingItems}
                 />
 
                 {/* Internal Movements (Multi-select) */}
-                <MultiSelect
+                <PricingCatalogMultiSelect
                   label="Internal Movements"
                   selectedIds={logistics.internalMovements}
-                  options={filteredLogisticsInternal}
-                  onChange={(internalMovements) =>
+                  onChange={(pricingItemIds) =>
                     onUpdate({
                       logistics: {
                         ...logistics,
-                        internalMovements,
+                        internalMovements: pricingItemIds,
                       },
                     })
                   }
+                  category="Logistics"
+                  parkId={card.parkId}
+                  items={pricingItems}
                 />
 
                 {/* Notes (Optional) */}
