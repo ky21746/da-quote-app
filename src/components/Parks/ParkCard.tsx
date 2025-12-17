@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ParkCard as ParkCardType } from '../../types/ui';
 import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
@@ -11,12 +11,7 @@ interface ParkCardProps {
 }
 
 export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) => {
-  const [isLogisticsOpen, setIsLogisticsOpen] = useState(false);
-  const { items: pricingItems } = usePricingCatalog();
-  
-  const logistics = card.logistics || {
-    internalMovements: [],
-  };
+  const { items: pricingItems, isLoading: catalogLoading } = usePricingCatalog();
 
   const parkOptions = [
     { value: '', label: 'Select a park...' },
@@ -88,6 +83,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             category="Aviation"
             parkId={card.parkId}
             items={pricingItems}
+            isLoading={catalogLoading}
           />
 
           {/* Lodging */}
@@ -98,6 +94,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             category="Lodging"
             parkId={card.parkId}
             items={pricingItems}
+            isLoading={catalogLoading}
           />
 
           {/* Local Transportation */}
@@ -108,6 +105,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             category="Vehicle"
             parkId={card.parkId}
             items={pricingItems}
+            isLoading={catalogLoading}
           />
 
           {/* Activities (Multi-select) */}
@@ -118,6 +116,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             category="Activities"
             parkId={card.parkId}
             items={pricingItems}
+            isLoading={catalogLoading}
           />
 
           {/* Extras (Multi-select) */}
@@ -128,90 +127,11 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             category="Extras"
             parkId={card.parkId}
             items={pricingItems}
+            isLoading={catalogLoading}
           />
 
-          {/* Logistics Section (Collapsible) */}
-          <div className="border-t border-gray-200 pt-4 mt-4">
-            <button
-              onClick={() => setIsLogisticsOpen(!isLogisticsOpen)}
-              className="w-full flex justify-between items-center text-left mb-2"
-            >
-              <h4 className="font-semibold text-gray-700">Logistics</h4>
-              <span className="text-gray-500">
-                {isLogisticsOpen ? '−' : '+'}
-              </span>
-            </button>
-
-            {isLogisticsOpen && (
-              <div className="space-y-4 mt-4 pl-2">
-                {/* Arrival / Movement Between Parks */}
-                <PricingCatalogSelect
-                  label="Arrival / Movement Between Parks"
-                  value={logistics.arrival}
-                  onChange={(pricingItemId) =>
-                    onUpdate({
-                      logistics: {
-                        ...logistics,
-                        arrival: pricingItemId,
-                      },
-                    })
-                  }
-                  category="Logistics"
-                  parkId={card.parkId}
-                  items={pricingItems}
-                />
-
-                {/* Vehicle & Driver */}
-                <PricingCatalogSelect
-                  label="Vehicle & Driver"
-                  value={logistics.vehicle}
-                  onChange={(pricingItemId) =>
-                    onUpdate({
-                      logistics: {
-                        ...logistics,
-                        vehicle: pricingItemId,
-                      },
-                    })
-                  }
-                  category="Logistics"
-                  parkId={card.parkId}
-                  items={pricingItems}
-                />
-
-                {/* Internal Movements (Multi-select) */}
-                <PricingCatalogMultiSelect
-                  label="Internal Movements"
-                  selectedIds={logistics.internalMovements}
-                  onChange={(pricingItemIds) =>
-                    onUpdate({
-                      logistics: {
-                        ...logistics,
-                        internalMovements: pricingItemIds,
-                      },
-                    })
-                  }
-                  category="Logistics"
-                  parkId={card.parkId}
-                  items={pricingItems}
-                />
-
-                {/* Notes (Optional) */}
-                <Input
-                  label="Notes (optional)"
-                  value={logistics.notes || ''}
-                  onChange={(value) =>
-                    onUpdate({
-                      logistics: {
-                        ...logistics,
-                        notes: value as string,
-                      },
-                    })
-                  }
-                  placeholder="Operator / planner notes..."
-                />
-              </div>
-            )}
-          </div>
+          {/* Logistics Section (Collapsible) - Hidden in Parks page, shown in Logistics page */}
+          {/* Note: Logistics fields are now handled in LogisticsSection component */}
         </div>
         );
       })()}

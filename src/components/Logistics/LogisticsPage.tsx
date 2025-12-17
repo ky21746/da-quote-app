@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTrip } from '../../context/TripContext';
 import { Button, ProgressStepper } from '../common';
-import { ParksSection } from '../Parks';
+import { LogisticsSection } from './LogisticsSection';
 
 export const LogisticsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -53,8 +53,8 @@ export const LogisticsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Parks Section with Logistics */}
-        <ParksSection />
+        {/* Logistics Section - Only Logistics fields */}
+        <LogisticsSection />
 
         <div className="flex gap-2">
           <Button onClick={() => navigate(-1)} variant="secondary">

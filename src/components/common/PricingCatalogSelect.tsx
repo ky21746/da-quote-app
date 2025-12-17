@@ -10,6 +10,7 @@ interface PricingCatalogSelectProps {
   category: PricingCategory;
   parkId?: string; // Park ID string (must match park.id from Trip Builder)
   items: PricingItem[];
+  isLoading?: boolean;
   disabled?: boolean;
 }
 
@@ -20,6 +21,7 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
   category,
   parkId,
   items,
+  isLoading = false,
   disabled: propDisabled = false,
 }) => {
   // HARD ASSERT: ParkId must not be lost when filtering
@@ -42,6 +44,12 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
   const options = useMemo(() => {
     const optionMap = new Map<string, { value: string; label: string }>();
 
+    // Show loading state if catalog is loading
+    if (isLoading) {
+      optionMap.set('', { value: '', label: 'Loading...' });
+      return Array.from(optionMap.values());
+    }
+
     // First option: Clear/Not selected
     optionMap.set('', { value: '', label: 'Not selected' });
 
@@ -62,7 +70,7 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
     }
 
     return Array.from(optionMap.values());
-  }, [filteredItems, value, selectedItem]);
+  }, [filteredItems, value, selectedItem, isLoading]);
 
   // Disable only if no options OR prop disabled
   const isDisabled = propDisabled || options.length === 0;
@@ -84,23 +92,27 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
       <select
         value={value || ''}
         onChange={handleChange}
-        disabled={isDisabled}
+        disabled={isDisabled || isLoading}
         className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          isDisabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white cursor-pointer'
+          isDisabled || isLoading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white cursor-pointer'
         }`}
         style={{
-          pointerEvents: isDisabled ? 'none' : 'auto',
+          pointerEvents: isDisabled || isLoading ? 'none' : 'auto',
         }}
       >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
+        {isLoading ? (
+          <option value="">Loading...</option>
+        ) : (
+          options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))
+        )}
       </select>
 
-      {/* Helper text when no options */}
-      {options.length === 0 && parkId && (
+      {/* Helper text when no options (only if not loading) */}
+      {!isLoading && options.length === 0 && parkId && (
         <p className="mt-1 text-xs text-gray-500">
           No active {category.toLowerCase()} items available for this park
         </p>
