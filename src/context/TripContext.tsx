@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { TripDraft, CalculationResult, DayDraft, ScenarioResults, ParkCard } from '../types/ui';
 
 interface TripContextType {
@@ -19,8 +19,23 @@ interface TripContextType {
 
 const TripContext = createContext<TripContextType | undefined>(undefined);
 
+// Storage key for trip draft persistence
+const TRIP_DRAFT_STORAGE_KEY = 'da-trip-draft';
+
 export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [draft, setDraft] = useState<TripDraft | null>(null);
+  // Load draft from localStorage on mount
+  const [draft, setDraftState] = useState<TripDraft | null>(() => {
+    try {
+      const stored = localStorage.getItem(TRIP_DRAFT_STORAGE_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch {
+      // Ignore parse errors
+    }
+    return null;
+  });
+
   const [calculationResult, setCalculationResult] = useState<CalculationResult | null>(null);
   const [daysBreakdown, setDaysBreakdown] = useState<DayDraft[]>([]);
   const [scenarioResults, setScenarioResults] = useState<ScenarioResults>({
@@ -28,6 +43,28 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     quality: null,
     premium: null,
   });
+
+  // Save draft to localStorage on every change
+  useEffect(() => {
+    if (draft) {
+      try {
+        localStorage.setItem(TRIP_DRAFT_STORAGE_KEY, JSON.stringify(draft));
+      } catch {
+        // Ignore storage errors
+      }
+    } else {
+      localStorage.removeItem(TRIP_DRAFT_STORAGE_KEY);
+    }
+  }, [draft]);
+
+  // Wrapper to ensure state updates trigger localStorage save
+  const setDraft = (newDraft: TripDraft | null | ((prev: TripDraft | null) => TripDraft | null)) => {
+    if (typeof newDraft === 'function') {
+      setDraftState(newDraft);
+    } else {
+      setDraftState(newDraft);
+    }
+  };
 
   const updateDay = (dayNumber: number, updates: Partial<DayDraft>) => {
     setDaysBreakdown((prev) =>
@@ -44,14 +81,17 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         internalMovements: [],
       },
     };
-    setDraft((prev) => ({
-      ...prev!,
-      parks: [...(prev?.parks || []), newCard],
-    }));
+    setDraftState((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        parks: [...(prev.parks || []), newCard],
+      };
+    });
   };
 
   const updateParkCard = (cardId: string, updates: Partial<ParkCard>) => {
-    setDraft((prev) => {
+    setDraftState((prev) => {
       if (!prev) return prev;
       return {
         ...prev,
@@ -63,7 +103,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const removeParkCard = (cardId: string) => {
-    setDraft((prev) => {
+    setDraftState((prev) => {
       if (!prev) return prev;
       return {
         ...prev,
@@ -76,6 +116,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setDraft(null);
     setDaysBreakdown([]);
     setScenarioResults({ base: null, quality: null, premium: null });
+    localStorage.removeItem(TRIP_DRAFT_STORAGE_KEY);
   };
 
   return (

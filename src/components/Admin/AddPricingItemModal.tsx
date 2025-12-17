@@ -141,7 +141,8 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
 
     // Save and close
     onSave(itemData);
-    onClose();
+    // Note: onSave is async, but we close modal immediately for UX
+    // The actual save happens in PricingCatalogPage.handleSave
   };
 
   if (!isOpen) return null;

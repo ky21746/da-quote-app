@@ -9,7 +9,7 @@ import { getParkLabel } from '../../constants/parks';
 
 export const PricingCatalogPage: React.FC = () => {
   const navigate = useNavigate();
-  const { items, addItem, updateItem, deleteItem, resetToSeed } = usePricingCatalog();
+  const { items, addItem, updateItem, deleteItem, isLoading } = usePricingCatalog();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PricingItem | null>(null);
 
@@ -64,11 +64,23 @@ export const PricingCatalogPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = (itemData: Omit<PricingItem, 'id'>) => {
-    if (editingItem) {
-      updateItem(editingItem.id, itemData);
-    } else {
-      addItem(itemData);
+  const handleSave = async (itemData: Omit<PricingItem, 'id'>) => {
+    console.log('💾 handleSave called with:', itemData);
+    try {
+      if (editingItem) {
+        console.log('📝 Updating item:', editingItem.id);
+        await updateItem(editingItem.id, itemData);
+        console.log('✅ Item updated successfully');
+      } else {
+        console.log('➕ Adding new item');
+        await addItem(itemData);
+        console.log('✅ Item added successfully');
+      }
+      setIsModalOpen(false);
+      setEditingItem(null);
+    } catch (error) {
+      console.error('❌ Error saving item:', error);
+      alert(`Error saving item: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -180,7 +192,7 @@ export const PricingCatalogPage: React.FC = () => {
                       {item.itemName}
                     </td>
                     <td className="border border-gray-300 px-3 py-2 text-right">
-                      USD {item.basePrice.toFixed(2)}
+                      USD {typeof item.basePrice === 'number' && !isNaN(item.basePrice) ? item.basePrice.toFixed(2) : '0.00'}
                     </td>
                     <td className="border border-gray-300 px-3 py-2">
                       <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">

@@ -2,9 +2,8 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // Pricing Catalog - read/write for all (no auth yet)
-    match /pricingCatalog/{document} {
+    match /pricingCatalog/{id} {
       allow read, write: if true;
     }
   }
 }
-
