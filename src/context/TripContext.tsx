@@ -40,6 +40,9 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       id: `park_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       activities: [],
       extras: [],
+      logistics: {
+        internalMovements: [],
+      },
     };
     setDraft((prev) => ({
       ...prev!,

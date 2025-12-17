@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ParkCard as ParkCardType } from '../../types/ui';
-import { Select, MultiSelect } from '../common';
+import { Select, MultiSelect, Input } from '../common';
 import {
   MOCK_PARKS,
   MOCK_ARRIVAL,
@@ -8,6 +8,9 @@ import {
   MOCK_TRANSPORT,
   MOCK_ACTIVITIES,
   MOCK_EXTRAS,
+  MOCK_LOGISTICS_ARRIVAL,
+  MOCK_LOGISTICS_VEHICLE,
+  MOCK_LOGISTICS_INTERNAL,
   getFilteredOptions,
 } from '../../data/mockCatalog';
 
@@ -18,11 +21,22 @@ interface ParkCardProps {
 }
 
 export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) => {
+  const [isLogisticsOpen, setIsLogisticsOpen] = useState(false);
+  
   const filteredArrival = getFilteredOptions(MOCK_ARRIVAL, card.parkId);
   const filteredLodging = getFilteredOptions(MOCK_LODGING, card.parkId);
   const filteredTransport = getFilteredOptions(MOCK_TRANSPORT, card.parkId);
   const filteredActivities = getFilteredOptions(MOCK_ACTIVITIES, card.parkId);
   const filteredExtras = getFilteredOptions(MOCK_EXTRAS, card.parkId);
+  
+  // Logistics options (filtered by parkId)
+  const filteredLogisticsArrival = getFilteredOptions(MOCK_LOGISTICS_ARRIVAL, card.parkId);
+  const filteredLogisticsVehicle = getFilteredOptions(MOCK_LOGISTICS_VEHICLE, card.parkId);
+  const filteredLogisticsInternal = getFilteredOptions(MOCK_LOGISTICS_INTERNAL, card.parkId);
+  
+  const logistics = card.logistics || {
+    internalMovements: [],
+  };
 
   const parkOptions = [
     { value: '', label: 'Select a park...' },
@@ -70,7 +84,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
         label="Park"
         value={card.parkId || ''}
         onChange={(value) => {
-          // When park changes, reset all dependent fields
+          // When park changes, reset all dependent fields including logistics
           onUpdate({
             parkId: value || undefined,
             arrival: undefined,
@@ -78,6 +92,9 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             transport: undefined,
             activities: [],
             extras: [],
+            logistics: {
+              internalMovements: [],
+            },
           });
         }}
         options={parkOptions}
@@ -125,6 +142,95 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             options={filteredExtras}
             onChange={(extras) => onUpdate({ extras })}
           />
+
+          {/* Logistics Section (Collapsible) */}
+          <div className="border-t border-gray-200 pt-4 mt-4">
+            <button
+              onClick={() => setIsLogisticsOpen(!isLogisticsOpen)}
+              className="w-full flex justify-between items-center text-left mb-2"
+            >
+              <h4 className="font-semibold text-gray-700">Logistics</h4>
+              <span className="text-gray-500">
+                {isLogisticsOpen ? '−' : '+'}
+              </span>
+            </button>
+
+            {isLogisticsOpen && (
+              <div className="space-y-4 mt-4 pl-2">
+                {/* Arrival / Movement Between Parks */}
+                <Select
+                  label="Arrival / Movement Between Parks"
+                  value={logistics.arrival || ''}
+                  onChange={(value) =>
+                    onUpdate({
+                      logistics: {
+                        ...logistics,
+                        arrival: value || undefined,
+                      },
+                    })
+                  }
+                  options={[
+                    { value: '', label: 'Select arrival/movement...' },
+                    ...filteredLogisticsArrival.map((opt) => ({
+                      value: opt.id,
+                      label: `${opt.name}${opt.price ? ` - ${opt.price}` : ''}`,
+                    })),
+                  ]}
+                />
+
+                {/* Vehicle & Driver */}
+                <Select
+                  label="Vehicle & Driver"
+                  value={logistics.vehicle || ''}
+                  onChange={(value) =>
+                    onUpdate({
+                      logistics: {
+                        ...logistics,
+                        vehicle: value || undefined,
+                      },
+                    })
+                  }
+                  options={[
+                    { value: '', label: 'Select vehicle...' },
+                    ...filteredLogisticsVehicle.map((opt) => ({
+                      value: opt.id,
+                      label: `${opt.name}${opt.price ? ` - ${opt.price}` : ''}`,
+                    })),
+                  ]}
+                />
+
+                {/* Internal Movements (Multi-select) */}
+                <MultiSelect
+                  label="Internal Movements"
+                  selectedIds={logistics.internalMovements}
+                  options={filteredLogisticsInternal}
+                  onChange={(internalMovements) =>
+                    onUpdate({
+                      logistics: {
+                        ...logistics,
+                        internalMovements,
+                      },
+                    })
+                  }
+                />
+
+                {/* Notes (Optional) */}
+                <Input
+                  label="Notes (optional)"
+                  value={logistics.notes || ''}
+                  onChange={(value) =>
+                    onUpdate({
+                      logistics: {
+                        ...logistics,
+                        notes: value as string,
+                      },
+                    })
+                  }
+                  placeholder="Operator / planner notes..."
+                />
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

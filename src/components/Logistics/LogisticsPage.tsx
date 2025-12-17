@@ -4,7 +4,7 @@ import { useTrip } from '../../context/TripContext';
 import { Button, ProgressStepper } from '../common';
 import { ParksSection } from '../Parks';
 
-export const TripDaysEditorPage: React.FC = () => {
+export const LogisticsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { draft } = useTrip();
@@ -30,9 +30,9 @@ export const TripDaysEditorPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Attractions & Parks</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Logistics</h1>
 
-        <ProgressStepper currentStep={2} steps={progressSteps} />
+        <ProgressStepper currentStep={3} steps={progressSteps} />
 
         {/* Read-only summary */}
         <div className="mb-6 p-4 bg-gray-50 rounded-lg">
@@ -53,7 +53,7 @@ export const TripDaysEditorPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Parks Section */}
+        {/* Parks Section with Logistics */}
         <ParksSection />
 
         <div className="flex gap-2">
@@ -61,10 +61,10 @@ export const TripDaysEditorPage: React.FC = () => {
             Back
           </Button>
           <Button
-            onClick={() => navigate(`/trip/${id}/logistics`)}
+            onClick={() => navigate(`/trip/${id}/review`)}
             variant="primary"
           >
-            Next: Logistics
+            Next: Review & Pricing
           </Button>
         </div>
       </div>

@@ -77,6 +77,13 @@ export interface ScenarioResults {
   premium: CalculationResult | null;
 }
 
+export interface ParkLogistics {
+  arrival?: string;
+  vehicle?: string;
+  internalMovements: string[];
+  notes?: string;
+}
+
 export interface ParkCard {
   id: string;
   parkId?: string;
@@ -85,12 +92,24 @@ export interface ParkCard {
   transport?: string;
   activities: string[];
   extras: string[];
+  logistics?: ParkLogistics;
 }
+
+export type PricingModel =
+  | 'per_person'
+  | 'fixed'
+  | 'per_day_fixed'
+  | 'per_night_per_person'
+  | 'per_night_fixed';
 
 export interface CatalogOption {
   id: string;
   name: string;
-  price?: string;
+  price?: string; // Display price string (e.g., "USD 150")
+  basePrice?: number; // Numeric price for calculations
+  pricingModel?: PricingModel;
+  splitAcrossTravelers?: boolean; // For fixed items that should show per-person
+  capacity?: number; // Display only (e.g., helicopter 13 pax)
   tier?: TripTier;
   parkId?: string;
 }
