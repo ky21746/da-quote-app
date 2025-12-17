@@ -102,6 +102,49 @@ export type PricingModel =
   | 'per_night_per_person'
   | 'per_night_fixed';
 
+export type ManualCostType =
+  | 'fixed_group'
+  | 'fixed_per_day'
+  | 'per_person'
+  | 'per_person_per_day'
+  | 'per_night_per_person'
+  | 'per_night_fixed';
+
+export type PricingCategory =
+  | 'Aviation'
+  | 'Lodging'
+  | 'Vehicle'
+  | 'Activities'
+  | 'Park Fees'
+  | 'Extras';
+
+export interface PricingItem {
+  id: string;
+  parkId?: string; // undefined = Global
+  category: PricingCategory;
+  itemName: string;
+  basePrice: number;
+  costType: ManualCostType;
+  appliesTo: 'Park-specific' | 'Global';
+  notes?: string;
+  active: boolean;
+}
+
+export interface ManualPricingLineItem {
+  id: string;
+  // Read-only
+  park: string;
+  category: string;
+  itemName: string;
+  // Editable
+  basePrice: number | null; // null = not set yet
+  costType: ManualCostType | '';
+  showTotal: boolean;
+  showPerPerson: boolean;
+  optedOut: boolean;
+  notes?: string;
+}
+
 export interface CatalogOption {
   id: string;
   name: string;
