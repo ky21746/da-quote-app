@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PricingItem, PricingCategory, ManualCostType } from '../../types/ui';
 import { Button, Input, Select } from '../common';
-import { PARKS } from '../../constants/parks';
+import { getParks } from '../../utils/parks';
 
 interface AddPricingItemModalProps {
   isOpen: boolean;
@@ -99,7 +99,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
 
   const parkOptions = [
     { value: '', label: 'Select park...' },
-    ...PARKS.map((park) => ({ value: park.id, label: park.label })),
+    ...getParks().map((park) => ({ value: park.id, label: park.label })),
   ];
 
   const handleSubmit = (e: React.FormEvent) => {

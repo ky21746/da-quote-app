@@ -84,6 +84,11 @@ function loadItemsFromStorage(): PricingItem[] {
 function saveItemsToStorage(items: PricingItem[]): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    // DEBUG: Verify save
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const parsed = saved ? JSON.parse(saved) : [];
+    console.log('[PricingCatalogContext] Saved to localStorage:', parsed.length, 'items');
+    console.log('[PricingCatalogContext] Saved Lodging items:', parsed.filter((i: PricingItem) => i.category === 'Lodging').map((i: PricingItem) => ({ id: i.id, name: i.itemName, parkId: i.parkId, appliesTo: i.appliesTo })));
   } catch (error) {
     console.error('Failed to save pricing catalog to localStorage:', error);
   }
@@ -91,7 +96,13 @@ function saveItemsToStorage(items: PricingItem[]): void {
 
 export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Load from localStorage on mount
-  const [items, setItems] = useState<PricingItem[]>(() => loadItemsFromStorage());
+  const [items, setItems] = useState<PricingItem[]>(() => {
+    const loaded = loadItemsFromStorage();
+    // DEBUG: Log loaded items
+    console.log('[PricingCatalogContext] Loaded items:', loaded.length);
+    console.log('[PricingCatalogContext] Lodging items:', loaded.filter(i => i.category === 'Lodging').map(i => ({ id: i.id, name: i.itemName, parkId: i.parkId, appliesTo: i.appliesTo, active: i.active })));
+    return loaded;
+  });
 
   // Save to localStorage whenever items change
   // CRITICAL: This ensures persistence on every state change
@@ -116,9 +127,14 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
       active: itemData.active ?? true,
     };
     
+    // DEBUG: Log new item being added
+    console.log('[PricingCatalogContext] Adding new item:', newItem);
+    
     // Add to state (will trigger localStorage save via useEffect)
     setItems((prev) => {
       const updated = [...prev, newItem];
+      console.log('[PricingCatalogContext] Updated items count:', updated.length);
+      console.log('[PricingCatalogContext] New item in list:', updated.find(i => i.id === newId));
       return updated;
     });
   };

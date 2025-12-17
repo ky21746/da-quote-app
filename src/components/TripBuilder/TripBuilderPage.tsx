@@ -43,16 +43,16 @@ export const TripBuilderPage: React.FC = () => {
     };
     setDraft(draft);
 
-    // Navigate to Phase 2: Attractions & Parks
+    // Navigate to Phase 2: Parks
     // Use 'draft' as ID for local draft (no backend required)
     navigate('/trip/draft/edit');
   };
 
   const progressSteps = [
-    'Basic Setup',
-    'Attractions & Parks',
+    'Setup',
+    'Parks',
     'Logistics',
-    'Review & Pricing',
+    'Pricing',
   ];
 
   return (

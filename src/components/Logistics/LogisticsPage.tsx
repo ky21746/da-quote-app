@@ -10,10 +10,10 @@ export const LogisticsPage: React.FC = () => {
   const { draft } = useTrip();
 
   const progressSteps = [
-    'Basic Setup',
-    'Attractions & Parks',
+    'Setup',
+    'Parks',
     'Logistics',
-    'Review & Pricing',
+    'Pricing',
   ];
 
   if (!draft) {
@@ -64,7 +64,7 @@ export const LogisticsPage: React.FC = () => {
             onClick={() => navigate(`/trip/${id}/review`)}
             variant="primary"
           >
-            Next: Review & Pricing
+            Next: Pricing
           </Button>
         </div>
       </div>

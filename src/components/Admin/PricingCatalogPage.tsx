@@ -1,11 +1,14 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { Button, Select } from '../common';
 import { PricingItem, PricingCategory } from '../../types/ui';
 import { AddPricingItemModal } from './AddPricingItemModal';
-import { PARKS } from '../../constants/parks';
+import { getParks } from '../../utils/parks';
+import { getParkLabel } from '../../constants/parks';
 
 export const PricingCatalogPage: React.FC = () => {
+  const navigate = useNavigate();
   const { items, addItem, updateItem, deleteItem, resetToSeed } = usePricingCatalog();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PricingItem | null>(null);
@@ -69,6 +72,16 @@ export const PricingCatalogPage: React.FC = () => {
     }
   };
 
+  const handleBack = () => {
+    // Check if there's history to go back to
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      // Fallback to trip builder if no history (direct access)
+      navigate('/trip/new');
+    }
+  };
+
   const categoryOptions: Array<{ value: string; label: string }> = [
     { value: 'all', label: 'All Categories' },
     { value: 'Aviation', label: 'Aviation' },
@@ -82,21 +95,20 @@ export const PricingCatalogPage: React.FC = () => {
   const parkOptions = [
     { value: 'all', label: 'All Parks' },
     { value: 'global', label: 'Global Items' },
-    ...PARKS.map((park) => ({ value: park.id, label: park.label })),
+    ...getParks().map((park) => ({ value: park.id, label: park.label })),
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Admin → Pricing Catalog</h1>
+          <div className="flex items-center gap-4">
+            <Button onClick={handleBack} variant="secondary">
+              ← Back
+            </Button>
+            <h1 className="text-2xl font-bold text-gray-800">Admin → Pricing Catalog</h1>
+          </div>
           <div className="flex gap-2 items-center">
-            <button
-              onClick={() => resetToSeed()}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-sm"
-            >
-              Reset to Seed
-            </button>
             <Button onClick={handleAddClick} variant="primary">
               + Add Pricing Item
             </Button>
@@ -159,7 +171,7 @@ export const PricingCatalogPage: React.FC = () => {
                         <span className="text-blue-600 font-medium">Global</span>
                       ) : (
                         <span className="text-gray-600">
-                          {item.parkId ? (PARKS.find((p) => p.id === item.parkId)?.label || item.parkId) : 'Unknown'}
+                          {item.parkId ? (getParks().find((p) => p.id === item.parkId)?.label || item.parkId) : 'Unknown'}
                         </span>
                       )}
                     </td>

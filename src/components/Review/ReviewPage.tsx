@@ -5,7 +5,7 @@ import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { Button, ProgressStepper } from '../common';
 import { ParkCard } from '../../types/ui';
 import { getPricingItemById, getPricingItemsByIds } from '../../utils/pricingCatalogHelpers';
-import { PARKS } from '../../constants/parks';
+import { getParks } from '../../utils/parks';
 
 export const ReviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,14 +15,14 @@ export const ReviewPage: React.FC = () => {
 
   const getParkName = (parkId?: string): string => {
     if (!parkId) return 'Not selected';
-    return PARKS.find((p) => p.id === parkId)?.label || parkId;
+    return getParks().find((p) => p.id === parkId)?.label || parkId;
   };
 
   const progressSteps = [
-    'Basic Setup',
-    'Attractions & Parks',
+    'Setup',
+    'Parks',
     'Logistics',
-    'Review & Pricing',
+    'Pricing',
   ];
 
   if (!draft) {

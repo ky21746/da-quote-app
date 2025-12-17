@@ -13,10 +13,10 @@ export const PricingPage: React.FC = () => {
   const { items: pricingItems } = usePricingCatalog();
 
   const progressSteps = [
-    'Basic Setup',
-    'Attractions & Parks',
+    'Setup',
+    'Parks',
     'Logistics',
-    'Review & Pricing',
+    'Pricing',
   ];
 
   // Calculate pricing from catalog

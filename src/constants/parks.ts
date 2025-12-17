@@ -8,7 +8,7 @@ export interface Park {
 /**
  * Unified Parks constant - Single Source of Truth for park labels
  */
-export const PARKS: Park[] = [
+export const PARKS: Array<{ id: string; label: string }> = [
   { id: 'MURCHISON', label: 'Murchison Falls National Park' },
   { id: 'BWINDI', label: 'Bwindi Impenetrable National Park' },
   { id: 'QUEEN_ELIZABETH', label: 'Queen Elizabeth National Park' },
@@ -26,7 +26,7 @@ export function getParkLabel(parkId: ParkId): string {
 /**
  * Get park by ParkId
  */
-export function getParkById(parkId: ParkId): Park | undefined {
+export function getParkById(parkId: ParkId): { id: string; label: string } | undefined {
   return PARKS.find((p) => p.id === parkId);
 }
 

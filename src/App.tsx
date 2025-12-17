@@ -1,16 +1,21 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { TripProvider } from './context/TripContext';
 import { PricingCatalogProvider } from './context/PricingCatalogContext';
+import AppHeader from './components/layout/AppHeader';
 import { AppRoutes } from './routes/AppRoutes';
 import './App.css';
 
 export const App: React.FC = () => {
   return (
-    <TripProvider>
-      <PricingCatalogProvider>
-        <AppRoutes />
-      </PricingCatalogProvider>
-    </TripProvider>
+    <BrowserRouter>
+      <TripProvider>
+        <PricingCatalogProvider>
+          <AppHeader />
+          <AppRoutes />
+        </PricingCatalogProvider>
+      </TripProvider>
+    </BrowserRouter>
   );
 };
 

@@ -1,4 +1,5 @@
 import { PricingItem, PricingCategory } from '../types/ui';
+import { assertValidParkId } from './parks';
 
 /**
  * CANONICAL function to get catalog items for a specific park and category
@@ -14,6 +15,11 @@ export function getCatalogItemsForPark(
   parkId: string | undefined,
   category: PricingCategory
 ): PricingItem[] {
+  // Type guard: Validate parkId before filtering
+  if (parkId) {
+    assertValidParkId(parkId);
+  }
+  
   if (!parkId) {
     // If no park selected, return only Global items
     return catalog.filter((item) => {
@@ -27,13 +33,41 @@ export function getCatalogItemsForPark(
   // 1. Active
   // 2. Match category
   // 3. AND (appliesTo === 'Global' OR parkId === parkId)
-  return catalog.filter((item) => {
+  const result = catalog.filter((item) => {
     if (!item.active) return false;
     if (item.category !== category) return false;
     
     // Show Global items OR park-specific items matching this park
-    return item.appliesTo === 'Global' || item.parkId === parkId;
+    // CRITICAL: Handle null/undefined parkId correctly
+    const isGlobal = item.appliesTo === 'Global';
+    const isParkMatch = item.parkId !== null && item.parkId !== undefined && item.parkId === parkId;
+    const matches = isGlobal || isParkMatch;
+    
+    // DEBUG: Log detailed filtering
+    if (category === 'Lodging') {
+      console.log(`[getCatalogItemsForPark] Checking item:`, {
+        itemName: item.itemName,
+        itemParkId: item.parkId,
+        itemAppliesTo: item.appliesTo,
+        searchParkId: parkId,
+        active: item.active,
+        categoryMatch: item.category === category,
+        isGlobal,
+        isParkMatch,
+        matches
+      });
+    }
+    
+    return matches;
   });
+  
+  // DEBUG: Log result
+  if (category === 'Lodging') {
+    console.log(`[getCatalogItemsForPark] Result for parkId=${parkId}, category=${category}:`, result.length, 'items');
+    console.log(`[getCatalogItemsForPark] Result items:`, result.map(i => ({ name: i.itemName, parkId: i.parkId, appliesTo: i.appliesTo })));
+  }
+  
+  return result;
 }
 
 /**

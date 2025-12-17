@@ -1,7 +1,7 @@
 import { TripDraft, PricingItem, ManualCostType } from '../types/ui';
 import { getPricingItemById, getPricingItemsByIds } from './pricingCatalogHelpers';
 import { getParkLabel } from '../constants/parks';
-import { PARKS } from '../constants/parks';
+import { getParks } from './parks';
 
 export interface PricingLineItem {
   id: string;
@@ -37,9 +37,9 @@ export function calculatePricingFromCatalog(
   const nights = days; // Assuming nights = days
 
   for (const card of parks) {
-    // Get park name - card.parkId is string matching PARKS[].id
-    const parkName = card.parkId 
-      ? (PARKS.find((p) => p.id === card.parkId)?.label || card.parkId)
+    // Get park name - card.parkId is string matching parks list
+    const parkName = card.parkId
+      ? (getParks().find((p) => p.id === card.parkId)?.label || card.parkId)
       : 'Unknown Park';
 
     // Arrival / Aviation

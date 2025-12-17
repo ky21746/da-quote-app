@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { PricingItem, PricingCategory } from '../../types/ui';
 import { getCatalogItemsForPark, getPricingItemById } from '../../utils/pricingCatalogHelpers';
+import { assertValidParkId } from '../../utils/parks';
 
 interface PricingCatalogSelectProps {
   label: string;
@@ -21,8 +22,30 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
   items,
   disabled: propDisabled = false,
 }) => {
+  // HARD ASSERT: ParkId must not be lost when filtering
+  if (parkId !== undefined && parkId !== null && parkId === '') {
+    throw new Error("ParkId lost in Trip Builder flow");
+  }
+  
+  // Type guard: Validate parkId before filtering
+  if (parkId) {
+    assertValidParkId(parkId);
+  }
+  
   // Get filtered items using CANONICAL function
-  const filteredItems = useMemo(() => getCatalogItemsForPark(items, parkId, category), [items, parkId, category]);
+  const filteredItems = useMemo(() => {
+    const result = getCatalogItemsForPark(items, parkId, category);
+    // DEBUG: Log filtering details
+    console.log(`[PricingCatalogSelect] ${label}:`, {
+      parkId,
+      category,
+      totalItems: items.length,
+      filteredCount: result.length,
+      filteredItems: result.map(i => ({ id: i.id, name: i.itemName, parkId: i.parkId, appliesTo: i.appliesTo, active: i.active })),
+      allLodgingItems: items.filter(i => i.category === 'Lodging').map(i => ({ id: i.id, name: i.itemName, parkId: i.parkId, appliesTo: i.appliesTo, active: i.active }))
+    });
+    return result;
+  }, [items, parkId, category, label]);
 
   // Get currently selected item (even if inactive/filtered out)
   const selectedItem = value ? getPricingItemById(items, value) : null;

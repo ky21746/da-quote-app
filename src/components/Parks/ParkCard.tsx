@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ParkCard as ParkCardType } from '../../types/ui';
 import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
-import { PARKS } from '../../constants/parks';
+import { getParks, assertValidParkId } from '../../utils/parks';
 
 interface ParkCardProps {
   card: ParkCardType;
@@ -20,7 +20,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
 
   const parkOptions = [
     { value: '', label: 'Select a park...' },
-    ...PARKS.map((park) => ({ value: park.id, label: park.label })),
+    ...getParks().map((park) => ({ value: park.id, label: park.label })),
   ];
 
   return (
@@ -41,9 +41,20 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
         value={card.parkId || ''}
         onChange={(value) => {
           // When park changes, reset all dependent fields including logistics
-          // CRITICAL: parkId must be string matching PARKS[].id
+          const selectedParkId = value || undefined;
+          
+          // HARD ASSERT: ParkId must not be lost
+          if (selectedParkId === null || selectedParkId === '') {
+            throw new Error("ParkId lost in Trip Builder flow");
+          }
+          
+          // Type guard: Validate parkId before updating
+          if (selectedParkId) {
+            assertValidParkId(selectedParkId);
+          }
+          
           onUpdate({
-            parkId: value || undefined,
+            parkId: selectedParkId,
             arrival: undefined,
             lodging: undefined,
             transport: undefined,
@@ -58,7 +69,16 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
       />
 
       {/* Categories shown only after park selected */}
-      {card.parkId && (
+      {card.parkId && (() => {
+        // HARD ASSERT: ParkId must not be lost
+        if (!card.parkId || card.parkId === '') {
+          throw new Error("ParkId lost in Trip Builder flow");
+        }
+        
+        // Type guard: Validate parkId exists in parks list
+        assertValidParkId(card.parkId);
+        
+        return (
         <div className="space-y-4 mt-4">
           {/* Arrival / Aviation */}
           <PricingCatalogSelect
@@ -193,7 +213,8 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             )}
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 };
