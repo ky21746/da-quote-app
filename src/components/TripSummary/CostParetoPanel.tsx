@@ -40,8 +40,8 @@ export const CostParetoPanel: React.FC<CostParetoPanelProps> = ({ calculation })
   );
 
   return (
-    <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-      <h3 className="text-lg font-bold text-gray-800 mb-4">Cost Breakdown (Pareto)</h3>
+    <div className="mb-6 p-4 bg-brand-olive/5 rounded-lg border border-brand-olive/20">
+      <h3 className="text-lg font-bold text-brand-dark mb-4">Cost Breakdown (Pareto)</h3>
 
       <div className="space-y-3">
         {categoriesWithPercentages.map((cat, idx) => {
@@ -52,7 +52,7 @@ export const CostParetoPanel: React.FC<CostParetoPanelProps> = ({ calculation })
             <div
               key={cat.category}
               className={`flex justify-between items-center p-2 rounded ${
-                isTopContributor ? 'bg-blue-50 border border-blue-200' : 'bg-white'
+                isTopContributor ? 'bg-brand-olive/10 border border-brand-olive/30' : 'bg-white border border-brand-olive/10'
               }`}
             >
               <div className="flex-1">
@@ -60,10 +60,10 @@ export const CostParetoPanel: React.FC<CostParetoPanelProps> = ({ calculation })
                   <span
                     className={`capitalize ${
                       isTop3
-                        ? 'font-bold text-gray-900'
+                        ? 'font-bold text-brand-dark'
                         : isTopContributor
-                        ? 'font-semibold text-gray-800'
-                        : 'text-gray-700'
+                        ? 'font-semibold text-brand-dark'
+                        : 'text-brand-dark/80'
                     }`}
                   >
                     {cat.category}
@@ -71,23 +71,23 @@ export const CostParetoPanel: React.FC<CostParetoPanelProps> = ({ calculation })
                   <span
                     className={`${
                       isTop3
-                        ? 'font-bold text-gray-900'
+                        ? 'font-bold text-brand-dark'
                         : isTopContributor
-                        ? 'font-semibold text-gray-800'
-                        : 'text-gray-700'
+                        ? 'font-semibold text-brand-dark'
+                        : 'text-brand-dark/80'
                     }`}
                   >
                     {cat.amount}
                   </span>
                 </div>
                 <div className="flex items-center">
-                  <div className="flex-1 bg-gray-200 rounded-full h-2 mr-2">
+                  <div className="flex-1 bg-brand-olive/20 rounded-full h-2 mr-2">
                     <div
-                      className="bg-blue-600 h-2 rounded-full"
+                      className="bg-brand-gold h-2 rounded-full"
                       style={{ width: `${Math.min(cat.percentage, 100)}%` }}
                     />
                   </div>
-                  <span className="text-xs text-gray-600 w-12 text-right">
+                  <span className="text-xs text-brand-dark/70 w-12 text-right">
                     {cat.percentage.toFixed(1)}%
                   </span>
                 </div>
@@ -98,8 +98,8 @@ export const CostParetoPanel: React.FC<CostParetoPanelProps> = ({ calculation })
       </div>
 
       {topContributors.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-gray-300">
-          <p className="text-xs text-gray-600">
+        <div className="mt-4 pt-4 border-t border-brand-olive/20">
+          <p className="text-xs text-brand-dark/70">
             <span className="font-semibold">Top {topContributors.length} categories</span> account
             for{' '}
             <span className="font-semibold">
@@ -112,5 +112,6 @@ export const CostParetoPanel: React.FC<CostParetoPanelProps> = ({ calculation })
     </div>
   );
 };
+
 
 

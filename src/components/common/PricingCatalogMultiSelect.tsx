@@ -2,6 +2,7 @@ import React from 'react';
 import { PricingItem, PricingCategory } from '../../types/ui';
 import { getCatalogItemsForPark } from '../../utils/pricingCatalogHelpers';
 import { formatCurrency } from '../../utils/currencyFormatter';
+import { getCategoryIcon } from '../../utils/iconHelpers';
 
 interface PricingCatalogMultiSelectProps {
   label: string;
@@ -35,7 +36,10 @@ export const PricingCatalogMultiSelect: React.FC<PricingCatalogMultiSelectProps>
 
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+      <label className="flex items-center gap-2 text-sm font-medium text-brand-dark mb-2">
+        {getCategoryIcon(category)}
+        {label}
+      </label>
       <div className="space-y-2 max-h-40 overflow-y-auto border border-gray-300 rounded p-2">
         {isLoading ? (
           <div className="text-sm text-gray-500 flex items-center gap-2">

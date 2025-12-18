@@ -3,6 +3,7 @@ import { PricingItem, PricingCategory } from '../../types/ui';
 import { getCatalogItemsForPark, getPricingItemById } from '../../utils/pricingCatalogHelpers';
 import { assertValidParkId } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
+import { getCategoryIcon } from '../../utils/iconHelpers';
 
 interface PricingCatalogSelectProps {
   label: string;
@@ -86,7 +87,10 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
   return (
     <div className="mb-4">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+        <label className="flex items-center gap-2 text-sm font-medium text-brand-dark mb-1">
+          {getCategoryIcon(category)}
+          {label}
+        </label>
       )}
       
       {/* Native select - simple and reliable */}

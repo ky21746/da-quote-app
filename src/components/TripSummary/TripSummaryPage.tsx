@@ -8,6 +8,7 @@ import { PricingScenarioComparison } from './PricingScenarioComparison';
 import { CostParetoPanel } from './CostParetoPanel';
 import { quoteService } from '../../services/quoteService';
 import { pdfService } from '../../services/pdfService';
+import { getCategoryIcon } from '../../utils/iconHelpers';
 
 export const TripSummaryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,9 +47,9 @@ export const TripSummaryPage: React.FC = () => {
     }
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     if (!draft || !calculationResult) return;
-    pdfService.generateQuotePDF(draft, calculationResult, savedQuoteId || undefined);
+    await pdfService.generateQuotePDF(draft, calculationResult, savedQuoteId || undefined);
   };
 
   if (!calculationResult) {
@@ -90,14 +91,15 @@ export const TripSummaryPage: React.FC = () => {
         </div>
 
         <div className="mb-6">
-          <h3 className="font-semibold text-gray-700 mb-3">Line-by-Line Breakdown</h3>
+          <h3 className="font-semibold text-brand-dark mb-3">Line-by-Line Breakdown</h3>
           {breakdown.map((category) => (
-            <div key={category.category} className="mb-4 border-b border-gray-200 pb-3">
+            <div key={category.category} className="mb-4 border-b border-brand-olive/20 pb-3">
               <div className="flex justify-between items-center mb-2">
-                <span className="font-medium text-gray-700 capitalize">
+                <span className="flex items-center gap-2 font-medium text-brand-dark capitalize">
+                  {getCategoryIcon(category.category)}
                   {category.category}
                 </span>
-                <span className="text-sm font-semibold text-gray-800">
+                <span className="text-sm font-semibold text-brand-dark">
                   {category.subtotal}
                 </span>
               </div>
@@ -105,15 +107,15 @@ export const TripSummaryPage: React.FC = () => {
                 {category.items.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded"
+                    className="flex justify-between items-center text-sm bg-brand-olive/5 p-2 rounded border border-brand-olive/10"
                   >
                     <div className="flex-1">
-                      <div className="font-medium text-gray-700">{item.description}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="font-medium text-brand-dark">{item.description}</div>
+                      <div className="text-xs text-brand-olive/70">
                         {item.quantity} × {item.unitPrice}
                       </div>
                     </div>
-                    <span className="font-semibold text-gray-800 ml-4">{item.total}</span>
+                    <span className="font-semibold text-brand-dark ml-4">{item.total}</span>
                   </div>
                 ))}
               </div>

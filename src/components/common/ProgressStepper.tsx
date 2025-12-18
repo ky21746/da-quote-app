@@ -25,9 +25,9 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
                 <div
                   className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium relative z-10 ${
                     isActive
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-brand-gold text-white'
                       : isCompleted
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-brand-olive text-white'
                       : 'bg-gray-200 text-gray-500'
                   }`}
                 >
@@ -38,7 +38,7 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
                 <span
                   className={`hidden md:inline-block mt-2 text-sm text-center leading-tight whitespace-nowrap min-h-[1.25rem] ${
                     isActive
-                      ? 'font-semibold text-blue-600'
+                      ? 'font-semibold text-brand-gold'
                       : isDisabled
                       ? 'text-gray-400'
                       : 'text-gray-600'
@@ -51,7 +51,7 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = ({
                 {index < steps.length - 1 && (
                   <div
                     className={`absolute top-4 left-1/2 h-0.5 ${
-                      isCompleted ? 'bg-green-500' : 'bg-gray-200'
+                      isCompleted ? 'bg-brand-olive' : 'bg-gray-200'
                     }`}
                     style={{ 
                       width: 'calc(100% - 1rem)',

@@ -18,8 +18,8 @@ export const Button: React.FC<ButtonProps> = ({
   const baseStyles = 'px-4 py-2 rounded font-medium transition-colors';
   const variantStyles =
     variant === 'primary'
-      ? 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400'
-      : 'bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:bg-gray-100';
+      ? 'bg-brand-gold text-white hover:bg-brand-gold/90 disabled:bg-gray-400 disabled:cursor-not-allowed'
+      : 'bg-white border-2 border-brand-olive text-brand-dark hover:bg-brand-olive/10 disabled:bg-gray-100 disabled:border-gray-300 disabled:cursor-not-allowed';
 
   return (
     <button

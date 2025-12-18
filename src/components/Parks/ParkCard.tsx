@@ -3,6 +3,7 @@ import { ParkCard as ParkCardType } from '../../types/ui';
 import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
+import { Trees } from 'lucide-react';
 
 interface ParkCardProps {
   card: ParkCardType;
@@ -21,7 +22,10 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
   return (
     <div className="border border-gray-300 rounded-lg p-4 mb-4 bg-white">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="font-semibold text-gray-800">Park Card</h3>
+        <h3 className="flex items-center gap-2 font-semibold text-brand-dark">
+          <Trees size={20} className="text-brand-dark" />
+          Park Card
+        </h3>
         <button
           onClick={onRemove}
           className="text-red-600 hover:text-red-800 text-sm font-medium"

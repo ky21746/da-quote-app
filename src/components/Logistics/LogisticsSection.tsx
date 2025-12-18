@@ -4,6 +4,7 @@ import { Button, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
 import { ParkCard as ParkCardType } from '../../types/ui';
+import { Truck } from 'lucide-react';
 
 export const LogisticsSection: React.FC = () => {
   const { draft, updateParkCard } = useTrip();
@@ -21,7 +22,10 @@ export const LogisticsSection: React.FC = () => {
 
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Logistics by Park</h2>
+      <h2 className="flex items-center gap-2 text-lg font-semibold text-brand-dark mb-4">
+        <Truck size={20} className="text-brand-dark" />
+        Logistics by Park
+      </h2>
       
       <div className="space-y-4">
         {parks.map((card) => {
@@ -119,5 +123,6 @@ export const LogisticsSection: React.FC = () => {
     </div>
   );
 };
+
 
 
