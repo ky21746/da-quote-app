@@ -4,12 +4,64 @@ import { useTrip } from '../../context/TripContext';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { Button, ProgressStepper } from '../common';
 import { PricingTable } from './PricingTable';
-import { calculatePricingFromCatalog } from '../../utils/catalogPricingEngine';
+import { calculatePricingFromCatalog, PricingResult } from '../../utils/catalogPricingEngine';
+import { CalculationResult, CategoryBreakdown, LineItemDisplay } from '../../types/ui';
+
+/**
+ * Convert PricingResult to CalculationResult format for TripSummaryPage
+ */
+function convertToCalculationResult(
+  pricingResult: PricingResult,
+  tripId: string
+): CalculationResult {
+  // Group breakdown by category
+  const categoryMap = new Map<string, LineItemDisplay[]>();
+  
+  pricingResult.breakdown.forEach((item) => {
+    if (!categoryMap.has(item.category)) {
+      categoryMap.set(item.category, []);
+    }
+    categoryMap.get(item.category)!.push({
+      description: `${item.itemName} (${item.park})`,
+      quantity: 1,
+      unitPrice: `USD ${item.basePrice.toFixed(2)}`,
+      total: `USD ${item.calculatedTotal.toFixed(2)}`,
+    });
+  });
+
+  // Convert to CategoryBreakdown array
+  const breakdown: CategoryBreakdown[] = Array.from(categoryMap.entries()).map(
+    ([category, items]) => {
+      // Calculate subtotal from the original breakdown items
+      const categoryItems = pricingResult.breakdown.filter((item) => item.category === category);
+      const subtotal = categoryItems.reduce((sum, item) => sum + item.calculatedTotal, 0);
+      return {
+        category,
+        items,
+        subtotal: `USD ${subtotal.toFixed(2)}`,
+      };
+    }
+  );
+
+  return {
+    calculationId: `calc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    tripId,
+    total: `USD ${pricingResult.totals.grandTotal.toFixed(2)}`,
+    pricePerPerson: `USD ${pricingResult.totals.perPerson.toFixed(2)}`,
+    breakdown,
+    markup: {
+      type: 'percent',
+      value: 0,
+      amount: 'USD 0.00',
+    },
+    warnings: [],
+  };
+}
 
 export const PricingPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { draft } = useTrip();
+  const { draft, setCalculationResult } = useTrip();
   const { items: pricingItems } = usePricingCatalog();
 
   const progressSteps = [
@@ -88,7 +140,20 @@ export const PricingPage: React.FC = () => {
           <Button onClick={() => navigate(-1)} variant="secondary">
             Back
           </Button>
-          <Button onClick={() => navigate(`/trip/${id}/summary`)} variant="primary">
+          <Button
+            onClick={() => {
+              // Convert pricing result to CalculationResult format
+              const calculationResult = convertToCalculationResult(
+                pricingResult,
+                id || 'draft'
+              );
+              // Save to context so TripSummaryPage can display it
+              setCalculationResult(calculationResult);
+              // Navigate to summary
+              navigate(`/trip/${id}/summary`);
+            }}
+            variant="primary"
+          >
             Proceed
           </Button>
         </div>
