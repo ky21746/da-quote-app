@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { PricingItem, PricingCategory } from '../../types/ui';
 import { getCatalogItemsForPark, getPricingItemById } from '../../utils/pricingCatalogHelpers';
 import { assertValidParkId } from '../../utils/parks';
+import { formatCurrency } from '../../utils/currencyFormatter';
 
 interface PricingCatalogSelectProps {
   label: string;
@@ -57,7 +58,7 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
     filteredItems.forEach((item) => {
       optionMap.set(item.id, {
         value: item.id,
-        label: `${item.itemName} - USD ${item.basePrice.toFixed(2)} (${item.costType.replace(/_/g, ' ')})`,
+        label: `${item.itemName} - ${formatCurrency(item.basePrice)} (${item.costType.replace(/_/g, ' ')})`,
       });
     });
 
@@ -65,7 +66,7 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
     if (value && selectedItem && !optionMap.has(value)) {
       optionMap.set(value, {
         value: selectedItem.id,
-        label: `(Selected) ${selectedItem.itemName} - USD ${selectedItem.basePrice.toFixed(2)} (${selectedItem.costType.replace(/_/g, ' ')})${!selectedItem.active ? ' [Inactive]' : ''}`,
+        label: `(Selected) ${selectedItem.itemName} - ${formatCurrency(selectedItem.basePrice)} (${selectedItem.costType.replace(/_/g, ' ')})${!selectedItem.active ? ' [Inactive]' : ''}`,
       });
     }
 

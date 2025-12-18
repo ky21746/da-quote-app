@@ -6,6 +6,7 @@ import { PricingItem, PricingCategory } from '../../types/ui';
 import { AddPricingItemModal } from './AddPricingItemModal';
 import { getParks } from '../../utils/parks';
 import { getParkLabel } from '../../constants/parks';
+import { formatCurrency } from '../../utils/currencyFormatter';
 
 export const PricingCatalogPage: React.FC = () => {
   const navigate = useNavigate();
@@ -204,7 +205,7 @@ export const PricingCatalogPage: React.FC = () => {
                       {item.itemName}
                     </td>
                     <td className="border border-gray-300 px-3 py-2 text-right">
-                      USD {typeof item.basePrice === 'number' && !isNaN(item.basePrice) ? item.basePrice.toFixed(2) : '0.00'}
+                      {typeof item.basePrice === 'number' && !isNaN(item.basePrice) ? formatCurrency(item.basePrice) : 'USD 0.00'}
                     </td>
                     <td className="border border-gray-300 px-3 py-2">
                       <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">

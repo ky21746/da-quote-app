@@ -1,14 +1,12 @@
 import React from 'react';
 import { PricingLineItem } from '../../utils/catalogPricingEngine';
+import { formatCurrency } from '../../utils/currencyFormatter';
 
 interface PricingTableProps {
   lines: PricingLineItem[];
 }
 
 export const PricingTable: React.FC<PricingTableProps> = ({ lines }) => {
-  const formatCurrency = (amount: number): string => {
-    return `USD ${amount.toFixed(2)}`;
-  };
 
   return (
     <div className="overflow-x-auto">

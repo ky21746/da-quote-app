@@ -6,6 +6,7 @@ import { Button, ProgressStepper } from '../common';
 import { PricingTable } from './PricingTable';
 import { calculatePricingFromCatalog, PricingResult } from '../../utils/catalogPricingEngine';
 import { CalculationResult, CategoryBreakdown, LineItemDisplay } from '../../types/ui';
+import { formatCurrency } from '../../utils/currencyFormatter';
 
 /**
  * Convert PricingResult to CalculationResult format for TripSummaryPage
@@ -24,8 +25,8 @@ function convertToCalculationResult(
     categoryMap.get(item.category)!.push({
       description: `${item.itemName} (${item.park})`,
       quantity: 1,
-      unitPrice: `USD ${item.basePrice.toFixed(2)}`,
-      total: `USD ${item.calculatedTotal.toFixed(2)}`,
+      unitPrice: formatCurrency(item.basePrice),
+      total: formatCurrency(item.calculatedTotal),
     });
   });
 
@@ -38,7 +39,7 @@ function convertToCalculationResult(
       return {
         category,
         items,
-        subtotal: `USD ${subtotal.toFixed(2)}`,
+        subtotal: formatCurrency(subtotal),
       };
     }
   );
@@ -46,8 +47,8 @@ function convertToCalculationResult(
   return {
     calculationId: `calc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     tripId,
-    total: `USD ${pricingResult.totals.grandTotal.toFixed(2)}`,
-    pricePerPerson: `USD ${pricingResult.totals.perPerson.toFixed(2)}`,
+    total: formatCurrency(pricingResult.totals.grandTotal),
+    pricePerPerson: formatCurrency(pricingResult.totals.perPerson),
     breakdown,
     markup: {
       type: 'percent',
@@ -95,9 +96,6 @@ export const PricingPage: React.FC = () => {
     );
   }
 
-  const formatCurrency = (amount: number): string => {
-    return `USD ${amount.toFixed(2)}`;
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">

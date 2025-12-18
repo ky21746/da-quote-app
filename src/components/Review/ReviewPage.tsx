@@ -6,6 +6,7 @@ import { Button, ProgressStepper } from '../common';
 import { ParkCard } from '../../types/ui';
 import { getPricingItemById, getPricingItemsByIds } from '../../utils/pricingCatalogHelpers';
 import { getParks } from '../../utils/parks';
+import { formatCurrency } from '../../utils/currencyFormatter';
 
 export const ReviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -72,7 +73,7 @@ export const ReviewPage: React.FC = () => {
               <span className="font-medium text-gray-700">Arrival / Aviation:</span>{' '}
               <span className="text-gray-600">{arrivalItem.itemName}</span>
               <span className="text-gray-500 ml-2">
-                (USD {arrivalItem.basePrice.toFixed(2)} - {arrivalItem.costType.replace(/_/g, ' ')})
+                ({formatCurrency(arrivalItem.basePrice)} - {arrivalItem.costType.replace(/_/g, ' ')})
               </span>
             </div>
           ) : (
@@ -85,7 +86,7 @@ export const ReviewPage: React.FC = () => {
               <span className="font-medium text-gray-700">Lodging:</span>{' '}
               <span className="text-gray-600">{lodgingItem.itemName}</span>
               <span className="text-gray-500 ml-2">
-                (USD {lodgingItem.basePrice.toFixed(2)} - {lodgingItem.costType.replace(/_/g, ' ')})
+                ({formatCurrency(lodgingItem.basePrice)} - {lodgingItem.costType.replace(/_/g, ' ')})
               </span>
             </div>
           ) : (
@@ -98,7 +99,7 @@ export const ReviewPage: React.FC = () => {
               <span className="font-medium text-gray-700">Transportation:</span>{' '}
               <span className="text-gray-600">{transportItem.itemName}</span>
               <span className="text-gray-500 ml-2">
-                (USD {transportItem.basePrice.toFixed(2)} - {transportItem.costType.replace(/_/g, ' ')})
+                ({formatCurrency(transportItem.basePrice)} - {transportItem.costType.replace(/_/g, ' ')})
               </span>
             </div>
           ) : (
@@ -114,7 +115,7 @@ export const ReviewPage: React.FC = () => {
                   <li key={activity.id} className="text-gray-600">
                     {activity.itemName}
                     <span className="text-gray-500 ml-2">
-                      (USD {activity.basePrice.toFixed(2)} - {activity.costType.replace(/_/g, ' ')})
+                      ({formatCurrency(activity.basePrice)} - {activity.costType.replace(/_/g, ' ')})
                     </span>
                   </li>
                 ))}
@@ -133,7 +134,7 @@ export const ReviewPage: React.FC = () => {
                   <li key={extra.id} className="text-gray-600">
                     {extra.itemName}
                     <span className="text-gray-500 ml-2">
-                      (USD {extra.basePrice.toFixed(2)} - {extra.costType.replace(/_/g, ' ')})
+                      ({formatCurrency(extra.basePrice)} - {extra.costType.replace(/_/g, ' ')})
                     </span>
                   </li>
                 ))}
@@ -153,7 +154,7 @@ export const ReviewPage: React.FC = () => {
                     <span className="font-medium text-gray-700">Arrival Between Parks:</span>{' '}
                     <span className="text-gray-600">{logisticsArrival.itemName}</span>
                     <span className="text-gray-500 ml-2">
-                      (USD {logisticsArrival.basePrice.toFixed(2)} - {logisticsArrival.costType.replace(/_/g, ' ')})
+                      ({formatCurrency(logisticsArrival.basePrice)} - {logisticsArrival.costType.replace(/_/g, ' ')})
                     </span>
                   </div>
                 ) : (
@@ -165,7 +166,7 @@ export const ReviewPage: React.FC = () => {
                     <span className="font-medium text-gray-700">Vehicle & Driver:</span>{' '}
                     <span className="text-gray-600">{logisticsVehicle.itemName}</span>
                     <span className="text-gray-500 ml-2">
-                      (USD {logisticsVehicle.basePrice.toFixed(2)} - {logisticsVehicle.costType.replace(/_/g, ' ')})
+                      ({formatCurrency(logisticsVehicle.basePrice)} - {logisticsVehicle.costType.replace(/_/g, ' ')})
                     </span>
                   </div>
                 ) : (
@@ -180,7 +181,7 @@ export const ReviewPage: React.FC = () => {
                         <li key={movement.id} className="text-gray-600">
                           {movement.itemName}
                           <span className="text-gray-500 ml-2">
-                            (USD {movement.basePrice.toFixed(2)} - {movement.costType.replace(/_/g, ' ')})
+                            ({formatCurrency(movement.basePrice)} - {movement.costType.replace(/_/g, ' ')})
                           </span>
                         </li>
                       ))}

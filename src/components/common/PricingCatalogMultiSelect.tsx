@@ -1,6 +1,7 @@
 import React from 'react';
 import { PricingItem, PricingCategory } from '../../types/ui';
 import { getCatalogItemsForPark } from '../../utils/pricingCatalogHelpers';
+import { formatCurrency } from '../../utils/currencyFormatter';
 
 interface PricingCatalogMultiSelectProps {
   label: string;
@@ -59,7 +60,7 @@ export const PricingCatalogMultiSelect: React.FC<PricingCatalogMultiSelectProps>
                 <span className="text-sm text-gray-700">{item.itemName}</span>
               </div>
               <div className="text-xs text-gray-500 ml-2">
-                USD {item.basePrice.toFixed(2)} ({item.costType.replace(/_/g, ' ')})
+                {formatCurrency(item.basePrice)} ({item.costType.replace(/_/g, ' ')})
               </div>
             </label>
           ))
