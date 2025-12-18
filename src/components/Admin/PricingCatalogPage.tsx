@@ -102,6 +102,7 @@ export const PricingCatalogPage: React.FC = () => {
     { value: 'Vehicle', label: 'Vehicle' },
     { value: 'Activities', label: 'Activities' },
     { value: 'Park Fees', label: 'Park Fees' },
+    { value: 'Permits', label: 'Permits' },
     { value: 'Extras', label: 'Extras' },
   ];
 

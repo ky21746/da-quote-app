@@ -13,6 +13,15 @@ export const PARKS: Array<{ id: string; label: string }> = [
   { id: 'BWINDI', label: 'Bwindi Impenetrable National Park' },
   { id: 'QUEEN_ELIZABETH', label: 'Queen Elizabeth National Park' },
   { id: 'KIBALE', label: 'Kibale Forest National Park' },
+  { id: 'MGAHINGA', label: 'Mgahinga Gorilla National Park' },
+  { id: 'KIDEPO', label: 'Kidepo Valley National Park' },
+  { id: 'LAKE_MBURO', label: 'Lake Mburo National Park' },
+  { id: 'MT_ELGON', label: 'Mt Elgon National Park' },
+  { id: 'RWENZORI', label: 'Rwenzori Mountains National Park' },
+  { id: 'SEMULIKI', label: 'Semuliki National Park' },
+  { id: 'ZIWA', label: 'Ziwa Rhino Sanctuary' },
+  { id: 'BUSIKA', label: 'Busika' },
+  { id: 'ENTEBBE', label: 'Entebbe' },
 ];
 
 /**

@@ -200,6 +200,9 @@ export function calculateLineTotal(
     case 'per_night_per_person':
       return basePrice * travelers * nights;
 
+    case 'per_guide':
+      return basePrice;
+
     default:
       return 0;
   }

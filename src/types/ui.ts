@@ -127,7 +127,8 @@ export type ManualCostType =
   | 'per_person'
   | 'per_person_per_day'
   | 'per_night'
-  | 'per_night_per_person';
+  | 'per_night_per_person'
+  | 'per_guide';
 
 export type PricingCategory =
   | 'Aviation'
@@ -135,6 +136,7 @@ export type PricingCategory =
   | 'Vehicle'
   | 'Activities'
   | 'Park Fees'
+  | 'Permits'
   | 'Extras'
   | 'Logistics';
 

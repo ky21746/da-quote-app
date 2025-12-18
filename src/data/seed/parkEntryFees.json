@@ -1,0 +1,113 @@
+[
+  {
+    "parkId": "MURCHISON",
+    "category": "Park Fees",
+    "itemName": "Murchison Park Entry Fee (FNR)",
+    "basePrice": 45,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  },
+  {
+    "parkId": "QUEEN_ELIZABETH",
+    "category": "Park Fees",
+    "itemName": "Queen Elizabeth Park Entry Fee (FNR)",
+    "basePrice": 40,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  },
+  {
+    "parkId": "BWINDI",
+    "category": "Park Fees",
+    "itemName": "Bwindi Park Entry Fee (FNR)",
+    "basePrice": 40,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  },
+  {
+    "parkId": "MGAHINGA",
+    "category": "Park Fees",
+    "itemName": "Mgahinga Park Entry Fee (FNR)",
+    "basePrice": 40,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  },
+  {
+    "parkId": "KIDEPO",
+    "category": "Park Fees",
+    "itemName": "Kidepo Park Entry Fee (FNR)",
+    "basePrice": 40,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  },
+  {
+    "parkId": "KIBALE",
+    "category": "Park Fees",
+    "itemName": "Kibale Park Entry Fee (FNR)",
+    "basePrice": 40,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  },
+  {
+    "parkId": "LAKE_MBURO",
+    "category": "Park Fees",
+    "itemName": "Lake Mburo Park Entry Fee (FNR)",
+    "basePrice": 40,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  },
+  {
+    "parkId": "MT_ELGON",
+    "category": "Park Fees",
+    "itemName": "Mt Elgon Park Entry Fee (FNR)",
+    "basePrice": 35,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  },
+  {
+    "parkId": "RWENZORI",
+    "category": "Park Fees",
+    "itemName": "Rwenzori Park Entry Fee (FNR)",
+    "basePrice": 35,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  },
+  {
+    "parkId": "SEMULIKI",
+    "category": "Park Fees",
+    "itemName": "Semuliki Park Entry Fee (FNR)",
+    "basePrice": 35,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  },
+  {
+    "parkId": "ZIWA",
+    "category": "Park Fees",
+    "itemName": "Ziwa Rhino Sanctuary Entry Fee (FNR)",
+    "basePrice": 20,
+    "costType": "per_person",
+    "appliesTo": "Park",
+    "active": true,
+    "notes": "Foreign Non-Resident – Israeli customers"
+  }
+]
+

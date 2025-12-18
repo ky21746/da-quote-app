@@ -249,6 +249,11 @@ function calculateItemTotal(
       explanation = `${item.basePrice} × ${travelers} travelers × ${nights} nights`;
       break;
 
+    case 'per_guide':
+      total = item.basePrice;
+      explanation = `${item.basePrice} (per guide)`;
+      break;
+
     default:
       total = 0;
       explanation = 'Unknown cost type';

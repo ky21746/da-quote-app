@@ -84,6 +84,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
     { value: 'Vehicle', label: 'Vehicle' },
     { value: 'Activities', label: 'Activities' },
     { value: 'Park Fees', label: 'Park Fees' },
+    { value: 'Permits', label: 'Permits' },
     { value: 'Extras', label: 'Extras' },
     { value: 'Logistics', label: 'Logistics' },
   ];
@@ -95,6 +96,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
     { value: 'per_person_per_day', label: 'Per Person Per Day' },
     { value: 'per_night', label: 'Per Night' },
     { value: 'per_night_per_person', label: 'Per Night Per Person' },
+    { value: 'per_guide', label: 'Per Guide' },
   ];
 
   const parkOptions = [

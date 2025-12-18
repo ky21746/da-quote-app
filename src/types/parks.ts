@@ -6,7 +6,16 @@ export type ParkId =
   | 'MURCHISON'
   | 'BWINDI'
   | 'QUEEN_ELIZABETH'
-  | 'KIBALE';
+  | 'KIBALE'
+  | 'MGAHINGA'
+  | 'KIDEPO'
+  | 'LAKE_MBURO'
+  | 'MT_ELGON'
+  | 'RWENZORI'
+  | 'SEMULIKI'
+  | 'ZIWA'
+  | 'BUSIKA'
+  | 'ENTEBBE';
 
 
 
