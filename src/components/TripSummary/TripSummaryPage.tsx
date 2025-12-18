@@ -6,6 +6,7 @@ import { Button } from '../common';
 import { ValidationWarnings } from './ValidationWarnings';
 import { PricingScenarioComparison } from './PricingScenarioComparison';
 import { CostParetoPanel } from './CostParetoPanel';
+import { quoteService } from '../../services/quoteService';
 
 export const TripSummaryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +15,8 @@ export const TripSummaryPage: React.FC = () => {
   const { calculateScenarios, isCalculating: isCalculatingScenarios, error: scenarioError } =
     useScenarioComparison();
   const [showComparison, setShowComparison] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedQuoteId, setSavedQuoteId] = useState<string | null>(null);
 
   useEffect(() => {
     // Load scenarios when comparison is enabled
@@ -23,6 +26,21 @@ export const TripSummaryPage: React.FC = () => {
       });
     }
   }, [showComparison, draft, id, scenarioResults.base, calculateScenarios, setScenarioResults]);
+
+  const handleSaveQuote = async () => {
+    if (!draft || !calculationResult) return;
+    setIsSaving(true);
+    try {
+      const quoteId = await quoteService.saveQuote(draft, calculationResult);
+      setSavedQuoteId(quoteId);
+      alert(`Quote saved! ID: ${quoteId}`);
+    } catch (error) {
+      console.error('Failed to save quote:', error);
+      alert('Failed to save quote');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (!calculationResult) {
     return (
@@ -138,11 +156,18 @@ export const TripSummaryPage: React.FC = () => {
           </>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button 
+            onClick={handleSaveQuote} 
+            variant="primary"
+            disabled={isSaving || !!savedQuoteId}
+          >
+            {isSaving ? 'Saving...' : savedQuoteId ? '✓ Saved' : 'Save Quote'}
+          </Button>
           <Button onClick={() => navigate('/trip/new')} variant="secondary">
             New Trip
           </Button>
-          <Button onClick={() => navigate(-1)} variant="primary">
+          <Button onClick={() => navigate(-1)} variant="secondary">
             Back
           </Button>
         </div>

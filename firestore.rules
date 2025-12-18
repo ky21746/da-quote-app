@@ -5,5 +5,10 @@ service cloud.firestore {
     match /pricingCatalog/{id} {
       allow read, write: if true;
     }
+    
+    // Quotes collection - read/write for all (no auth yet)
+    match /quotes/{quoteId} {
+      allow read, write: if true;
+    }
   }
 }
