@@ -257,3 +257,4 @@ src/
 - ✅ TypeScript strict mode
 - ✅ Core boundaries maintained
 
+

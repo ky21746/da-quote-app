@@ -64,3 +64,4 @@ export const PricingTable: React.FC<PricingTableProps> = ({ lines }) => {
   );
 };
 
+

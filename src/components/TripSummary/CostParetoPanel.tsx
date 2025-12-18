@@ -113,3 +113,4 @@ export const CostParetoPanel: React.FC<CostParetoPanelProps> = ({ calculation })
   );
 };
 
+

@@ -79,3 +79,4 @@ function mapCalculationToResult(calculation: Calculation): CalculationResult {
   };
 }
 
+

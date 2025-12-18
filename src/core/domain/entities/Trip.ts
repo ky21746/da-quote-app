@@ -15,3 +15,4 @@ export interface Trip {
   metadata?: Record<string, unknown>;
 }
 
+

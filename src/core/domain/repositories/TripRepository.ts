@@ -7,3 +7,4 @@ export interface TripRepository {
   listByUser(userId: string): Promise<Trip[]>;
 }
 
+

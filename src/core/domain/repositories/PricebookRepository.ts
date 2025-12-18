@@ -6,3 +6,4 @@ export interface PricebookRepository {
   getByVersion(version: string): Promise<Pricebook | null>;
 }
 
+

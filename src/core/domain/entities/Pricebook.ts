@@ -23,3 +23,4 @@ export interface Pricebook {
   updatedAt: Date;
 }
 
+

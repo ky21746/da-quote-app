@@ -174,3 +174,4 @@ interface LineItemDraft {
 - ✅ **Mobile-first** - Responsive design
 - ✅ **TypeScript strict** - Full type safety
 
+

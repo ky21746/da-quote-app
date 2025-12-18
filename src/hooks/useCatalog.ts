@@ -49,3 +49,4 @@ export const useCatalog = (category: string) => {
   return { items, loading, error };
 };
 
+
