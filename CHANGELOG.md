@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2024-12-18] - Pricing Flow Complete
+
+### Working
+- Full trip flow: Setup → Parks → Logistics → Pricing → Summary
+- Price calculation from catalog
+- Category breakdown display
+- localStorage persistence
+- Loading states in Admin and Trip Builder
+
+### Known Issues
+- Proceed button resets data (to be fixed)
+
+### Next
+- Fix Proceed button
+- Save quotes to Firebase
+- PDF export
+
 ## [2024-12-17] - UX Improvements & Architecture Separation
 
 ### Added
