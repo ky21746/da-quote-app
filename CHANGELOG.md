@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2024-12-18] - Export Quote to PDF Feature
+
+### Added
+- Export PDF button on Trip Summary page
+- `pdfService` for generating PDF quotes
+- PDF includes: trip details, totals, breakdown by category
+- Automatic file naming: `quote-{id}-{date}.pdf`
+
+### Technical
+- Installed jsPDF library
+- Created `src/services/pdfService.ts`
+- PDF generation with professional formatting
+
 ## [2024-12-18] - Save Quote Feature Complete
 
 ### Added

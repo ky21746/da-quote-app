@@ -7,6 +7,7 @@ import { ValidationWarnings } from './ValidationWarnings';
 import { PricingScenarioComparison } from './PricingScenarioComparison';
 import { CostParetoPanel } from './CostParetoPanel';
 import { quoteService } from '../../services/quoteService';
+import { pdfService } from '../../services/pdfService';
 
 export const TripSummaryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,6 +44,11 @@ export const TripSummaryPage: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleExportPDF = () => {
+    if (!draft || !calculationResult) return;
+    pdfService.generateQuotePDF(draft, calculationResult, savedQuoteId || undefined);
   };
 
   if (!calculationResult) {
@@ -166,6 +172,9 @@ export const TripSummaryPage: React.FC = () => {
             disabled={isSaving || !!savedQuoteId}
           >
             {isSaving ? 'Saving...' : savedQuoteId ? '✓ Saved' : 'Save Quote'}
+          </Button>
+          <Button onClick={handleExportPDF} variant="secondary">
+            Export PDF
           </Button>
           <Button onClick={() => navigate('/trip/new')} variant="secondary">
             New Trip
