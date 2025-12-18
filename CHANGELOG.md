@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2024-12-18] - Save Quote Feature Complete
+
+### Added
+- Save Quote button on Trip Summary page
+- `quoteService` for saving quotes to Firestore
+- Quote management: save, get, update status
+- Firestore rules for `quotes` collection
+
+### Fixed
+- Proceed button now saves calculation result before navigation
+- Firestore undefined values handling (removeUndefined helper)
+- Quote data cleaning before save
+
+### Technical
+- Created `src/services/quoteService.ts`
+- Updated `firestore.rules` with quotes collection permissions
+- Enhanced error logging in Save Quote handler
+
 ## [2024-12-18] - Pricing Flow Complete
 
 ### Working

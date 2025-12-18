@@ -1,14 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Pricing Catalog - read/write for all (no auth yet)
-    match /pricingCatalog/{id} {
+    match /pricingCatalog/{document=**} {
       allow read, write: if true;
     }
-    
-    // Quotes collection - read/write for all (no auth yet)
-    match /quotes/{quoteId} {
+    match /quotes/{document=**} {
       allow read, write: if true;
+    }
+    match /{document=**} {
+      allow read, write: if request.time < timestamp.date(2026, 1, 16);
     }
   }
 }

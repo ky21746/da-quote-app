@@ -34,9 +34,12 @@ export const TripSummaryPage: React.FC = () => {
       const quoteId = await quoteService.saveQuote(draft, calculationResult);
       setSavedQuoteId(quoteId);
       alert(`Quote saved! ID: ${quoteId}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save quote:', error);
-      alert('Failed to save quote');
+      console.error('Error code:', error?.code);
+      console.error('Error message:', error?.message);
+      console.error('Error details:', error);
+      alert(`Failed to save quote: ${error?.message || 'Unknown error'}`);
     } finally {
       setIsSaving(false);
     }
