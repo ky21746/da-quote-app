@@ -3,11 +3,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTrip } from '../../context/TripContext';
 import { Button, ProgressStepper } from '../common';
 import { ParksSection } from '../Parks';
+import { validateNights } from '../../utils/tripValidation';
 
 export const TripDaysEditorPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { draft } = useTrip();
+  
+  const nightsValidation = draft 
+    ? validateNights(draft.days, draft.parks || [])
+    : { valid: false, totalNights: 0, message: '' };
 
   const progressSteps = [
     'Setup',
@@ -63,6 +68,7 @@ export const TripDaysEditorPage: React.FC = () => {
           <Button
             onClick={() => navigate(`/trip/${id}/logistics`)}
             variant="primary"
+            disabled={!nightsValidation.valid}
           >
             Next: Logistics
           </Button>

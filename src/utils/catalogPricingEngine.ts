@@ -34,19 +34,21 @@ export function calculatePricingFromCatalog(
   const parks = trip.parks || [];
   const travelers = trip.travelers;
   const days = trip.days;
-  const nights = days; // Assuming nights = days
 
   for (const card of parks) {
     // Get park name - card.parkId is string matching parks list
     const parkName = card.parkId
       ? (getParks().find((p) => p.id === card.parkId)?.label || card.parkId)
       : 'Unknown Park';
+    
+    // Use nights from this specific park card, fallback to 1 if not set
+    const parkNights = card.nights || 1;
 
     // Arrival / Aviation
     if (card.arrival) {
       const item = getPricingItemById(pricingItems, card.arrival);
       if (item) {
-        const { total, explanation } = calculateItemTotal(item, travelers, days, nights);
+        const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights);
         breakdown.push({
           id: `line_${card.id}_arrival`,
           park: parkName,
@@ -61,11 +63,11 @@ export function calculatePricingFromCatalog(
       }
     }
 
-    // Lodging
+    // Lodging - uses park-specific nights
     if (card.lodging) {
       const item = getPricingItemById(pricingItems, card.lodging);
       if (item) {
-        const { total, explanation } = calculateItemTotal(item, travelers, days, nights);
+        const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights);
         breakdown.push({
           id: `line_${card.id}_lodging`,
           park: parkName,
@@ -84,7 +86,7 @@ export function calculatePricingFromCatalog(
     if (card.transport) {
       const item = getPricingItemById(pricingItems, card.transport);
       if (item) {
-        const { total, explanation } = calculateItemTotal(item, travelers, days, nights);
+        const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights);
         breakdown.push({
           id: `line_${card.id}_transport`,
           park: parkName,
@@ -102,7 +104,7 @@ export function calculatePricingFromCatalog(
     // Activities
     const activityItems = getPricingItemsByIds(pricingItems, card.activities);
     activityItems.forEach((item, idx) => {
-      const { total, explanation } = calculateItemTotal(item, travelers, days, nights);
+      const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights);
       breakdown.push({
         id: `line_${card.id}_activity_${idx}`,
         park: parkName,
@@ -119,7 +121,7 @@ export function calculatePricingFromCatalog(
     // Extras
     const extraItems = getPricingItemsByIds(pricingItems, card.extras);
     extraItems.forEach((item, idx) => {
-      const { total, explanation } = calculateItemTotal(item, travelers, days, nights);
+      const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights);
       breakdown.push({
         id: `line_${card.id}_extra_${idx}`,
         park: parkName,
@@ -139,7 +141,7 @@ export function calculatePricingFromCatalog(
       if (card.logistics.arrival) {
         const item = getPricingItemById(pricingItems, card.logistics.arrival);
         if (item) {
-          const { total, explanation } = calculateItemTotal(item, travelers, days, nights);
+          const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights);
           breakdown.push({
             id: `line_${card.id}_log_arrival`,
             park: parkName,
@@ -158,7 +160,7 @@ export function calculatePricingFromCatalog(
       if (card.logistics.vehicle) {
         const item = getPricingItemById(pricingItems, card.logistics.vehicle);
         if (item) {
-          const { total, explanation } = calculateItemTotal(item, travelers, days, nights);
+          const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights);
           breakdown.push({
             id: `line_${card.id}_log_vehicle`,
             park: parkName,
@@ -176,7 +178,7 @@ export function calculatePricingFromCatalog(
       // Logistics - Internal Movements
       const internalItems = getPricingItemsByIds(pricingItems, card.logistics.internalMovements || []);
       internalItems.forEach((item, idx) => {
-        const { total, explanation } = calculateItemTotal(item, travelers, days, nights);
+        const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights);
         breakdown.push({
           id: `line_${card.id}_log_internal_${idx}`,
           park: parkName,

@@ -84,14 +84,33 @@ export interface ParkLogistics {
   notes?: string;
 }
 
+// DayCard represents one calendar day within a park
+export interface DayCard {
+  id: string; // Unique ID for this day
+  dayNumber: number; // 1, 2, 3... within this park (not global trip day)
+  title?: string; // Optional: "Morning Safari", "Gorilla Trekking"
+  activities: string[]; // pricingItemIds for this specific day
+  extras: string[]; // pricingItemIds for this specific day
+  departureToNextPark?: string; // Flight/movement to next park (only on last day of park)
+  notes?: string; // Optional: itinerary notes for this day
+}
+
 export interface ParkCard {
   id: string;
   parkId?: string; // Park ID string (must match PARKS[].id)
-  arrival?: string; // pricingItemId
-  lodging?: string; // pricingItemId
-  transport?: string; // pricingItemId
-  activities: string[]; // pricingItemIds
-  extras: string[]; // pricingItemIds
+  nights?: number; // Number of nights at this park/leg (auto-generates DayCards)
+  
+  // Park-level (applies to all days):
+  arrival?: string; // pricingItemId - Arrival to THIS park (shown on first day)
+  lodging?: string; // pricingItemId - Lodging for all nights at this park
+  transport?: string; // pricingItemId - Default transport (can be overridden per day)
+  
+  days: DayCard[]; // Array of day cards (1 per night)
+  
+  // DEPRECATED: These will be moved to DayCards, but kept for backward compatibility during migration
+  activities: string[]; // pricingItemIds - Will be distributed to DayCards
+  extras: string[]; // pricingItemIds - Will be distributed to DayCards
+  
   logistics?: ParkLogistics;
 }
 

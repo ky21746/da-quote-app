@@ -1,9 +1,11 @@
 import React from 'react';
 import { ParkCard as ParkCardType } from '../../types/ui';
-import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
+import { Select, Input, PricingCatalogSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
 import { Trees } from 'lucide-react';
+import { DayCard } from './DayCard';
+import { useTrip } from '../../context/TripContext';
 
 interface ParkCardProps {
   card: ParkCardType;
@@ -13,6 +15,7 @@ interface ParkCardProps {
 
 export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) => {
   const { items: pricingItems, isLoading: catalogLoading } = usePricingCatalog();
+  const { updateDayCard } = useTrip();
 
   const parkOptions = [
     { value: '', label: 'Select a park...' },
@@ -54,9 +57,16 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
           
           onUpdate({
             parkId: selectedParkId,
+            // Keep nights when changing park, but reset days
             arrival: undefined,
             lodging: undefined,
             transport: undefined,
+            days: card.nights ? Array.from({ length: card.nights }, (_, i) => ({
+              id: `day_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${i}`,
+              dayNumber: i + 1,
+              activities: [],
+              extras: [],
+            })) : [],
             activities: [],
             extras: [],
             logistics: {
@@ -67,7 +77,19 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
         options={parkOptions}
       />
 
-      {/* Categories shown only after park selected */}
+      {/* Nights Input - shown only after park selected */}
+      {card.parkId && (
+        <Input
+          label="Nights"
+          type="number"
+          value={card.nights || 1}
+          onChange={(value) => onUpdate({ nights: Number(value) })}
+          min={1}
+          max={30}
+        />
+      )}
+
+      {/* Park-level settings shown only after park selected */}
       {card.parkId && (() => {
         // HARD ASSERT: ParkId must not be lost
         if (!card.parkId || card.parkId === '') {
@@ -77,22 +99,28 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
         // Type guard: Validate parkId exists in parks list
         assertValidParkId(card.parkId);
         
+        const days = card.days || [];
+        const isFirstDay = days.length > 0;
+        const isLastDay = days.length > 0;
+        
         return (
         <div className="space-y-4 mt-4">
-          {/* Arrival / Aviation */}
-          <PricingCatalogSelect
-            label="Arrival / Aviation"
-            value={card.arrival}
-            onChange={(pricingItemId) => onUpdate({ arrival: pricingItemId })}
-            category="Aviation"
-            parkId={card.parkId}
-            items={pricingItems}
-            isLoading={catalogLoading}
-          />
+          {/* Arrival / Aviation - shown on first day only */}
+          {isFirstDay && (
+            <PricingCatalogSelect
+              label="Arrival / Aviation"
+              value={card.arrival}
+              onChange={(pricingItemId) => onUpdate({ arrival: pricingItemId })}
+              category="Aviation"
+              parkId={card.parkId}
+              items={pricingItems}
+              isLoading={catalogLoading}
+            />
+          )}
 
-          {/* Lodging */}
+          {/* Lodging - park-level (applies to all nights) */}
           <PricingCatalogSelect
-            label="Lodging"
+            label="Lodging (all nights)"
             value={card.lodging}
             onChange={(pricingItemId) => onUpdate({ lodging: pricingItemId })}
             category="Lodging"
@@ -101,9 +129,9 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             isLoading={catalogLoading}
           />
 
-          {/* Local Transportation */}
+          {/* Local Transportation - park-level (default transport) */}
           <PricingCatalogSelect
-            label="Local Transportation"
+            label="Local Transportation (default)"
             value={card.transport}
             onChange={(pricingItemId) => onUpdate({ transport: pricingItemId })}
             category="Vehicle"
@@ -112,30 +140,24 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             isLoading={catalogLoading}
           />
 
-          {/* Activities (Multi-select) */}
-          <PricingCatalogMultiSelect
-            label="Activities"
-            selectedIds={card.activities}
-            onChange={(pricingItemIds) => onUpdate({ activities: pricingItemIds })}
-            category="Activities"
-            parkId={card.parkId}
-            items={pricingItems}
-            isLoading={catalogLoading}
-          />
-
-          {/* Extras (Multi-select) */}
-          <PricingCatalogMultiSelect
-            label="Extras"
-            selectedIds={card.extras}
-            onChange={(pricingItemIds) => onUpdate({ extras: pricingItemIds })}
-            category="Extras"
-            parkId={card.parkId}
-            items={pricingItems}
-            isLoading={catalogLoading}
-          />
-
-          {/* Logistics Section (Collapsible) - Hidden in Parks page, shown in Logistics page */}
-          {/* Note: Logistics fields are now handled in LogisticsSection component */}
+          {/* Day Cards - shown only if nights > 0 */}
+          {card.nights && card.nights > 0 && days.length > 0 && (
+            <div className="mt-4">
+              <h4 className="text-sm font-semibold text-brand-dark mb-3">Daily Itinerary</h4>
+              <div className="space-y-3">
+                {days.map((dayCard, index) => (
+                  <DayCard
+                    key={dayCard.id}
+                    dayCard={dayCard}
+                    parkId={card.parkId!}
+                    isFirstDay={index === 0}
+                    isLastDay={index === days.length - 1}
+                    onUpdate={(updates) => updateDayCard(card.id, dayCard.id, updates)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         );
       })()}
