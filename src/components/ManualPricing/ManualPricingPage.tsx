@@ -46,7 +46,7 @@ export const ManualPricingPage: React.FC = () => {
 
   if (!draft) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">No trip draft found.</p>
           <Button onClick={() => navigate('/trip/new')}>Start New Trip</Button>
@@ -66,12 +66,12 @@ export const ManualPricingPage: React.FC = () => {
   const pricePerPerson = draft.travelers > 0 ? total / draft.travelers : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">Manual Pricing</h1>
 
         {draft && (
-          <div className="mb-6 p-4 bg-gray-50 rounded">
+          <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded">
             <h2 className="font-semibold text-gray-700 mb-2">{draft.name}</h2>
             <p className="text-sm text-gray-600">
               {draft.travelers} travelers • {draft.days} days
@@ -86,7 +86,7 @@ export const ManualPricingPage: React.FC = () => {
         />
 
         {lineItems.length > 0 && (
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
+          <div className="mt-6 p-4 md:p-6 bg-blue-50 border border-blue-200 rounded">
             <div className="flex justify-between items-center">
               <div>
                 <span className="text-sm text-gray-600">Grand Total: </span>

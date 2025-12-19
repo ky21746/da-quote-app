@@ -87,7 +87,7 @@ export const PricingPage: React.FC = () => {
 
   if (!draft) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">Draft not loaded</p>
           <Button onClick={() => navigate('/trip/new')}>Start New Trip</Button>
@@ -98,8 +98,8 @@ export const PricingPage: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Pricing</h1>
 
         <ProgressStepper currentStep={4} steps={progressSteps} />
@@ -111,7 +111,7 @@ export const PricingPage: React.FC = () => {
         </div>
 
         {/* Final Output Section */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded-lg border border-gray-200">
           <h2 className="text-lg font-semibold text-gray-800 mb-3">Final Output</h2>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">

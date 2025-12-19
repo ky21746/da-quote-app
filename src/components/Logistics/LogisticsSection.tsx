@@ -13,7 +13,7 @@ export const LogisticsSection: React.FC = () => {
 
   if (parks.length === 0) {
     return (
-      <div className="p-4 border border-gray-200 rounded-lg text-center text-gray-500">
+      <div className="p-4 md:p-6 border border-gray-200 rounded-lg text-center text-gray-500">
         No parks added yet. Please add parks in the previous step.
       </div>
     );
@@ -42,7 +42,7 @@ export const LogisticsSection: React.FC = () => {
           const parkName = getParks().find((p) => p.id === card.parkId)?.label || card.parkId;
 
           return (
-            <div key={card.id} className="border border-gray-300 rounded-lg p-4 bg-white">
+            <div key={card.id} className="border border-gray-300 rounded-lg p-4 md:p-6 bg-white">
               <h3 className="font-semibold text-gray-800 mb-4">{parkName}</h3>
 
               <div className="space-y-4">

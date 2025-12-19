@@ -245,7 +245,7 @@ function calculateItemTotal(
 
     case 'per_night_per_person':
       total = item.basePrice * travelers * nights;
-      explanation = `${item.basePrice} × ${travelers} travelers × ${nights} nights`;
+      explanation = `${item.basePrice} × ${nights} nights × ${travelers} travelers`;
       break;
 
     case 'per_guide':

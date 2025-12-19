@@ -22,7 +22,7 @@ export const DayCard: React.FC<DayCardProps> = ({
   const { items: pricingItems, isLoading: catalogLoading } = usePricingCatalog();
 
   return (
-    <div className="border border-brand-olive/30 rounded-lg p-4 mb-3 bg-brand-olive/5">
+    <div className="border border-brand-olive/30 rounded-lg p-4 md:p-5 mb-3 bg-brand-olive/5">
       <div className="flex items-center gap-2 mb-3">
         <Calendar size={18} className="text-brand-dark" />
         <h4 className="font-semibold text-brand-dark">

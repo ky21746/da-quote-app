@@ -28,7 +28,7 @@ export const ReviewPage: React.FC = () => {
 
   if (!draft) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">Draft not loaded</p>
           <Button onClick={() => navigate('/trip/new')}>Start New Trip</Button>
@@ -52,7 +52,7 @@ export const ReviewPage: React.FC = () => {
     const logisticsInternal = getPricingItemsByIds(pricingItems, logistics?.internalMovements || []);
 
     return (
-      <div key={card.id} className="mb-6 p-4 border border-gray-300 rounded-lg bg-white">
+      <div key={card.id} className="mb-6 p-4 md:p-6 border border-gray-300 rounded-lg bg-white">
         {/* Park Header */}
         <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
           <h3 className="text-lg font-semibold text-gray-800">{parkName}</h3>
@@ -206,14 +206,14 @@ export const ReviewPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
+      <div className="max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Review</h1>
 
         <ProgressStepper currentStep={4} steps={progressSteps} />
 
         {/* Trip Overview Card */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded-lg border border-gray-200">
           <h2 className="font-semibold text-gray-700 mb-3">Trip Overview</h2>
           <div className="space-y-2 text-sm text-gray-600">
             <div>
@@ -235,7 +235,7 @@ export const ReviewPage: React.FC = () => {
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Parks Review</h2>
           {parks.length === 0 ? (
-            <div className="p-4 border border-gray-200 rounded-lg text-center text-gray-500">
+            <div className="p-4 md:p-6 border border-gray-200 rounded-lg text-center text-gray-500">
               No parks added yet
             </div>
           ) : (

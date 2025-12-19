@@ -5,7 +5,7 @@ export default function AppHeader() {
   const navigate = useNavigate();
 
   return (
-    <header className="w-full h-16 flex items-center justify-between px-6 border-b border-brand-olive/20 bg-white">
+    <header className="w-full h-16 md:h-20 flex items-center justify-between px-4 md:px-6 lg:px-8 border-b border-brand-olive/20 bg-white">
       <div className="flex items-center gap-3">
         {/* לוגו - שים את הקובץ ב-public/logo.png או public/assets/logo.svg */}
         <img 

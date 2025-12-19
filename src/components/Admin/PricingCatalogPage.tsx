@@ -98,12 +98,13 @@ export const PricingCatalogPage: React.FC = () => {
 
   const categoryOptions: Array<{ value: string; label: string }> = [
     { value: 'all', label: 'All Categories' },
-    { value: 'Aviation', label: 'Aviation' },
-    { value: 'Lodging', label: 'Lodging' },
-    { value: 'Vehicle', label: 'Vehicle' },
-    { value: 'Activities', label: 'Activities' },
     { value: 'Park Fees', label: 'Park Fees' },
     { value: 'Permits', label: 'Permits' },
+    { value: 'Activities', label: 'Activities' },
+    { value: 'Lodging', label: 'Lodging' },
+    { value: 'Aviation', label: 'Aviation' },
+    { value: 'Vehicle', label: 'Vehicle' },
+    { value: 'Logistics', label: 'Logistics' },
     { value: 'Extras', label: 'Extras' },
   ];
 
@@ -114,8 +115,8 @@ export const PricingCatalogPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-4">
             <Button onClick={handleBack} variant="secondary">
@@ -137,7 +138,7 @@ export const PricingCatalogPage: React.FC = () => {
         <UpdateAviationCategory />
 
         {/* Filter Bar */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 md:p-6 bg-gray-50 rounded-lg">
           <Select
             label="Park"
             value={parkFilter}

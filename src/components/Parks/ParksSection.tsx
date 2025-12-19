@@ -47,7 +47,7 @@ export const ParksSection: React.FC = () => {
       )}
 
       {parks.length === 0 ? (
-        <div className="p-4 border border-gray-200 rounded-lg text-center text-gray-500">
+        <div className="p-4 md:p-6 border border-gray-200 rounded-lg text-center text-gray-500">
           No parks added yet. Click "+ Add Park" to get started.
         </div>
       ) : (

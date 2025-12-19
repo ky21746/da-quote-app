@@ -54,7 +54,7 @@ export const TripSummaryPage: React.FC = () => {
 
   if (!calculationResult) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">No calculation result found.</p>
           <Button onClick={() => navigate('/trip/new')}>Start New Trip</Button>
@@ -66,12 +66,12 @@ export const TripSummaryPage: React.FC = () => {
   const { total, pricePerPerson, breakdown, markup, warnings } = calculationResult;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
+      <div className="max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Trip Summary</h1>
 
         {draft && (
-          <div className="mb-6 p-4 bg-gray-50 rounded">
+          <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded">
             <h2 className="font-semibold text-gray-700 mb-2">{draft.name}</h2>
             <p className="text-sm text-gray-600">
               {draft.travelers} travelers • {draft.days} days • {draft.tier}
@@ -124,7 +124,7 @@ export const TripSummaryPage: React.FC = () => {
         </div>
 
         {markup.value > 0 && (
-          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+          <div className="mb-6 p-4 md:p-6 bg-yellow-50 border border-yellow-200 rounded">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-gray-700">
                 Markup ({markup.type === 'percent' ? `${markup.value}%` : 'Fixed'})

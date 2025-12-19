@@ -15,7 +15,7 @@ interface ParkCardProps {
 
 export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) => {
   const { items: pricingItems, isLoading: catalogLoading } = usePricingCatalog();
-  const { updateDayCard } = useTrip();
+  const { updateDayCard, draft } = useTrip();
 
   const parkOptions = [
     { value: '', label: 'Select a park...' },
@@ -23,7 +23,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
   ];
 
   return (
-    <div className="border border-gray-300 rounded-lg p-4 mb-4 bg-white">
+    <div className="border border-gray-300 rounded-lg p-4 md:p-6 lg:p-8 mb-4 bg-white">
       <div className="flex justify-between items-center mb-4">
         <h3 className="flex items-center gap-2 font-semibold text-brand-dark">
           <Trees size={20} className="text-brand-dark" />
@@ -210,21 +210,35 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             />
           </div>
 
-          {/* Day Cards - shown only if nights > 0 */}
-          {card.nights && card.nights > 0 && days.length > 0 && (
-            <div className="mt-4">
-              <h4 className="text-sm font-semibold text-brand-dark mb-3">Daily Itinerary</h4>
+          {/* Day Cards - show all days based on trip days, not just nights */}
+          {card.parkId && days.length > 0 && (
+            <div className="mt-4 border-t border-gray-200 pt-4">
+              <h4 className="text-sm font-semibold text-brand-dark mb-3">
+                Daily Itinerary ({days.length} days, {card.nights || 0} nights)
+              </h4>
               <div className="space-y-3">
-                {days.map((dayCard, index) => (
-                  <DayCard
-                    key={dayCard.id}
-                    dayCard={dayCard}
-                    parkId={card.parkId!}
-                    isFirstDay={index === 0}
-                    isLastDay={index === days.length - 1}
-                    onUpdate={(updates) => updateDayCard(card.id, dayCard.id, updates)}
-                  />
-                ))}
+                {days.map((dayCard, index) => {
+                  // Determine if this day has lodging (all days except possibly the last one)
+                  const hasLodging = index < (card.nights || days.length - 1);
+                  const isLastDay = index === days.length - 1;
+                  
+                  return (
+                    <div key={dayCard.id} className={!hasLodging ? 'opacity-75' : ''}>
+                      {!hasLodging && (
+                        <div className="mb-2 text-xs text-orange-600 font-medium">
+                          ⚠️ No lodging for this day
+                        </div>
+                      )}
+                      <DayCard
+                        dayCard={dayCard}
+                        parkId={card.parkId!}
+                        isFirstDay={index === 0}
+                        isLastDay={isLastDay}
+                        onUpdate={(updates) => updateDayCard(card.id, dayCard.id, updates)}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

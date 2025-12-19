@@ -9,6 +9,8 @@ import { assertValidParkId } from './parks';
  * @param parkId - Park ID string (must match park.id from Trip Builder)
  * @param category - PricingCategory to filter by
  * @returns Filtered active items matching parkId (or Global) and category
+ * 
+ * Special case: When category is 'Activities', also includes 'Permits' from the same park
  */
 export function getCatalogItemsForPark(
   catalog: PricingItem[],
@@ -31,11 +33,15 @@ export function getCatalogItemsForPark(
 
   // Return items that are:
   // 1. Active
-  // 2. Match category
+  // 2. Match category (or Permits if category is Activities)
   // 3. AND (appliesTo === 'Global' OR parkId === parkId)
   return catalog.filter((item) => {
     if (!item.active) return false;
-    if (item.category !== category) return false;
+    
+    // Special case: Include Permits when filtering for Activities
+    const categoryMatch = item.category === category || 
+                        (category === 'Activities' && item.category === 'Permits');
+    if (!categoryMatch) return false;
     
     // Show Global items OR park-specific items matching this park
     const isGlobal = item.appliesTo === 'Global';

@@ -116,9 +116,24 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           
           // Backward compatibility: If card doesn't have days array, initialize it
           let currentDays = card.days || [];
-          if (!card.days && card.nights && card.nights > 0) {
+          const newNights = updates.nights !== undefined ? updates.nights : card.nights;
+          
+          // Calculate number of days for this park: days = nights + 1 (last day is departure without lodging)
+          // If trip has 5 days total and this park has 4 nights, create 5 DayCards for this park
+          // For a single park covering entire trip, use trip days; otherwise use nights + 1
+          const totalParks = (prev.parks || []).length;
+          const tripDays = prev.days || 0;
+          const parkDays = (totalParks === 1 && tripDays > 0) ? tripDays : (newNights ? newNights + 1 : 1);
+          
+          if (!card.days && newNights && newNights > 0) {
             // Migrate old ParkCard: distribute activities/extras to first day
-            currentDays = generateDayCards(card.nights);
+            // Create DayCards based on park days (nights + 1 for last day without lodging)
+            currentDays = Array.from({ length: parkDays }, (_, i) => ({
+              id: `day_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${i}`,
+              dayNumber: i + 1,
+              activities: [],
+              extras: [],
+            }));
             if (card.activities.length > 0 || card.extras.length > 0) {
               currentDays[0] = {
                 ...currentDays[0],
@@ -128,37 +143,45 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
           }
           
-          // If nights changed, update DayCards array
-          const newNights = updates.nights !== undefined ? updates.nights : card.nights;
-          const currentNights = currentDays.length;
-          
           let updatedDays = [...currentDays];
           
-          // Auto-generate DayCards when nights is set/changed
-          if (newNights !== undefined && newNights !== currentNights) {
-            if (newNights > currentNights) {
-              // Add new DayCards
-              const newDays = generateDayCards(newNights - currentNights);
-              updatedDays = [...updatedDays, ...newDays.map((day, idx) => ({
-                ...day,
-                dayNumber: currentNights + idx + 1,
-              }))];
-            } else if (newNights < currentNights) {
-              // Remove excess DayCards (keep first N days)
-              updatedDays = updatedDays.slice(0, newNights);
-              // Clear departureToNextPark from the new last day if it exists
-              if (updatedDays.length > 0 && updatedDays[updatedDays.length - 1].departureToNextPark) {
-                updatedDays[updatedDays.length - 1] = {
-                  ...updatedDays[updatedDays.length - 1],
-                  departureToNextPark: undefined,
+          // Auto-generate DayCards based on park days (nights + 1) when nights is set/changed
+          if (newNights !== undefined && parkDays !== currentDays.length) {
+            // Create DayCards for all park days (nights + 1, where last day is without lodging)
+            updatedDays = Array.from({ length: parkDays }, (_, i) => {
+              // Reuse existing day if available
+              if (currentDays[i]) {
+                return {
+                  ...currentDays[i],
+                  dayNumber: i + 1,
                 };
               }
+              // Create new day
+              return {
+                id: `day_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${i}`,
+                dayNumber: i + 1,
+                activities: [],
+                extras: [],
+              };
+            });
+            
+            // Clear departureToNextPark from the new last day if it exists
+            if (updatedDays.length > 0 && updatedDays[updatedDays.length - 1].departureToNextPark) {
+              updatedDays[updatedDays.length - 1] = {
+                ...updatedDays[updatedDays.length - 1],
+                departureToNextPark: undefined,
+              };
             }
           }
           
-          // If nights is set for the first time, generate initial DayCards
+          // If nights is set for the first time, generate initial DayCards based on park days
           if (newNights !== undefined && updatedDays.length === 0 && newNights > 0) {
-            updatedDays = generateDayCards(newNights);
+            updatedDays = Array.from({ length: parkDays }, (_, i) => ({
+              id: `day_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${i}`,
+              dayNumber: i + 1,
+              activities: [],
+              extras: [],
+            }));
           }
           
           return {
