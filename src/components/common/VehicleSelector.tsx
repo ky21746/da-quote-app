@@ -1,5 +1,4 @@
 import React from 'react';
-import { Input } from './Input';
 
 interface VehicleSelectorProps {
   enabled: boolean;

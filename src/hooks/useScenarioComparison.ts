@@ -4,7 +4,6 @@ import { authService } from '../app/auth';
 import { CalculationResult, ScenarioResults } from '../types/ui';
 import { TripDraft } from '../types/ui';
 import { tripRepository } from '../app/config/dependencies';
-import { Trip } from '../core/domain/entities';
 
 export const useScenarioComparison = () => {
   const [isCalculating, setIsCalculating] = useState(false);

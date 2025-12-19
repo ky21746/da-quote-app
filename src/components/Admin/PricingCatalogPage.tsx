@@ -2,10 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { Button, Select } from '../common';
-import { PricingItem, PricingCategory } from '../../types/ui';
+import { PricingItem } from '../../types/ui';
 import { AddPricingItemModal } from './AddPricingItemModal';
+import { CleanupOldAviation } from './CleanupOldAviation';
+import { UpdateAviationCategory } from './UpdateAviationCategory';
 import { getParks } from '../../utils/parks';
-import { getParkLabel } from '../../constants/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
 
 export const PricingCatalogPage: React.FC = () => {
@@ -128,6 +129,12 @@ export const PricingCatalogPage: React.FC = () => {
             </Button>
           </div>
         </div>
+
+        {/* Cleanup Old Aviation Items - Temporary */}
+        <CleanupOldAviation />
+
+        {/* Update Aviation Category - Temporary */}
+        <UpdateAviationCategory />
 
         {/* Filter Bar */}
         <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">

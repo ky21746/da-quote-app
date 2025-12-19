@@ -1,4 +1,4 @@
-import { Trip, Pricebook, Calculation } from '../domain/entities';
+import { Calculation } from '../domain/entities';
 import {
   TripRepository,
   PricebookRepository,

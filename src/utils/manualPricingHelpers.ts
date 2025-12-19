@@ -1,4 +1,4 @@
-import { ManualPricingLineItem, ManualCostType, TripDraft } from '../types/ui';
+import { ManualPricingLineItem, TripDraft } from '../types/ui';
 import {
   getArrivalOption,
   getLodgingOption,

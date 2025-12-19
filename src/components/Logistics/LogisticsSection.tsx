@@ -1,9 +1,8 @@
 import React from 'react';
 import { useTrip } from '../../context/TripContext';
-import { Button, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
+import { Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
-import { ParkCard as ParkCardType } from '../../types/ui';
 import { Truck } from 'lucide-react';
 
 export const LogisticsSection: React.FC = () => {
@@ -77,7 +76,7 @@ export const LogisticsSection: React.FC = () => {
                       },
                     })
                   }
-                  category="Logistics"
+                  category="Vehicle"
                   parkId={card.parkId}
                   items={pricingItems}
                   isLoading={catalogLoading}

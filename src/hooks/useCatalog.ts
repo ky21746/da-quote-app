@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { pricebookRepository } from '../app/config/dependencies';
 import { CatalogOption } from '../types/catalog';
-import { PricebookItem } from '../core/domain/entities';
 
 export const useCatalog = (category: string) => {
   const [items, setItems] = useState<CatalogOption[]>([]);

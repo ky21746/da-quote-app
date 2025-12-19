@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParkCard as ParkCardType } from '../../types/ui';
-import { Select, Input, PricingCatalogSelect } from '../common';
+import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
 import { Trees } from 'lucide-react';
@@ -100,25 +100,21 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
         assertValidParkId(card.parkId);
         
         const days = card.days || [];
-        const isFirstDay = days.length > 0;
-        const isLastDay = days.length > 0;
         
         return (
         <div className="space-y-4 mt-4">
-          {/* Arrival / Aviation - shown on first day only */}
-          {isFirstDay && (
-            <PricingCatalogSelect
-              label="Arrival / Aviation"
-              value={card.arrival}
-              onChange={(pricingItemId) => onUpdate({ arrival: pricingItemId })}
-              category="Aviation"
-              parkId={card.parkId}
-              items={pricingItems}
-              isLoading={catalogLoading}
-            />
-          )}
+          {/* 3. Arrival to Park (Flight or Vehicle) - park-level */}
+          <PricingCatalogSelect
+            label="Arrival to Park (Flight or Vehicle)"
+            value={card.arrival}
+            onChange={(pricingItemId) => onUpdate({ arrival: pricingItemId })}
+            category="Aviation"
+            parkId={card.parkId}
+            items={pricingItems}
+            isLoading={catalogLoading}
+          />
 
-          {/* Lodging - park-level (applies to all nights) */}
+          {/* 4. Lodging - park-level (applies to all nights) */}
           <PricingCatalogSelect
             label="Lodging (all nights)"
             value={card.lodging}
@@ -129,16 +125,90 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             isLoading={catalogLoading}
           />
 
-          {/* Local Transportation - park-level (default transport) */}
-          <PricingCatalogSelect
-            label="Local Transportation (default)"
-            value={card.transport}
-            onChange={(pricingItemId) => onUpdate({ transport: pricingItemId })}
-            category="Vehicle"
+          {/* 5. Activities - park-level */}
+          <PricingCatalogMultiSelect
+            label="Activities"
+            selectedIds={card.activities || []}
+            onChange={(pricingItemIds) => onUpdate({ activities: pricingItemIds })}
+            category="Activities"
             parkId={card.parkId}
             items={pricingItems}
             isLoading={catalogLoading}
           />
+
+          {/* 6. Logistics - park-level */}
+          <div className="border-t border-gray-200 pt-4">
+            <h4 className="text-sm font-semibold text-brand-dark mb-3">Logistics</h4>
+            
+            {/* Arrival Between Parks */}
+            <PricingCatalogSelect
+              label="Arrival Between Parks"
+              value={card.logistics?.arrival}
+              onChange={(pricingItemId) => onUpdate({ 
+                logistics: { 
+                  arrival: pricingItemId,
+                  vehicle: card.logistics?.vehicle,
+                  internalMovements: card.logistics?.internalMovements || [],
+                  notes: card.logistics?.notes,
+                } 
+              })}
+              category="Logistics"
+              parkId={card.parkId}
+              items={pricingItems}
+              isLoading={catalogLoading}
+            />
+
+            {/* Vehicle & Driver */}
+            <PricingCatalogSelect
+              label="Vehicle & Driver"
+              value={card.logistics?.vehicle}
+              onChange={(pricingItemId) => onUpdate({ 
+                logistics: { 
+                  arrival: card.logistics?.arrival,
+                  vehicle: pricingItemId,
+                  internalMovements: card.logistics?.internalMovements || [],
+                  notes: card.logistics?.notes,
+                } 
+              })}
+              category="Vehicle"
+              parkId={card.parkId}
+              items={pricingItems}
+              isLoading={catalogLoading}
+            />
+
+            {/* Internal Movements */}
+            <PricingCatalogMultiSelect
+              label="Internal Movements"
+              selectedIds={card.logistics?.internalMovements || []}
+              onChange={(pricingItemIds) => onUpdate({ 
+                logistics: { 
+                  arrival: card.logistics?.arrival,
+                  vehicle: card.logistics?.vehicle,
+                  internalMovements: pricingItemIds,
+                  notes: card.logistics?.notes,
+                } 
+              })}
+              category="Logistics"
+              parkId={card.parkId}
+              items={pricingItems}
+              isLoading={catalogLoading}
+            />
+
+            {/* Logistics Notes */}
+            <Input
+              label="Logistics Notes (optional)"
+              value={card.logistics?.notes || ''}
+              onChange={(value) => onUpdate({ 
+                logistics: { 
+                  arrival: card.logistics?.arrival,
+                  vehicle: card.logistics?.vehicle,
+                  internalMovements: card.logistics?.internalMovements || [],
+                  notes: value as string,
+                } 
+              })}
+              placeholder="Additional logistics information..."
+            />
+          </div>
 
           {/* Day Cards - shown only if nights > 0 */}
           {card.nights && card.nights > 0 && days.length > 0 && (

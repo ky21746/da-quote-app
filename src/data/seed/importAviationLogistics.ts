@@ -10,11 +10,12 @@ import { db } from '../../lib/firebase';
 import { PricingItem } from '../../types/ui';
 
 // Aviation Logistics data - All Global items (parkId: null)
+// NOTE: These are Aviation items, not Logistics
 const aviationLogisticsData = [
   // Helicopter Charters - Bell 412
   {
     parkId: null,
-    category: 'Logistics',
+    category: 'Aviation',
     itemName: 'Helicopter Charter – Bell 412 – EBB to Buhoma Community School',
     basePrice: 9416,
     costType: 'fixed_group',

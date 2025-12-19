@@ -1,6 +1,5 @@
 import { TripDraft, PricingItem, ManualCostType } from '../types/ui';
 import { getPricingItemById, getPricingItemsByIds } from './pricingCatalogHelpers';
-import { getParkLabel } from '../constants/parks';
 import { getParks } from './parks';
 
 export interface PricingLineItem {
