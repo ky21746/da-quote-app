@@ -10,9 +10,15 @@ export const TripDaysEditorPage: React.FC = () => {
   const navigate = useNavigate();
   const { draft } = useTrip();
   
+  // Check if at least one day has a park selected
+  const hasAtLeastOnePark = draft?.tripDays?.some(day => day.parkId) || false;
+  
   const nightsValidation = draft 
     ? validateNights(draft.days, draft.parks || [])
     : { valid: false, totalNights: 0, message: '' };
+  
+  // Use tripDays validation if available, otherwise fall back to parks validation
+  const canProceed = draft?.tripDays ? hasAtLeastOnePark : nightsValidation.valid;
 
   const progressSteps = [
     'Setup',
@@ -68,7 +74,7 @@ export const TripDaysEditorPage: React.FC = () => {
           <Button
             onClick={() => navigate(`/trip/${id}/logistics`)}
             variant="primary"
-            disabled={!nightsValidation.valid}
+            disabled={!canProceed}
           >
             Next: Logistics
           </Button>

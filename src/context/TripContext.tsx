@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { TripDraft, CalculationResult, DayDraft, ScenarioResults, ParkCard, DayCard } from '../types/ui';
+import { TripDraft, CalculationResult, DayDraft, ScenarioResults, ParkCard, DayCard, TripDay } from '../types/ui';
 
 interface TripContextType {
   draft: TripDraft | null;
@@ -15,6 +15,7 @@ interface TripContextType {
   updateParkCard: (cardId: string, updates: Partial<ParkCard>) => void;
   removeParkCard: (cardId: string) => void;
   updateDayCard: (parkCardId: string, dayCardId: string, updates: Partial<DayCard>) => void;
+  updateTripDay: (dayNumber: number, updates: Partial<TripDay>) => void;
   clearDraft: () => void;
 }
 
@@ -222,6 +223,38 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
+  const updateTripDay = (dayNumber: number, updates: Partial<TripDay>) => {
+    setDraftState((prev) => {
+      if (!prev) return prev;
+      
+      // Initialize tripDays array if it doesn't exist
+      let tripDays = prev.tripDays || [];
+      
+      // Ensure we have enough days
+      while (tripDays.length < prev.days) {
+        tripDays.push({
+          dayNumber: tripDays.length + 1,
+          activities: [],
+          logistics: {
+            internalMovements: [],
+          },
+        });
+      }
+      
+      // Update the specific day
+      tripDays = tripDays.map((day) =>
+        day.dayNumber === dayNumber
+          ? { ...day, ...updates }
+          : day
+      );
+      
+      return {
+        ...prev,
+        tripDays,
+      };
+    });
+  };
+
   const clearDraft = () => {
     setDraft(null);
     setDaysBreakdown([]);
@@ -245,6 +278,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         updateParkCard,
         removeParkCard,
         updateDayCard,
+        updateTripDay,
         clearDraft,
       }}
     >

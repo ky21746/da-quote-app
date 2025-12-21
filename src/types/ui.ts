@@ -39,7 +39,8 @@ export interface TripDraft {
   markup?: Markup; // Optional, only in final step (post-calculation)
   daysBreakdown?: DayDraft[];
   manualLineItems?: LineItemDraft[]; // Manual pricing items
-  parks?: ParkCard[]; // Park-based planning blocks
+  parks?: ParkCard[]; // Park-based planning blocks (deprecated, use tripDays)
+  tripDays?: TripDay[]; // Array of days (1 per trip day)
 }
 
 export interface CalculationResult {
@@ -82,6 +83,20 @@ export interface ParkLogistics {
   vehicle?: string; // pricingItemId
   internalMovements: string[]; // pricingItemIds
   notes?: string;
+}
+
+// TripDay represents one day in the trip (1, 2, 3... global trip day)
+export interface TripDay {
+  dayNumber: number; // 1, 2, 3... (global trip day)
+  parkId?: string;
+  arrival?: string; // pricingItemId
+  lodging?: string; // pricingItemId
+  activities: string[]; // pricingItemIds
+  logistics?: {
+    vehicle?: string; // pricingItemId
+    internalMovements: string[]; // pricingItemIds
+    notes?: string;
+  };
 }
 
 // DayCard represents one calendar day within a park
