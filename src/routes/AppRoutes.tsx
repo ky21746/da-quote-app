@@ -22,6 +22,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/trip/:id/summary" element={<TripSummaryPage />} />
       <Route path="/admin/pricing-catalog" element={<PricingCatalogPage />} />
       <Route path="/debug/firestore" element={<FirestoreProbe />} />
+      <Route path="/trip" element={<Navigate to="/trip/new" replace />} />
       <Route path="/" element={<Navigate to="/trip/new" replace />} />
     </Routes>
   );
