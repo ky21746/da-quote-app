@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTrip } from '../../context/TripContext';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
-import { Button, ProgressStepper } from '../common';
+import { Button, ProgressStepper, Input } from '../common';
 import { PricingTable } from './PricingTable';
 import { calculatePricingFromCatalog, PricingResult } from '../../utils/catalogPricingEngine';
 import { CalculationResult, CategoryBreakdown, LineItemDisplay } from '../../types/ui';
@@ -17,7 +17,7 @@ function convertToCalculationResult(
 ): CalculationResult {
   // Group breakdown by category
   const categoryMap = new Map<string, LineItemDisplay[]>();
-  
+
   pricingResult.breakdown.forEach((item) => {
     if (!categoryMap.has(item.category)) {
       categoryMap.set(item.category, []);
@@ -62,8 +62,28 @@ function convertToCalculationResult(
 export const PricingPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { draft, setCalculationResult } = useTrip();
+  const { draft, setDraft, setCalculationResult } = useTrip();
   const { items: pricingItems } = usePricingCatalog();
+
+  // Local state for adjustments
+  const [unexpectedPercentage, setUnexpectedPercentage] = useState<number>(
+    draft?.unexpectedPercentage || 0
+  );
+  const [localAgentVehiclePercentage, setLocalAgentVehiclePercentage] = useState<number>(
+    draft?.localAgentVehiclePercentage || 0
+  );
+  const [myProfitPercentage, setMyProfitPercentage] = useState<number>(
+    draft?.myProfitPercentage || 0
+  );
+
+  // Update local state when draft changes
+  useEffect(() => {
+    if (draft) {
+      setUnexpectedPercentage(draft.unexpectedPercentage || 0);
+      setLocalAgentVehiclePercentage(draft.localAgentVehiclePercentage || 0);
+      setMyProfitPercentage(draft.myProfitPercentage || 0);
+    }
+  }, [draft?.unexpectedPercentage, draft?.localAgentVehiclePercentage, draft?.myProfitPercentage]);
 
   const progressSteps = [
     'Setup',
@@ -73,7 +93,7 @@ export const PricingPage: React.FC = () => {
   ];
 
   // Calculate pricing from catalog
-  const pricingResult = useMemo(() => {
+  const basePricingResult = useMemo(() => {
     if (!draft) {
       return {
         breakdown: [],
@@ -82,6 +102,37 @@ export const PricingPage: React.FC = () => {
     }
     return calculatePricingFromCatalog(draft, pricingItems);
   }, [draft, pricingItems]);
+
+  // Calculate adjustments
+  const adjustments = useMemo(() => {
+    const baseTotal = basePricingResult.totals.grandTotal;
+
+    // Calculate vehicle total (sum of Vehicle category items)
+    const vehicleTotal = basePricingResult.breakdown
+      .filter((item) => item.category === 'Vehicle')
+      .reduce((sum, item) => sum + item.calculatedTotal, 0);
+
+    // 1. Calculate Contingency (Unforeseen Costs) on Base Total
+    const unexpectedAmount = (baseTotal * (unexpectedPercentage || 0)) / 100;
+    const subtotalAfterUnexpected = baseTotal + unexpectedAmount;
+
+    // 2. Calculate Local Agent Commission on (Base Total + Contingency)
+    // Note: Applying to the running total instead of just vehicle total as per request
+    const localAgentVehicleAmount = (subtotalAfterUnexpected * (localAgentVehiclePercentage || 0)) / 100;
+    const subtotalAfterLocalAgent = subtotalAfterUnexpected + localAgentVehicleAmount;
+
+    // 3. Calculate Profit Margin on (Base + Contingency + Local Agent)
+    const myProfitAmount = (subtotalAfterLocalAgent * (myProfitPercentage || 0)) / 100;
+
+    return {
+      baseTotal,
+      vehicleTotal,
+      unexpectedAmount,
+      localAgentVehicleAmount,
+      myProfitAmount,
+      finalTotal: subtotalAfterLocalAgent + myProfitAmount,
+    };
+  }, [basePricingResult, unexpectedPercentage, localAgentVehiclePercentage, myProfitPercentage]);
 
   const travelers = draft?.travelers || 0;
 
@@ -107,7 +158,59 @@ export const PricingPage: React.FC = () => {
         {/* Pricing Table (Read-only from Catalog) */}
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Line Items</h2>
-          <PricingTable lines={pricingResult.breakdown} />
+          <PricingTable lines={basePricingResult.breakdown} />
+        </div>
+
+        {/* Pricing Adjustments */}
+        <div className="mb-6 p-4 md:p-6 bg-blue-50 rounded-lg border border-blue-200">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Pricing Adjustments</h2>
+          <div className="space-y-4">
+            <Input
+              label="Contingency (Unforeseen Costs) (%)"
+              type="number"
+              value={unexpectedPercentage}
+              onChange={(value) => {
+                const numValue = typeof value === 'number' ? value : Number(value);
+                setUnexpectedPercentage(numValue);
+                if (draft) {
+                  setDraft({ ...draft, unexpectedPercentage: numValue });
+                }
+              }}
+              min={0}
+              max={100}
+              step={0.1}
+            />
+            <Input
+              label="Local Agent Commission (%)"
+              type="number"
+              value={localAgentVehiclePercentage}
+              onChange={(value) => {
+                const numValue = typeof value === 'number' ? value : Number(value);
+                setLocalAgentVehiclePercentage(numValue);
+                if (draft) {
+                  setDraft({ ...draft, localAgentVehiclePercentage: numValue });
+                }
+              }}
+              min={0}
+              max={100}
+              step={0.1}
+            />
+            <Input
+              label="Profit Margin (%)"
+              type="number"
+              value={myProfitPercentage}
+              onChange={(value) => {
+                const numValue = typeof value === 'number' ? value : Number(value);
+                setMyProfitPercentage(numValue);
+                if (draft) {
+                  setDraft({ ...draft, myProfitPercentage: numValue });
+                }
+              }}
+              min={0}
+              max={100}
+              step={0.1}
+            />
+          </div>
         </div>
 
         {/* Final Output Section */}
@@ -119,15 +222,51 @@ export const PricingPage: React.FC = () => {
               <span className="font-semibold text-gray-800">{travelers}</span>
             </div>
             <div className="flex justify-between pt-2 border-t border-gray-200">
+              <span className="text-gray-600">Base Total:</span>
+              <span className="font-semibold text-gray-800">
+                {formatCurrency(adjustments.baseTotal)}
+              </span>
+            </div>
+            {unexpectedPercentage > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">
+                  Contingency (Unforeseen Costs) ({unexpectedPercentage}%):
+                </span>
+                <span className="font-semibold text-gray-800">
+                  {formatCurrency(adjustments.unexpectedAmount)}
+                </span>
+              </div>
+            )}
+            {localAgentVehiclePercentage > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">
+                  Local Agent Commission ({localAgentVehiclePercentage}%):
+                </span>
+                <span className="font-semibold text-gray-800">
+                  {formatCurrency(adjustments.localAgentVehicleAmount)}
+                </span>
+              </div>
+            )}
+            {myProfitPercentage > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">
+                  Profit Margin ({myProfitPercentage}%):
+                </span>
+                <span className="font-semibold text-gray-800">
+                  {formatCurrency(adjustments.myProfitAmount)}
+                </span>
+              </div>
+            )}
+            <div className="flex justify-between pt-2 border-t border-gray-200">
               <span className="font-semibold text-gray-800">Grand Total:</span>
               <span className="font-bold text-lg text-gray-900">
-                {formatCurrency(pricingResult.totals.grandTotal)}
+                {formatCurrency(adjustments.finalTotal)}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Final Price Per Person:</span>
               <span className="font-semibold text-gray-800">
-                {formatCurrency(pricingResult.totals.perPerson)}
+                {formatCurrency(travelers > 0 ? adjustments.finalTotal / travelers : 0)}
               </span>
             </div>
           </div>
@@ -140,9 +279,25 @@ export const PricingPage: React.FC = () => {
           </Button>
           <Button
             onClick={() => {
-              // Convert pricing result to CalculationResult format
+              // Update draft with adjustments
+              if (draft) {
+                setDraft({
+                  ...draft,
+                  unexpectedPercentage,
+                  localAgentVehiclePercentage,
+                  myProfitPercentage,
+                });
+              }
+              // Convert pricing result to CalculationResult format (with adjustments)
+              const adjustedResult: PricingResult = {
+                breakdown: basePricingResult.breakdown,
+                totals: {
+                  grandTotal: adjustments.finalTotal,
+                  perPerson: travelers > 0 ? adjustments.finalTotal / travelers : 0,
+                },
+              };
               const calculationResult = convertToCalculationResult(
-                pricingResult,
+                adjustedResult,
                 id || 'draft'
               );
               // Save to context so TripSummaryPage can display it

@@ -41,6 +41,10 @@ export interface TripDraft {
   manualLineItems?: LineItemDraft[]; // Manual pricing items
   parks?: ParkCard[]; // Park-based planning blocks (deprecated, use tripDays)
   tripDays?: TripDay[]; // Array of days (1 per trip day)
+  // Pricing adjustments
+  unexpectedPercentage?: number; // העמסת בלתי צפוי באחוזים
+  localAgentVehiclePercentage?: number; // העמסת אחוז רכב לסוכן מקומי
+  myProfitPercentage?: number; // העמאת רווח שלי באחוזים
 }
 
 export interface CalculationResult {
