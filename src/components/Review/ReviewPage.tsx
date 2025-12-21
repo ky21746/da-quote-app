@@ -44,7 +44,8 @@ export const ReviewPage: React.FC = () => {
 
   const tripDays = draft.tripDays || [];
 
-  const renderDayReview = (day: typeof tripDays[0]) => {
+  const renderDayReview = (day: (typeof tripDays)[0]) => {
+    if (!day) return null;
     const parkName = getParkName(day.parkId);
     const arrivalItem = day.arrival ? getPricingItemById(pricingItems, day.arrival) : undefined;
     const lodgingItem = day.lodging ? getPricingItemById(pricingItems, day.lodging) : undefined;
@@ -255,7 +256,7 @@ export const ReviewPage: React.FC = () => {
               No trip days configured yet
             </div>
           ) : (
-            <div className="space-y-4">{tripDays.map((day) => renderDayReview(day))}</div>
+            <div className="space-y-4">{tripDays.filter(Boolean).map((day) => renderDayReview(day))}</div>
           )}
         </div>
 
