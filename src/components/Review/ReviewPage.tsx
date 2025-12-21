@@ -3,10 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTrip } from '../../context/TripContext';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { Button, ProgressStepper } from '../common';
-import { ParkCard } from '../../types/ui';
 import { getPricingItemById, getPricingItemsByIds } from '../../utils/pricingCatalogHelpers';
-import { getParks } from '../../utils/parks';
+import { getParks, assertValidParkId } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
+import { Calendar, AlertCircle } from 'lucide-react';
 
 export const ReviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,13 +16,18 @@ export const ReviewPage: React.FC = () => {
 
   const getParkName = (parkId?: string): string => {
     if (!parkId) return 'Not selected';
-    return getParks().find((p) => p.id === parkId)?.label || parkId;
+    try {
+      assertValidParkId(parkId);
+      return getParks().find((p) => p.id === parkId)?.label || parkId;
+    } catch {
+      return parkId;
+    }
   };
 
   const progressSteps = [
     'Setup',
     'Parks',
-    'Logistics',
+    'Summary',
     'Pricing',
   ];
 
@@ -37,47 +42,102 @@ export const ReviewPage: React.FC = () => {
     );
   }
 
-  const parks = draft.parks || [];
+  const tripDays = draft.tripDays || [];
 
-  const renderParkReview = (card: ParkCard, index: number) => {
-    const parkName = getParkName(card.parkId);
-    const arrivalItem = card.arrival ? getPricingItemById(pricingItems, card.arrival) : undefined;
-    const lodgingItem = card.lodging ? getPricingItemById(pricingItems, card.lodging) : undefined;
-    const transportItem = card.transport ? getPricingItemById(pricingItems, card.transport) : undefined;
-    const activityItems = getPricingItemsByIds(pricingItems, card.activities);
-    const extraItems = getPricingItemsByIds(pricingItems, card.extras);
-    const logistics = card.logistics;
-    const logisticsArrival = logistics?.arrival ? getPricingItemById(pricingItems, logistics.arrival) : undefined;
+  const renderDayReview = (day: typeof tripDays[0]) => {
+    const parkName = getParkName(day.parkId);
+    const arrivalItem = day.arrival ? getPricingItemById(pricingItems, day.arrival) : undefined;
+    const lodgingItem = day.lodging ? getPricingItemById(pricingItems, day.lodging) : undefined;
+    const activityItems = getPricingItemsByIds(pricingItems, day.activities || []);
+    const logistics = day.logistics;
     const logisticsVehicle = logistics?.vehicle ? getPricingItemById(pricingItems, logistics.vehicle) : undefined;
     const logisticsInternal = getPricingItemsByIds(pricingItems, logistics?.internalMovements || []);
 
+    // Collect warnings for this day
+    const warnings: string[] = [];
+    
+    if (day.parkId && !day.arrival) {
+      warnings.push(`Day ${day.dayNumber} - ${parkName}: Arrival to Park not selected`);
+    }
+    
+    if (day.parkId && !day.lodging && day.dayNumber < (draft.days || 0)) {
+      // Only warn about missing lodging if it's not the last day
+      warnings.push(`Day ${day.dayNumber} - ${parkName}: Lodging not selected`);
+    }
+    
+    if (day.parkId && (!day.activities || day.activities.length === 0)) {
+      warnings.push(`Day ${day.dayNumber} - ${parkName}: No activities selected`);
+    }
+    
+    if (day.parkId && logistics && !logistics.vehicle) {
+      warnings.push(`Day ${day.dayNumber} - ${parkName}: Vehicle & Driver not selected`);
+    }
+
     return (
-      <div key={card.id} className="mb-6 p-4 md:p-6 border border-gray-300 rounded-lg bg-white">
-        {/* Park Header */}
+      <div key={day.dayNumber} className="mb-6 p-4 md:p-6 border border-gray-300 rounded-lg bg-white">
+        {/* Day Header */}
         <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800">{parkName}</h3>
+          <div className="flex items-center gap-2">
+            <Calendar size={18} className="text-brand-dark" />
+            <h3 className="text-lg font-semibold text-gray-800">Day {day.dayNumber}</h3>
+            {day.parkId && (
+              <>
+                <span className="text-sm text-gray-500">•</span>
+                <span className="text-sm text-gray-600">{parkName}</span>
+              </>
+            )}
+          </div>
           <Button
             onClick={() => navigate(`/trip/${id}/edit`)}
             variant="secondary"
             type="button"
           >
-            Edit Park
+            Edit Day
           </Button>
         </div>
 
+        {/* Warnings */}
+        {warnings.length > 0 && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-start gap-2">
+              <AlertCircle size={18} className="text-yellow-600 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-yellow-800 mb-2">Missing Selections:</div>
+                <ul className="space-y-1">
+                  {warnings.map((warning, idx) => (
+                    <li key={idx} className="text-sm text-yellow-700">
+                      • {warning}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Selected Components */}
         <div className="space-y-4">
+          {/* Park */}
+          {day.parkId ? (
+            <div className="text-sm">
+              <span className="font-medium text-gray-700">Park:</span>{' '}
+              <span className="text-gray-600">{parkName}</span>
+            </div>
+          ) : (
+            <div className="text-sm text-gray-400">Park: Not selected</div>
+          )}
+
           {/* Arrival / Aviation */}
           {arrivalItem ? (
             <div className="text-sm">
-              <span className="font-medium text-gray-700">Arrival / Aviation:</span>{' '}
+              <span className="font-medium text-gray-700">Arrival to Park:</span>{' '}
               <span className="text-gray-600">{arrivalItem.itemName}</span>
               <span className="text-gray-500 ml-2">
                 ({formatCurrency(arrivalItem.basePrice)} - {arrivalItem.costType.replace(/_/g, ' ')})
               </span>
             </div>
           ) : (
-            <div className="text-sm text-gray-400">Arrival / Aviation: Not selected</div>
+            <div className="text-sm text-gray-400">Arrival to Park: Not selected</div>
           )}
 
           {/* Lodging */}
@@ -91,19 +151,6 @@ export const ReviewPage: React.FC = () => {
             </div>
           ) : (
             <div className="text-sm text-gray-400">Lodging: Not selected</div>
-          )}
-
-          {/* Transportation */}
-          {transportItem ? (
-            <div className="text-sm">
-              <span className="font-medium text-gray-700">Transportation:</span>{' '}
-              <span className="text-gray-600">{transportItem.itemName}</span>
-              <span className="text-gray-500 ml-2">
-                ({formatCurrency(transportItem.basePrice)} - {transportItem.costType.replace(/_/g, ' ')})
-              </span>
-            </div>
-          ) : (
-            <div className="text-sm text-gray-400">Transportation: Not selected</div>
           )}
 
           {/* Activities */}
@@ -125,42 +172,11 @@ export const ReviewPage: React.FC = () => {
             <div className="text-sm text-gray-400">Activities: None selected</div>
           )}
 
-          {/* Extras */}
-          {extraItems.length > 0 ? (
-            <div className="text-sm">
-              <span className="font-medium text-gray-700">Extras:</span>
-              <ul className="ml-4 mt-1 space-y-1">
-                {extraItems.map((extra) => (
-                  <li key={extra.id} className="text-gray-600">
-                    {extra.itemName}
-                    <span className="text-gray-500 ml-2">
-                      ({formatCurrency(extra.basePrice)} - {extra.costType.replace(/_/g, ' ')})
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <div className="text-sm text-gray-400">Extras: None selected</div>
-          )}
-
           {/* Logistics */}
-          {logistics && (
+          {(logistics?.vehicle || (logistics?.internalMovements && logistics.internalMovements.length > 0) || logistics?.notes) && (
             <div className="mt-4 pt-4 border-t border-gray-200">
               <h4 className="font-medium text-gray-700 mb-2">Logistics</h4>
               <div className="space-y-2 text-sm">
-                {logisticsArrival ? (
-                  <div>
-                    <span className="font-medium text-gray-700">Arrival Between Parks:</span>{' '}
-                    <span className="text-gray-600">{logisticsArrival.itemName}</span>
-                    <span className="text-gray-500 ml-2">
-                      ({formatCurrency(logisticsArrival.basePrice)} - {logisticsArrival.costType.replace(/_/g, ' ')})
-                    </span>
-                  </div>
-                ) : (
-                  <div className="text-gray-400">Arrival Between Parks: Not selected</div>
-                )}
-
                 {logisticsVehicle ? (
                   <div>
                     <span className="font-medium text-gray-700">Vehicle & Driver:</span>{' '}
@@ -231,15 +247,15 @@ export const ReviewPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Parks Review */}
+        {/* Days Review */}
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Parks Review</h2>
-          {parks.length === 0 ? (
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Trip Days Review</h2>
+          {tripDays.length === 0 ? (
             <div className="p-4 md:p-6 border border-gray-200 rounded-lg text-center text-gray-500">
-              No parks added yet
+              No trip days configured yet
             </div>
           ) : (
-            <div className="space-y-4">{parks.map((card, index) => renderParkReview(card, index))}</div>
+            <div className="space-y-4">{tripDays.map((day) => renderDayReview(day))}</div>
           )}
         </div>
 
