@@ -163,6 +163,7 @@ export const PricingCatalogPage: React.FC = () => {
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-3 py-2 text-left">Park / Global</th>
                 <th className="border border-gray-300 px-3 py-2 text-left">Category</th>
+                <th className="border border-gray-300 px-3 py-2 text-left">SKU</th>
                 <th className="border border-gray-300 px-3 py-2 text-left">Item Name</th>
                 <th className="border border-gray-300 px-3 py-2 text-right">Base Price</th>
                 <th className="border border-gray-300 px-3 py-2 text-left">Cost Type</th>
@@ -174,7 +175,7 @@ export const PricingCatalogPage: React.FC = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="border border-gray-300 px-3 py-4 text-center text-gray-500">
+                  <td colSpan={9} className="border border-gray-300 px-3 py-4 text-center text-gray-500">
                     <div className="flex items-center justify-center gap-2">
                       <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -186,7 +187,7 @@ export const PricingCatalogPage: React.FC = () => {
                 </tr>
               ) : filteredItems.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="border border-gray-300 px-3 py-4 text-center text-gray-500">
+                  <td colSpan={9} className="border border-gray-300 px-3 py-4 text-center text-gray-500">
                     No pricing items found
                   </td>
                 </tr>
@@ -203,6 +204,9 @@ export const PricingCatalogPage: React.FC = () => {
                       )}
                     </td>
                     <td className="border border-gray-300 px-3 py-2">{item.category}</td>
+                    <td className="border border-gray-300 px-3 py-2 text-sm text-gray-500 font-mono">
+                      {item.sku || '-'}
+                    </td>
                     <td className="border border-gray-300 px-3 py-2 font-medium">
                       {item.itemName}
                     </td>

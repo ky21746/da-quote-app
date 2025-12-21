@@ -22,21 +22,21 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
     console.log('🔌 Starting Firestore subscription to pricingCatalog collection');
     console.log('🔌 Firestore db instance:', db);
     console.log('🔌 Collection path: pricingCatalog');
-    
+
     const q = collection(db, 'pricingCatalog');
-    
+
     console.log('🔌 Collection reference created:', q);
-    
+
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
         console.log('📥 Firestore snapshot received:', snapshot.docs.length, 'documents');
-        
+
         const data: PricingItem[] = snapshot.docs
           .map((d) => {
             const docData = d.data();
             console.log('📄 Document:', d.id, docData);
-            
+
             // STRICT VALIDATION - ensure all required fields exist
             const item: PricingItem = {
               id: d.id,
@@ -48,18 +48,19 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
               appliesTo: docData.appliesTo || 'Global',
               active: docData.active !== undefined ? docData.active : true,
               notes: docData.notes ?? null,
+              sku: docData.sku || undefined,
             };
-            
+
             // Validate required fields
             if (!item.itemName || !item.category) {
               console.warn('⚠️ Invalid item skipped:', d.id, item);
               return null;
             }
-            
+
             return item;
           })
           .filter((item): item is PricingItem => item !== null);
-        
+
         console.log('✅ Setting items:', data.length, 'valid items');
         console.log('📋 Items data:', data);
         setItems(data);
@@ -80,12 +81,12 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
 
   const addItem = async (itemData: Omit<PricingItem, 'id'>) => {
     console.log('✍️ addItem called with:', itemData);
-    
+
     // Validation: Check for missing parkId in park-specific items
     if (itemData.appliesTo === 'Park' && !itemData.parkId) {
       throw new Error('Missing parkId for park-specific item');
     }
-    
+
     // Write directly to Firestore
     const payload = {
       parkId: itemData.parkId ?? null,
@@ -96,8 +97,9 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
       appliesTo: itemData.appliesTo,
       notes: itemData.notes ?? null,
       active: itemData.active ?? true,
+      sku: itemData.sku || null,
     };
-    
+
     console.log('📤 Writing to Firestore:', payload);
     try {
       const docRef = await addDoc(collection(db, 'pricingCatalog'), payload);

@@ -28,6 +28,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
         appliesTo: editingItem.appliesTo,
         notes: editingItem.notes || '',
         active: editingItem.active,
+        sku: editingItem.sku || '',
       };
     }
     return {
@@ -39,6 +40,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
       appliesTo: 'Global',
       notes: '',
       active: true,
+      sku: '',
     };
   };
 
@@ -60,6 +62,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
           appliesTo: editingItem.appliesTo,
           notes: editingItem.notes || '',
           active: editingItem.active,
+          sku: editingItem.sku || '',
         });
         setAppliesTo(editingItem.appliesTo);
       } else {
@@ -72,6 +75,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
           appliesTo: 'Global',
           notes: '',
           active: true,
+          sku: '',
         });
         setAppliesTo('Global');
       }
@@ -139,6 +143,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
       appliesTo,
       notes: formData.notes?.trim() || undefined,
       active: formData.active,
+      sku: formData.sku?.trim() || undefined,
     };
 
     // Save and close
@@ -207,6 +212,16 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
                 }
                 placeholder="Enter item name"
                 required
+              />
+
+              <Input
+                label="SKU (Optional)"
+                type="text"
+                value={formData.sku || ''}
+                onChange={(value) =>
+                  setFormData({ ...formData, sku: value as string })
+                }
+                placeholder="Enter SKU"
               />
 
               <Input

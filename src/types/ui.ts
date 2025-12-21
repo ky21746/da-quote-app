@@ -169,6 +169,7 @@ export interface PricingItem {
   appliesTo: 'Global' | 'Park'; // 'Global' = applies to all parks, 'Park' = park-specific
   active: boolean;
   notes?: string;
+  sku?: string;
 }
 
 export interface ManualPricingLineItem {
