@@ -69,8 +69,8 @@ export const PricingPage: React.FC = () => {
   const [unexpectedPercentage, setUnexpectedPercentage] = useState<number>(
     draft?.unexpectedPercentage || 0
   );
-  const [localAgentVehiclePercentage, setLocalAgentVehiclePercentage] = useState<number>(
-    draft?.localAgentVehiclePercentage || 0
+  const [localAgentCommissionPercentage, setLocalAgentCommissionPercentage] = useState<number>(
+    draft?.localAgentCommissionPercentage || 0
   );
   const [myProfitPercentage, setMyProfitPercentage] = useState<number>(
     draft?.myProfitPercentage || 0
@@ -80,10 +80,10 @@ export const PricingPage: React.FC = () => {
   useEffect(() => {
     if (draft) {
       setUnexpectedPercentage(draft.unexpectedPercentage || 0);
-      setLocalAgentVehiclePercentage(draft.localAgentVehiclePercentage || 0);
+      setLocalAgentCommissionPercentage(draft.localAgentCommissionPercentage || 0);
       setMyProfitPercentage(draft.myProfitPercentage || 0);
     }
-  }, [draft?.unexpectedPercentage, draft?.localAgentVehiclePercentage, draft?.myProfitPercentage]);
+  }, [draft, draft?.unexpectedPercentage, draft?.localAgentCommissionPercentage, draft?.myProfitPercentage]);
 
   const progressSteps = [
     'Setup',
@@ -118,8 +118,8 @@ export const PricingPage: React.FC = () => {
 
     // 2. Calculate Local Agent Commission on (Base Total + Contingency)
     // Note: Applying to the running total instead of just vehicle total as per request
-    const localAgentVehicleAmount = (subtotalAfterUnexpected * (localAgentVehiclePercentage || 0)) / 100;
-    const subtotalAfterLocalAgent = subtotalAfterUnexpected + localAgentVehicleAmount;
+    const localAgentCommissionAmount = (subtotalAfterUnexpected * (localAgentCommissionPercentage || 0)) / 100;
+    const subtotalAfterLocalAgent = subtotalAfterUnexpected + localAgentCommissionAmount;
 
     // 3. Calculate Profit Margin on (Base + Contingency + Local Agent)
     const myProfitAmount = (subtotalAfterLocalAgent * (myProfitPercentage || 0)) / 100;
@@ -128,11 +128,11 @@ export const PricingPage: React.FC = () => {
       baseTotal,
       vehicleTotal,
       unexpectedAmount,
-      localAgentVehicleAmount,
+      localAgentCommissionAmount,
       myProfitAmount,
       finalTotal: subtotalAfterLocalAgent + myProfitAmount,
     };
-  }, [basePricingResult, unexpectedPercentage, localAgentVehiclePercentage, myProfitPercentage]);
+  }, [basePricingResult, unexpectedPercentage, localAgentCommissionPercentage, myProfitPercentage]);
 
   const travelers = draft?.travelers || 0;
 
@@ -183,12 +183,12 @@ export const PricingPage: React.FC = () => {
             <Input
               label="Local Agent Commission (%)"
               type="number"
-              value={localAgentVehiclePercentage}
+              value={localAgentCommissionPercentage}
               onChange={(value) => {
                 const numValue = typeof value === 'number' ? value : Number(value);
-                setLocalAgentVehiclePercentage(numValue);
+                setLocalAgentCommissionPercentage(numValue);
                 if (draft) {
-                  setDraft({ ...draft, localAgentVehiclePercentage: numValue });
+                  setDraft({ ...draft, localAgentCommissionPercentage: numValue });
                 }
               }}
               min={0}
@@ -237,13 +237,13 @@ export const PricingPage: React.FC = () => {
                 </span>
               </div>
             )}
-            {localAgentVehiclePercentage > 0 && (
+            {localAgentCommissionPercentage > 0 && (
               <div className="flex justify-between">
                 <span className="text-gray-600">
-                  Local Agent Commission ({localAgentVehiclePercentage}%):
+                  Local Agent Commission ({localAgentCommissionPercentage}%):
                 </span>
                 <span className="font-semibold text-gray-800">
-                  {formatCurrency(adjustments.localAgentVehicleAmount)}
+                  {formatCurrency(adjustments.localAgentCommissionAmount)}
                 </span>
               </div>
             )}
@@ -284,7 +284,7 @@ export const PricingPage: React.FC = () => {
                 setDraft({
                   ...draft,
                   unexpectedPercentage,
-                  localAgentVehiclePercentage,
+                  localAgentCommissionPercentage,
                   myProfitPercentage,
                 });
               }

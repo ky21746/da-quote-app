@@ -68,19 +68,6 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Helper function to generate DayCards based on nights
-  const generateDayCards = (nights: number): DayCard[] => {
-    const days: DayCard[] = [];
-    for (let i = 1; i <= nights; i++) {
-      days.push({
-        id: `day_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        dayNumber: i,
-        activities: [],
-        extras: [],
-      });
-    }
-    return days;
-  };
 
   const updateDay = (dayNumber: number, updates: Partial<DayDraft>) => {
     setDaysBreakdown((prev) =>
@@ -114,18 +101,18 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ...prev,
         parks: (prev.parks || []).map((card) => {
           if (card.id !== cardId) return card;
-          
+
           // Backward compatibility: If card doesn't have days array, initialize it
           let currentDays = card.days || [];
           const newNights = updates.nights !== undefined ? updates.nights : card.nights;
-          
+
           // Calculate number of days for this park: days = nights + 1 (last day is departure without lodging)
           // If trip has 5 days total and this park has 4 nights, create 5 DayCards for this park
           // For a single park covering entire trip, use trip days; otherwise use nights + 1
           const totalParks = (prev.parks || []).length;
           const tripDays = prev.days || 0;
           const parkDays = (totalParks === 1 && tripDays > 0) ? tripDays : (newNights ? newNights + 1 : 1);
-          
+
           if (!card.days && newNights && newNights > 0) {
             // Migrate old ParkCard: distribute activities/extras to first day
             // Create DayCards based on park days (nights + 1 for last day without lodging)
@@ -143,9 +130,9 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               };
             }
           }
-          
+
           let updatedDays = [...currentDays];
-          
+
           // Auto-generate DayCards based on park days (nights + 1) when nights is set/changed
           if (newNights !== undefined && parkDays !== currentDays.length) {
             // Create DayCards for all park days (nights + 1, where last day is without lodging)
@@ -165,7 +152,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 extras: [],
               };
             });
-            
+
             // Clear departureToNextPark from the new last day if it exists
             if (updatedDays.length > 0 && updatedDays[updatedDays.length - 1].departureToNextPark) {
               updatedDays[updatedDays.length - 1] = {
@@ -174,7 +161,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               };
             }
           }
-          
+
           // If nights is set for the first time, generate initial DayCards based on park days
           if (newNights !== undefined && updatedDays.length === 0 && newNights > 0) {
             updatedDays = Array.from({ length: parkDays }, (_, i) => ({
@@ -184,7 +171,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               extras: [],
             }));
           }
-          
+
           return {
             ...card,
             ...updates,
@@ -226,10 +213,10 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateTripDay = (dayNumber: number, updates: Partial<TripDay>) => {
     setDraftState((prev) => {
       if (!prev) return prev;
-      
+
       // Initialize tripDays array if it doesn't exist
       let tripDays = prev.tripDays || [];
-      
+
       // Ensure we have enough days
       while (tripDays.length < prev.days) {
         tripDays.push({
@@ -240,14 +227,14 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           },
         });
       }
-      
+
       // Update the specific day
       tripDays = tripDays.map((day) =>
         day.dayNumber === dayNumber
           ? { ...day, ...updates }
           : day
       );
-      
+
       return {
         ...prev,
         tripDays,

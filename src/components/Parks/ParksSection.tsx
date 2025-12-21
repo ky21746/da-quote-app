@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useTrip } from '../../context/TripContext';
-import { Button } from '../common';
 import { TripDayCard } from './TripDayCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -63,9 +62,9 @@ export const ParksSection: React.FC = () => {
       ...updates,
       logistics: updates.logistics
         ? {
-            ...updates.logistics,
-            internalMovements: updates.logistics.internalMovements || [],
-          }
+          ...updates.logistics,
+          internalMovements: updates.logistics.internalMovements || [],
+        }
         : undefined,
     };
     updateTripDay(currentDayNumber, normalizedUpdates);
@@ -102,18 +101,17 @@ export const ParksSection: React.FC = () => {
           {Array.from({ length: totalDays }, (_, i) => {
             const dayData = draft?.tripDays?.[i];
             const hasPark = dayData?.parkId !== undefined;
-            
+
             return (
               <button
                 key={i}
                 onClick={() => setCurrentDayIndex(i)}
-                className={`w-12 h-12 rounded-full font-semibold text-sm transition-colors flex items-center justify-center box-border ${
-                  i === currentDayIndex
-                    ? 'bg-brand-olive text-white border-2 border-brand-olive'
-                    : hasPark
+                className={`w-12 h-12 rounded-full font-semibold text-sm transition-colors flex items-center justify-center box-border ${i === currentDayIndex
+                  ? 'bg-brand-olive text-white border-2 border-brand-olive'
+                  : hasPark
                     ? 'bg-green-100 text-green-800 border-2 border-green-300'
                     : 'bg-gray-200 text-gray-600 hover:bg-gray-300 border-2 border-transparent'
-                }`}
+                  }`}
               >
                 D{i + 1}
               </button>
@@ -139,6 +137,8 @@ export const ParksSection: React.FC = () => {
         activities={currentDayData.activities || []}
         logistics={currentDayData.logistics}
         onUpdate={handleUpdateDay}
+        onNextDay={handleNext}
+        isLastDay={currentDayIndex === totalDays - 1}
       />
     </div>
   );

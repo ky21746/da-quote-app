@@ -2,7 +2,7 @@ import React from 'react';
 import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
-import { Calendar } from 'lucide-react';
+import { Calendar, ChevronRight } from 'lucide-react';
 
 interface TripDayCardProps {
   dayNumber: number; // 1, 2, 3... (global trip day)
@@ -26,6 +26,8 @@ interface TripDayCardProps {
       notes?: string;
     };
   }) => void;
+  onNextDay?: () => void;
+  isLastDay?: boolean;
 }
 
 export const TripDayCard: React.FC<TripDayCardProps> = ({
@@ -36,6 +38,8 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   activities,
   logistics,
   onUpdate,
+  onNextDay,
+  isLastDay,
 }) => {
   const { items: pricingItems, isLoading: catalogLoading } = usePricingCatalog();
 
@@ -112,17 +116,17 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
         {parkId && (
           <div className="border-t border-gray-200 pt-4">
             <h4 className="text-sm font-semibold text-brand-dark mb-3">Logistics</h4>
-            
+
             {/* Vehicle & Driver */}
             <PricingCatalogSelect
               label="Vehicle & Driver"
               value={logistics?.vehicle}
-              onChange={(pricingItemId) => onUpdate({ 
-                logistics: { 
+              onChange={(pricingItemId) => onUpdate({
+                logistics: {
                   ...logistics,
                   vehicle: pricingItemId,
                   internalMovements: logistics?.internalMovements || [],
-                } 
+                }
               })}
               category="Vehicle"
               parkId={parkId}
@@ -134,11 +138,11 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
             <PricingCatalogMultiSelect
               label="Internal Movements"
               selectedIds={logistics?.internalMovements || []}
-              onChange={(pricingItemIds) => onUpdate({ 
-                logistics: { 
+              onChange={(pricingItemIds) => onUpdate({
+                logistics: {
                   ...logistics,
                   internalMovements: pricingItemIds,
-                } 
+                }
               })}
               category="Logistics"
               parkId={parkId}
@@ -150,18 +154,30 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
             <Input
               label="Logistics Notes (optional)"
               value={logistics?.notes || ''}
-              onChange={(value) => onUpdate({ 
-                logistics: { 
+              onChange={(value) => onUpdate({
+                logistics: {
                   ...logistics,
                   notes: value as string,
                   internalMovements: logistics?.internalMovements || [],
-                } 
+                }
               })}
               placeholder="Additional logistics information..."
             />
           </div>
         )}
       </div>
+
+      {!isLastDay && onNextDay && (
+        <div className="mt-8 flex justify-end pt-4 border-t border-gray-100">
+          <button
+            onClick={onNextDay}
+            className="flex items-center gap-2 px-4 py-2 bg-brand-olive text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
+          >
+            Next Day
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -4,8 +4,6 @@ import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { Button, Select } from '../common';
 import { PricingItem } from '../../types/ui';
 import { AddPricingItemModal } from './AddPricingItemModal';
-import { CleanupOldAviation } from './CleanupOldAviation';
-import { UpdateAviationCategory } from './UpdateAviationCategory';
 import { getParks } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
 
@@ -33,14 +31,14 @@ export const PricingCatalogPage: React.FC = () => {
           if (item.parkId !== parkFilter) return false;
         }
       }
-      
+
       // Category filter
       if (categoryFilter !== 'all' && item.category !== categoryFilter) return false;
-      
+
       // Active filter
       if (activeFilter === 'active' && !item.active) return false;
       if (activeFilter === 'inactive' && item.active) return false;
-      
+
       return true;
     });
   }, [items, parkFilter, categoryFilter, activeFilter]);
@@ -131,11 +129,6 @@ export const PricingCatalogPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Cleanup Old Aviation Items - Temporary */}
-        <CleanupOldAviation />
-
-        {/* Update Aviation Category - Temporary */}
-        <UpdateAviationCategory />
 
         {/* Filter Bar */}
         <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 md:p-6 bg-gray-50 rounded-lg">

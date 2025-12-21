@@ -1,10 +1,10 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { PricingItem, PricingCategory } from '../../types/ui';
 import { getCatalogItemsForPark, getPricingItemById } from '../../utils/pricingCatalogHelpers';
 import { assertValidParkId } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
 import { getCategoryIcon } from '../../utils/iconHelpers';
-import { Helicopter, Plane, Car, ChevronDown } from 'lucide-react';
+import { Helicopter, Plane, Car } from 'lucide-react';
 
 interface PricingCatalogSelectProps {
   label: string;
@@ -27,18 +27,16 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
   isLoading = false,
   disabled: propDisabled = false,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   // HARD ASSERT: ParkId must not be lost when filtering
   if (parkId !== undefined && parkId !== null && parkId === '') {
     throw new Error("ParkId lost in Trip Builder flow");
   }
-  
+
   // Type guard: Validate parkId before filtering
   if (parkId) {
     assertValidParkId(parkId);
   }
-  
+
   // Get filtered items using CANONICAL function
   const filteredItems = useMemo(() => getCatalogItemsForPark(items, parkId, category), [items, parkId, category]);
 
@@ -143,15 +141,14 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
           {label}
         </label>
       )}
-      
+
       {/* Native select with optgroups for Aviation */}
       <select
         value={value || ''}
         onChange={handleChange}
         disabled={isDisabled || isLoading}
-        className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          isDisabled || isLoading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white cursor-pointer'
-        }`}
+        className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDisabled || isLoading ? 'bg-gray-100 cursor-not-allowed' : 'bg-white cursor-pointer'
+          }`}
         style={{
           pointerEvents: isDisabled || isLoading ? 'none' : 'auto',
         }}

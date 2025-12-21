@@ -43,7 +43,7 @@ export interface TripDraft {
   tripDays?: TripDay[]; // Array of days (1 per trip day)
   // Pricing adjustments
   unexpectedPercentage?: number; // העמסת בלתי צפוי באחוזים
-  localAgentVehiclePercentage?: number; // העמסת אחוז רכב לסוכן מקומי
+  localAgentCommissionPercentage?: number; // העמסת אחוז רכב לסוכן מקומי
   myProfitPercentage?: number; // העמאת רווח שלי באחוזים
 }
 
@@ -118,18 +118,18 @@ export interface ParkCard {
   id: string;
   parkId?: string; // Park ID string (must match PARKS[].id)
   nights?: number; // Number of nights at this park/leg (auto-generates DayCards)
-  
+
   // Park-level (applies to all days):
   arrival?: string; // pricingItemId - Arrival to THIS park (shown on first day)
   lodging?: string; // pricingItemId - Lodging for all nights at this park
   transport?: string; // pricingItemId - Default transport (can be overridden per day)
-  
+
   days: DayCard[]; // Array of day cards (1 per night)
-  
+
   // DEPRECATED: These will be moved to DayCards, but kept for backward compatibility during migration
   activities: string[]; // pricingItemIds - Will be distributed to DayCards
   extras: string[]; // pricingItemIds - Will be distributed to DayCards
-  
+
   logistics?: ParkLogistics;
 }
 
