@@ -68,7 +68,7 @@ export const PricingPage: React.FC = () => {
   const progressSteps = [
     'Setup',
     'Parks',
-    'Logistics',
+    'Summary',
     'Pricing',
   ];
 

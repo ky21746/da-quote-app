@@ -30,11 +30,128 @@ export function calculatePricingFromCatalog(
   pricingItems: PricingItem[]
 ): PricingResult {
   const breakdown: PricingLineItem[] = [];
-  const parks = trip.parks || [];
   const travelers = trip.travelers;
   const days = trip.days;
 
-  for (const card of parks) {
+  // Use tripDays if available, otherwise fall back to parks (backward compatibility)
+  const tripDays = trip.tripDays || [];
+  const parks = trip.parks || [];
+
+  // Calculate from tripDays (new structure)
+  if (tripDays.length > 0) {
+    // Count nights per park (lodging indicates a night)
+    const parkNightsMap = new Map<string, number>();
+    
+    for (const day of tripDays) {
+      if (day.parkId && day.lodging) {
+        parkNightsMap.set(day.parkId, (parkNightsMap.get(day.parkId) || 0) + 1);
+      }
+    }
+
+    for (const day of tripDays) {
+      if (!day.parkId) continue;
+
+      const parkName = getParks().find((p) => p.id === day.parkId)?.label || day.parkId;
+      const parkNights = parkNightsMap.get(day.parkId) || 0;
+
+      // Arrival to Park
+      if (day.arrival) {
+        const item = getPricingItemById(pricingItems, day.arrival);
+        if (item) {
+          const { total, explanation } = calculateItemTotal(item, travelers, days, 1);
+          breakdown.push({
+            id: `line_day${day.dayNumber}_arrival`,
+            park: parkName,
+            category: item.category,
+            itemName: item.itemName,
+            basePrice: item.basePrice,
+            costType: item.costType,
+            calculatedTotal: total,
+            perPerson: travelers > 0 ? total / travelers : 0,
+            calculationExplanation: explanation,
+          });
+        }
+      }
+
+      // Lodging
+      if (day.lodging) {
+        const item = getPricingItemById(pricingItems, day.lodging);
+        if (item) {
+          const { total, explanation } = calculateItemTotal(item, travelers, days, 1);
+          breakdown.push({
+            id: `line_day${day.dayNumber}_lodging`,
+            park: parkName,
+            category: item.category,
+            itemName: item.itemName,
+            basePrice: item.basePrice,
+            costType: item.costType,
+            calculatedTotal: total,
+            perPerson: travelers > 0 ? total / travelers : 0,
+            calculationExplanation: explanation,
+          });
+        }
+      }
+
+      // Activities
+      if (day.activities && day.activities.length > 0) {
+        const activityItems = getPricingItemsByIds(pricingItems, day.activities);
+        activityItems.forEach((item, idx) => {
+          const { total, explanation } = calculateItemTotal(item, travelers, days, 1);
+          breakdown.push({
+            id: `line_day${day.dayNumber}_activity_${idx}`,
+            park: parkName,
+            category: item.category,
+            itemName: item.itemName,
+            basePrice: item.basePrice,
+            costType: item.costType,
+            calculatedTotal: total,
+            perPerson: travelers > 0 ? total / travelers : 0,
+            calculationExplanation: explanation,
+          });
+        });
+      }
+
+      // Logistics - Vehicle
+      if (day.logistics?.vehicle) {
+        const item = getPricingItemById(pricingItems, day.logistics.vehicle);
+        if (item) {
+          const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights);
+          breakdown.push({
+            id: `line_day${day.dayNumber}_log_vehicle`,
+            park: parkName,
+            category: item.category,
+            itemName: item.itemName,
+            basePrice: item.basePrice,
+            costType: item.costType,
+            calculatedTotal: total,
+            perPerson: travelers > 0 ? total / travelers : 0,
+            calculationExplanation: explanation,
+          });
+        }
+      }
+
+      // Logistics - Internal Movements
+      if (day.logistics?.internalMovements && day.logistics.internalMovements.length > 0) {
+        const internalItems = getPricingItemsByIds(pricingItems, day.logistics.internalMovements);
+        internalItems.forEach((item, idx) => {
+          const { total, explanation } = calculateItemTotal(item, travelers, days, 1);
+          breakdown.push({
+            id: `line_day${day.dayNumber}_log_internal_${idx}`,
+            park: parkName,
+            category: item.category,
+            itemName: item.itemName,
+            basePrice: item.basePrice,
+            costType: item.costType,
+            calculatedTotal: total,
+            perPerson: travelers > 0 ? total / travelers : 0,
+            calculationExplanation: explanation,
+          });
+        });
+      }
+    }
+  } else {
+    // Fallback to parks structure (backward compatibility)
+    for (const card of parks) {
     // Get park name - card.parkId is string matching parks list
     const parkName = card.parkId
       ? (getParks().find((p) => p.id === card.parkId)?.label || card.parkId)
@@ -190,6 +307,7 @@ export function calculatePricingFromCatalog(
           calculationExplanation: explanation,
         });
       });
+    }
     }
   }
 
