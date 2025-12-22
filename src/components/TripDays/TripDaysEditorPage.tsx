@@ -18,7 +18,19 @@ export const TripDaysEditorPage: React.FC = () => {
     : { valid: false, totalNights: 0, message: '' };
   
   // Use tripDays validation if available, otherwise fall back to parks validation
-  const canProceed = draft?.tripDays ? hasAtLeastOnePark : nightsValidation.valid;
+  const tripDays = draft?.tripDays || [];
+
+  // Critical correctness rule: Busika requires at least one activity selected per Busika day
+  const busikaMissingActivitiesDays = tripDays
+    .filter((day) => day?.parkId === 'BUSIKA')
+    .filter((day) => !day.activities || day.activities.length === 0)
+    .map((day) => day.dayNumber);
+
+  const busikaActivitiesValid = busikaMissingActivitiesDays.length === 0;
+
+  const canProceed = draft?.tripDays
+    ? (hasAtLeastOnePark && busikaActivitiesValid)
+    : nightsValidation.valid;
 
   const progressSteps = [
     'Setup',
@@ -66,6 +78,12 @@ export const TripDaysEditorPage: React.FC = () => {
 
         {/* Parks Section */}
         <ParksSection />
+
+        {draft?.tripDays && !busikaActivitiesValid && (
+          <div className="mb-4 p-3 border border-red-200 bg-red-50 rounded-lg text-sm text-red-700">
+            Busika activities are required. Please select at least one activity for day(s): {busikaMissingActivitiesDays.join(', ')}.
+          </div>
+        )}
 
         <div className="flex gap-2">
           <Button onClick={() => navigate(-1)} variant="secondary">

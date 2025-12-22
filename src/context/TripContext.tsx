@@ -214,13 +214,27 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setDraftState((prev) => {
       if (!prev) return prev;
 
-      // Initialize tripDays array if it doesn't exist
-      let tripDays = prev.tripDays || [];
+      // Initialize tripDays array if it doesn't exist (and NEVER mutate prev.tripDays)
+      const existingTripDays = Array.isArray(prev.tripDays) ? prev.tripDays : [];
 
-      // Ensure we have enough days
-      while (tripDays.length < prev.days) {
+      // Deep-clone existing days to avoid any shared references between days
+      const tripDays: TripDay[] = existingTripDays.map((day) => ({
+        ...day,
+        activities: Array.isArray(day.activities) ? [...day.activities] : [],
+        logistics: day.logistics
+          ? {
+              ...day.logistics,
+              internalMovements: Array.isArray(day.logistics.internalMovements)
+                ? [...day.logistics.internalMovements]
+                : [],
+            }
+          : undefined,
+      }));
+
+      // Ensure we have enough days (each day must be a fresh object)
+      for (let i = tripDays.length; i < prev.days; i += 1) {
         tripDays.push({
-          dayNumber: tripDays.length + 1,
+          dayNumber: i + 1,
           activities: [],
           logistics: {
             internalMovements: [],
@@ -228,16 +242,27 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         });
       }
 
-      // Update the specific day
-      tripDays = tripDays.map((day) =>
-        day.dayNumber === dayNumber
-          ? { ...day, ...updates }
-          : day
+      // Update the specific day (deep-clone updates too)
+      const normalizedUpdates: Partial<TripDay> = {
+        ...updates,
+        activities: Array.isArray(updates.activities) ? [...updates.activities] : updates.activities,
+        logistics: updates.logistics
+          ? {
+              ...updates.logistics,
+              internalMovements: Array.isArray(updates.logistics.internalMovements)
+                ? [...updates.logistics.internalMovements]
+                : [],
+            }
+          : updates.logistics,
+      };
+
+      const updatedTripDays = tripDays.map((day) =>
+        day.dayNumber === dayNumber ? { ...day, ...normalizedUpdates } : day
       );
 
       return {
         ...prev,
-        tripDays,
+        tripDays: updatedTripDays,
       };
     });
   };
