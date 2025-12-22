@@ -103,52 +103,50 @@ export const CheckBusikaData: React.FC = () => {
               </ul>
             </div>
           )}
-          {busikaData.activities === 0 && (
-            <div className="mt-2">
-              <p className="text-red-600 font-bold">⚠️ No Activities found! Check console for details.</p>
-              <div className="mt-2 flex gap-2">
-                <Button
-                  onClick={async () => {
-                    setIsReimporting(true);
-                    try {
-                      console.log('🔄 Re-importing Busika Activities ONLY...');
-                      console.log('📋 Total items to import:', 30);
-                      const result = await runActivitiesImport();
-                      console.log('📊 Final result:', result);
-                      alert(`Import completed!\nSuccess: ${result.success}\nSkipped: ${result.skipped}\nErrors: ${result.errors.length}\n\nCheck console for details.`);
-                      // Reload page after import to refresh data
-                      setTimeout(() => window.location.reload(), 2000);
-                    } catch (error) {
-                      console.error('❌ Re-import failed:', error);
-                      alert(`Import failed! Check console for details.\nError: ${error instanceof Error ? error.message : 'Unknown error'}`);
-                      setIsReimporting(false);
-                    }
-                  }}
-                  disabled={isReimporting}
-                >
-                  {isReimporting ? 'Importing...' : 'Import Activities ONLY'}
-                </Button>
-                <Button
-                  onClick={async () => {
-                    setIsReimporting(true);
-                    try {
-                      console.log('🔄 Re-importing ALL Busika Data...');
-                      await runBusikaImport();
-                      // Reload page after import to refresh data
-                      setTimeout(() => window.location.reload(), 2000);
-                    } catch (error) {
-                      console.error('Re-import failed:', error);
-                      setIsReimporting(false);
-                    }
-                  }}
-                  disabled={isReimporting}
-                  variant="secondary"
-                >
-                  {isReimporting ? 'Importing...' : 'Re-import All Busika'}
-                </Button>
-              </div>
-            </div>
-          )}
+          <div className="mt-2 text-sm text-gray-500">
+            <p>Use these buttons to update/import data:</p>
+          </div>
+          <div className="mt-2 flex gap-2">
+            <Button
+              onClick={async () => {
+                setIsReimporting(true);
+                try {
+                  console.log('🔄 Re-importing Busika Activities ONLY...');
+                  console.log('📋 Total items to import:', 30);
+                  const result = await runActivitiesImport();
+                  console.log('📊 Final result:', result);
+                  alert(`Import completed!\nSuccess/Updated: ${result.success + (result.updated || 0)}\nErrors: ${result.errors.length}\n\nCheck console for details.`);
+                  // Reload page after import to refresh data
+                  setTimeout(() => window.location.reload(), 2000);
+                } catch (error) {
+                  console.error('❌ Re-import failed:', error);
+                  alert(`Import failed! Check console for details.\nError: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                  setIsReimporting(false);
+                }
+              }}
+              disabled={isReimporting}
+            >
+              {isReimporting ? 'Importing...' : 'Force Update Activities'}
+            </Button>
+            <Button
+              onClick={async () => {
+                setIsReimporting(true);
+                try {
+                  console.log('🔄 Re-importing ALL Busika Data...');
+                  await runBusikaImport();
+                  // Reload page after import to refresh data
+                  setTimeout(() => window.location.reload(), 2000);
+                } catch (error) {
+                  console.error('Re-import failed:', error);
+                  setIsReimporting(false);
+                }
+              }}
+              disabled={isReimporting}
+              variant="secondary"
+            >
+              {isReimporting ? 'Importing...' : 'Force Update All'}
+            </Button>
+          </div>
         </div>
       ) : (
         <p className="text-sm">No data loaded yet</p>

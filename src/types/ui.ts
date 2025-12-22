@@ -197,5 +197,6 @@ export interface CatalogOption {
   capacity?: number; // Display only (e.g., helicopter 13 pax)
   tier?: TripTier;
   parkId?: string;
+  sku?: string;
 }
 

@@ -285,6 +285,7 @@ interface ActivityData {
   parkId: string;
   category: string;
   itemName: string;
+  sku?: string;
   basePrice: number;
   costType: string;
   appliesTo: string;
@@ -356,8 +357,9 @@ export async function importActivities(): Promise<{
         costType: item.costType as PricingItem['costType'],
         appliesTo: item.appliesTo as 'Global' | 'Park',
         active: item.active,
+        sku: (item as any).sku || null,
       };
-      
+
       // Only include notes if it has a value (not empty string)
       if (item.notes && item.notes.trim() !== '') {
         docData.notes = item.notes;
@@ -387,12 +389,12 @@ export async function importActivities(): Promise<{
 export async function runImport(): Promise<void> {
   console.log('🚀 Starting activities import...');
   const results = await importActivities();
-  
+
   console.log('\n📊 Import Summary:');
   console.log(`✅ Successfully added: ${results.success}`);
   console.log(`⏭️  Skipped (already exists): ${results.skipped}`);
   console.log(`❌ Errors: ${results.errors.length}`);
-  
+
   if (results.errors.length > 0) {
     console.log('\n❌ Errors:');
     results.errors.forEach((err) => {

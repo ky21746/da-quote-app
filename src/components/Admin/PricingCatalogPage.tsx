@@ -7,6 +7,7 @@ import { AddPricingItemModal } from './AddPricingItemModal';
 import { getParks } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
 
+
 export const PricingCatalogPage: React.FC = () => {
   const navigate = useNavigate();
   const { items, addItem, updateItem, deleteItem, isLoading } = usePricingCatalog();
@@ -128,6 +129,7 @@ export const PricingCatalogPage: React.FC = () => {
             </Button>
           </div>
         </div>
+
 
 
         {/* Filter Bar */}
@@ -265,4 +267,3 @@ export const PricingCatalogPage: React.FC = () => {
     </div>
   );
 };
-

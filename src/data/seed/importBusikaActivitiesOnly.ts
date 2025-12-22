@@ -4,8 +4,7 @@
  * This script imports ONLY Busika activities to Firestore.
  * Use this if the main import failed for activities.
  */
-
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import { PricingItem } from '../../types/ui';
 
@@ -319,11 +318,13 @@ const busikaActivitiesData = [
 export async function importBusikaActivities(): Promise<{
   success: number;
   skipped: number;
+  updated: number;
   errors: Array<{ itemName: string; error: string }>;
 }> {
   const results = {
     success: 0,
     skipped: 0,
+    updated: 0,
     errors: [] as Array<{ itemName: string; error: string }>,
   };
 
@@ -341,12 +342,6 @@ export async function importBusikaActivities(): Promise<{
 
       const existingDocs = await getDocs(existingQuery);
 
-      if (!existingDocs.empty) {
-        console.log(`⏭️  Skipping existing item: ${item.itemName} (${item.parkId})`);
-        results.skipped++;
-        continue;
-      }
-
       // Add document to Firestore
       // Firestore doesn't accept undefined - use null or omit the field
       const docData: any = {
@@ -357,13 +352,29 @@ export async function importBusikaActivities(): Promise<{
         costType: item.costType as PricingItem['costType'],
         appliesTo: item.appliesTo as 'Global' | 'Park',
         active: item.active,
+        sku: (item as any).sku || (item as any).SKU || null,
       };
-      
+
       // Only include notes if it has a value (not empty string)
       if (item.notes && item.notes.trim() !== '') {
         docData.notes = item.notes;
       } else {
         docData.notes = null;
+      }
+
+      if (!existingDocs.empty) {
+        console.log(`🔄 Updating existing item: ${item.itemName} (${item.parkId})`);
+        try {
+          const docId = existingDocs.docs[0].id;
+          const docRef = doc(db, 'pricingCatalog', docId);
+          await updateDoc(docRef, docData);
+          console.log(`✅ Successfully updated: ${item.itemName} (ID: ${docId})`);
+          results.updated++;
+          continue;
+        } catch (updateError) {
+          console.error(`❌ Error updating ${item.itemName}:`, updateError);
+          throw updateError;
+        }
       }
 
       console.log('📤 Attempting to add:', JSON.stringify(docData, null, 2));
@@ -394,24 +405,25 @@ export async function importBusikaActivities(): Promise<{
 export async function runImport(): Promise<{
   success: number;
   skipped: number;
+  updated: number;
   errors: Array<{ itemName: string; error: string }>;
 }> {
   console.log('🚀 Starting Busika Activities import...');
   console.log('📋 Total items to process:', busikaActivitiesData.length);
   const results = await importBusikaActivities();
-  
+
   console.log('\n📊 Import Summary:');
   console.log(`✅ Successfully added: ${results.success}`);
-  console.log(`⏭️  Skipped (already exists): ${results.skipped}`);
+  console.log(`🔄 Successfully updated: ${results.updated}`);
+  console.log(`⏭️  Skipped: ${results.skipped}`);
   console.log(`❌ Errors: ${results.errors.length}`);
-  
+
   if (results.errors.length > 0) {
     console.log('\n❌ Errors:');
     results.errors.forEach((err) => {
       console.log(`  - ${err.itemName}: ${err.error}`);
     });
   }
-  
+
   return results;
 }
-

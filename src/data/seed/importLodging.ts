@@ -146,6 +146,7 @@ interface LodgingData {
   appliesTo: string;
   active: boolean;
   notes: string;
+  sku?: string;
 }
 
 /**
@@ -212,8 +213,9 @@ export async function importLodging(): Promise<{
         costType: item.costType as PricingItem['costType'],
         appliesTo: item.appliesTo as 'Global' | 'Park',
         active: item.active,
+        sku: (item as any).sku || (item as any).SKU || null,
       };
-      
+
       // Only include notes if it has a value (not empty string)
       if (item.notes && item.notes.trim() !== '') {
         docData.notes = item.notes;
@@ -243,12 +245,12 @@ export async function importLodging(): Promise<{
 export async function runImport(): Promise<void> {
   console.log('🚀 Starting lodging import...');
   const results = await importLodging();
-  
+
   console.log('\n📊 Import Summary:');
   console.log(`✅ Successfully added: ${results.success}`);
   console.log(`⏭️  Skipped (already exists): ${results.skipped}`);
   console.log(`❌ Errors: ${results.errors.length}`);
-  
+
   if (results.errors.length > 0) {
     console.log('\n❌ Errors:');
     results.errors.forEach((err) => {
