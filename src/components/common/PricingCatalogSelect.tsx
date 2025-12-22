@@ -119,12 +119,8 @@ export const PricingCatalogSelect: React.FC<PricingCatalogSelectProps> = ({
     return Array.from(optionMap.values());
   }, [filteredItems, value, selectedItem, isLoading, category]);
 
-  // Disable only if no options OR prop disabled
-  // For Aviation with groups, check if any group has items
-  const hasItems = category === 'Aviation'
-    ? groupedItems.groups.some(g => g.items.length > 0)
-    : options.length > 1; // > 1 because first option is "Not selected"
-  const isDisabled = propDisabled || !hasItems;
+  // Disable only if explicitly requested by parent
+  const isDisabled = propDisabled;
 
   // Handle change
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

@@ -25,6 +25,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
         itemName: editingItem.itemName,
         basePrice: editingItem.basePrice,
         costType: editingItem.costType,
+        capacity: editingItem.capacity,
         appliesTo: editingItem.appliesTo,
         notes: editingItem.notes || '',
         active: editingItem.active,
@@ -37,6 +38,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
       itemName: '',
       basePrice: 0,
       costType: 'fixed_group',
+      capacity: undefined,
       appliesTo: 'Global',
       notes: '',
       active: true,
@@ -59,6 +61,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
           itemName: editingItem.itemName,
           basePrice: editingItem.basePrice,
           costType: editingItem.costType,
+          capacity: editingItem.capacity,
           appliesTo: editingItem.appliesTo,
           notes: editingItem.notes || '',
           active: editingItem.active,
@@ -72,6 +75,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
           itemName: '',
           basePrice: 0,
           costType: 'fixed_group',
+          capacity: undefined,
           appliesTo: 'Global',
           notes: '',
           active: true,
@@ -140,6 +144,7 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
       itemName: formData.itemName.trim(),
       basePrice: formData.basePrice,
       costType: formData.costType,
+      capacity: Number.isFinite(Number(formData.capacity)) ? Number(formData.capacity) : undefined,
       appliesTo,
       notes: formData.notes?.trim() || undefined,
       active: formData.active,
@@ -244,6 +249,22 @@ export const AddPricingItemModal: React.FC<AddPricingItemModalProps> = ({
                 }
                 options={costTypeOptions}
                 required
+              />
+
+              <Input
+                label="Capacity (optional)"
+                type="number"
+                value={typeof formData.capacity === 'number' ? formData.capacity : ''}
+                onChange={(value) => {
+                  const numValue = Number(value);
+                  if (!Number.isFinite(numValue) || numValue <= 0) {
+                    setFormData({ ...formData, capacity: undefined });
+                    return;
+                  }
+                  setFormData({ ...formData, capacity: numValue });
+                }}
+                min={1}
+                step="1"
               />
 
               <Input

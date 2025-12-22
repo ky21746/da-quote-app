@@ -15,7 +15,27 @@ interface ParkCardProps {
 
 export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) => {
   const { items: pricingItems, isLoading: catalogLoading } = usePricingCatalog();
-  const { updateDayCard } = useTrip();
+  const { updateDayCard, draft, setDraft } = useTrip();
+
+  const travelers = draft?.travelers || 0;
+
+  const getDefaultQuantity = (capacity: number): number => {
+    if (!Number.isFinite(capacity) || capacity <= 0) return 1;
+    if (travelers > capacity) return Math.ceil(travelers / capacity);
+    return 1;
+  };
+
+  const getQuantityOptions = (min: number): number[] => {
+    const max = Math.max(min, 10);
+    return Array.from({ length: max }, (_, i) => i + 1);
+  };
+
+  const selectedArrivalItem = card.arrival
+    ? pricingItems.find((i) => i.id === card.arrival) || null
+    : null;
+  const selectedVehicleItem = card.logistics?.vehicle
+    ? pricingItems.find((i) => i.id === card.logistics!.vehicle) || null
+    : null;
 
   const parkOptions = [
     { value: '', label: 'Select a park...' },
@@ -104,15 +124,78 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
         return (
           <div className="space-y-4 mt-4">
             {/* 3. Arrival to Park (Flight or Vehicle) - park-level */}
-            <PricingCatalogSelect
-              label="Arrival to Park (Flight or Vehicle)"
-              value={card.arrival}
-              onChange={(pricingItemId) => onUpdate({ arrival: pricingItemId })}
-              category="Aviation"
-              parkId={card.parkId}
-              items={pricingItems}
-              isLoading={catalogLoading}
-            />
+            <div>
+              <PricingCatalogSelect
+                label="Arrival to Park (Flight or Vehicle)"
+                value={card.arrival}
+                onChange={(pricingItemId) => {
+                  onUpdate({ arrival: pricingItemId });
+
+                  setDraft((prev) => {
+                    if (!prev) return prev;
+
+                    const nextItemQuantities: Record<string, number> = {
+                      ...(prev.itemQuantities || {}),
+                    };
+
+                    if (pricingItemId) {
+                      const selected = pricingItems.find((i) => i.id === pricingItemId);
+                      const capacity = selected?.capacity;
+                      if (typeof capacity === 'number' && Number.isFinite(capacity)) {
+                        if (nextItemQuantities[pricingItemId] === undefined) {
+                          nextItemQuantities[pricingItemId] = getDefaultQuantity(capacity);
+                        }
+                      }
+                    }
+
+                    return {
+                      ...prev,
+                      itemQuantities: nextItemQuantities,
+                    };
+                  });
+                }}
+                category="Aviation"
+                parkId={card.parkId}
+                items={pricingItems}
+                isLoading={catalogLoading}
+              />
+
+              {card.arrival &&
+                selectedArrivalItem &&
+                typeof selectedArrivalItem.capacity === 'number' &&
+                Number.isFinite(selectedArrivalItem.capacity) && (
+                  <div className="flex items-center gap-3 mt-2">
+                    <label className="text-xs font-medium text-gray-700">Quantity</label>
+                    <select
+                      className="px-2 py-1 border border-gray-300 rounded-md text-sm"
+                      value={
+                        draft?.itemQuantities?.[card.arrival] ??
+                        getDefaultQuantity(selectedArrivalItem.capacity)
+                      }
+                      onChange={(e) => {
+                        const newQty = Number(e.target.value);
+                        setDraft((prev) => {
+                          if (!prev) return prev;
+                          return {
+                            ...prev,
+                            itemQuantities: {
+                              ...(prev.itemQuantities || {}),
+                              [card.arrival!]: newQty,
+                            },
+                          };
+                        });
+                      }}
+                    >
+                      {getQuantityOptions(getDefaultQuantity(selectedArrivalItem.capacity)).map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="text-xs text-gray-500">Capacity: {selectedArrivalItem.capacity}</div>
+                  </div>
+                )}
+            </div>
 
             {/* 4. Lodging - park-level (applies to all nights) */}
             <PricingCatalogSelect
@@ -159,22 +242,85 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
               />
 
               {/* Vehicle & Driver */}
-              <PricingCatalogSelect
-                label="Vehicle & Driver"
-                value={card.logistics?.vehicle}
-                onChange={(pricingItemId) => onUpdate({
-                  logistics: {
-                    arrival: card.logistics?.arrival,
-                    vehicle: pricingItemId,
-                    internalMovements: card.logistics?.internalMovements || [],
-                    notes: card.logistics?.notes,
-                  }
-                })}
-                category="Vehicle"
-                parkId={card.parkId}
-                items={pricingItems}
-                isLoading={catalogLoading}
-              />
+              <div>
+                <PricingCatalogSelect
+                  label="Vehicle & Driver"
+                  value={card.logistics?.vehicle}
+                  onChange={(pricingItemId) => {
+                    onUpdate({
+                      logistics: {
+                        arrival: card.logistics?.arrival,
+                        vehicle: pricingItemId,
+                        internalMovements: card.logistics?.internalMovements || [],
+                        notes: card.logistics?.notes,
+                      },
+                    });
+
+                    setDraft((prev) => {
+                      if (!prev) return prev;
+
+                      const nextItemQuantities: Record<string, number> = {
+                        ...(prev.itemQuantities || {}),
+                      };
+
+                      if (pricingItemId) {
+                        const selected = pricingItems.find((i) => i.id === pricingItemId);
+                        const capacity = selected?.capacity;
+                        if (typeof capacity === 'number' && Number.isFinite(capacity)) {
+                          if (nextItemQuantities[pricingItemId] === undefined) {
+                            nextItemQuantities[pricingItemId] = getDefaultQuantity(capacity);
+                          }
+                        }
+                      }
+
+                      return {
+                        ...prev,
+                        itemQuantities: nextItemQuantities,
+                      };
+                    });
+                  }}
+                  category="Vehicle"
+                  parkId={card.parkId}
+                  items={pricingItems}
+                  isLoading={catalogLoading}
+                />
+
+                {card.logistics?.vehicle &&
+                  selectedVehicleItem &&
+                  typeof selectedVehicleItem.capacity === 'number' &&
+                  Number.isFinite(selectedVehicleItem.capacity) && (
+                    <div className="flex items-center gap-3 mt-2">
+                      <label className="text-xs font-medium text-gray-700">Quantity</label>
+                      <select
+                        className="px-2 py-1 border border-gray-300 rounded-md text-sm"
+                        value={
+                          draft?.itemQuantities?.[card.logistics.vehicle] ??
+                          getDefaultQuantity(selectedVehicleItem.capacity)
+                        }
+                        onChange={(e) => {
+                          const newQty = Number(e.target.value);
+                          setDraft((prev) => {
+                            if (!prev) return prev;
+                            return {
+                              ...prev,
+                              itemQuantities: {
+                                ...(prev.itemQuantities || {}),
+                                [card.logistics!.vehicle!]: newQty,
+                              },
+                            };
+                          });
+                        }}
+                      >
+                        {getQuantityOptions(getDefaultQuantity(selectedVehicleItem.capacity)).map((n) => (
+                          <option key={n} value={n}>
+                            {n}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="text-xs text-gray-500">Capacity: {selectedVehicleItem.capacity}</div>
+                    </div>
+                  )}
+              </div>
 
               {/* Internal Movements */}
               <PricingCatalogMultiSelect

@@ -9,16 +9,73 @@ import { CostParetoPanel } from './CostParetoPanel';
 import { quoteService } from '../../services/quoteService';
 import { pdfService } from '../../services/pdfService';
 import { getCategoryIcon } from '../../utils/iconHelpers';
+import { usePricingCatalog } from '../../context/PricingCatalogContext';
+import { validateCapacity } from '../../core/validators/CapacityValidator';
 
 export const TripSummaryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { calculationResult, draft, scenarioResults, setScenarioResults } = useTrip();
+  const { items: pricingItems } = usePricingCatalog();
   const { calculateScenarios, isCalculating: isCalculatingScenarios, error: scenarioError } =
     useScenarioComparison();
   const [showComparison, setShowComparison] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [savedQuoteId, setSavedQuoteId] = useState<string | null>(null);
+
+  const selectedPricingItemIds = React.useMemo(() => {
+    if (!draft) return [];
+    const ids: string[] = [];
+
+    if (draft.tripDays && draft.tripDays.length > 0) {
+      for (const day of draft.tripDays) {
+        if (day.arrival) ids.push(day.arrival);
+        if (day.lodging) ids.push(day.lodging);
+        if (day.activities && day.activities.length > 0) ids.push(...day.activities);
+        if (day.logistics?.vehicle) ids.push(day.logistics.vehicle);
+        if (day.logistics?.internalMovements && day.logistics.internalMovements.length > 0) {
+          ids.push(...day.logistics.internalMovements);
+        }
+      }
+    }
+
+    if (draft.parks && draft.parks.length > 0) {
+      for (const park of draft.parks) {
+        if (park.arrival) ids.push(park.arrival);
+        if (park.lodging) ids.push(park.lodging);
+        if (park.transport) ids.push(park.transport);
+        if (park.activities && park.activities.length > 0) ids.push(...park.activities);
+        if (park.extras && park.extras.length > 0) ids.push(...park.extras);
+        if (park.logistics?.arrival) ids.push(park.logistics.arrival);
+        if (park.logistics?.vehicle) ids.push(park.logistics.vehicle);
+        if (park.logistics?.internalMovements && park.logistics.internalMovements.length > 0) {
+          ids.push(...park.logistics.internalMovements);
+        }
+        if (park.days && park.days.length > 0) {
+          for (const day of park.days) {
+            if (day.activities && day.activities.length > 0) ids.push(...day.activities);
+            if (day.extras && day.extras.length > 0) ids.push(...day.extras);
+            if (day.departureToNextPark) ids.push(day.departureToNextPark);
+          }
+        }
+      }
+    }
+
+    return ids.filter(Boolean);
+  }, [draft]);
+
+  const capacityValidation = React.useMemo(() => {
+    if (!draft) return { isValid: true, issues: [] as any[] };
+    return validateCapacity({
+      travelers: draft.travelers,
+      selectedItemIds: selectedPricingItemIds,
+      catalogItems: pricingItems,
+      quantitiesByItemId: draft.itemQuantities,
+      defaultQuantitiesByItemId: Object.fromEntries(
+        pricingItems.map((i) => [i.id, typeof i.quantity === 'number' ? i.quantity : 1])
+      ),
+    });
+  }, [draft, pricingItems, selectedPricingItemIds]);
 
   useEffect(() => {
     // Load scenarios when comparison is enabled
@@ -31,6 +88,7 @@ export const TripSummaryPage: React.FC = () => {
 
   const handleSaveQuote = async () => {
     if (!draft || !calculationResult) return;
+    if (!capacityValidation.isValid) return;
     setIsSaving(true);
     try {
       const quoteId = await quoteService.saveQuote(draft, calculationResult);
@@ -49,6 +107,7 @@ export const TripSummaryPage: React.FC = () => {
 
   const handleExportPDF = async () => {
     if (!draft || !calculationResult) return;
+    if (!capacityValidation.isValid) return;
     await pdfService.generateQuotePDF(draft, calculationResult, savedQuoteId || undefined);
   };
 
@@ -76,6 +135,56 @@ export const TripSummaryPage: React.FC = () => {
             <p className="text-sm text-gray-600">
               {draft.travelers} travelers • {draft.days} days • {draft.tier}
             </p>
+          </div>
+        )}
+
+        {!capacityValidation.isValid && (
+          <div className="mb-6 p-4 md:p-6 bg-red-100 border border-red-400 text-red-800 rounded">
+            <div className="font-semibold mb-2">
+              The selected item capacity is insufficient for the number of travelers.
+            </div>
+            <div className="space-y-3">
+              {capacityValidation.issues.map((issue: any, idx: number) => (
+                <div key={`${issue.itemId}_${idx}`} className="bg-white/60 border border-red-200 rounded p-3">
+                  <div className="text-sm font-medium">Item: {issue.itemId}</div>
+                  <div className="text-xs mt-1">
+                    Travelers: {issue.travelers} | Capacity: {issue.capacity} | Quantity: {issue.quantity}
+                  </div>
+                  <div className="flex gap-2 flex-wrap mt-3">
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        const action = (issue.actions || []).find((a: any) => a.type === 'increase_quantity');
+                        if (!action) return;
+                        // We do not mutate draft here (TripContext doesn't expose setDraft in summary).
+                        alert(`Increase quantity to ${action.requiredQuantity} for item ${action.itemId}`);
+                      }}
+                    >
+                      Increase quantity
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        const action = (issue.actions || []).find((a: any) => a.type === 'replace_item');
+                        const alternatives = action?.alternatives || [];
+                        if (alternatives.length === 0) {
+                          alert('No higher-capacity alternative found in catalog.');
+                          return;
+                        }
+                        alert(
+                          `Replace item with a higher-capacity alternative. Options:\n` +
+                            alternatives
+                              .map((alt: any) => `${alt.itemId} (capacity ${alt.capacity})`)
+                              .join('\n')
+                        );
+                      }}
+                    >
+                      Replace item
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -171,11 +280,11 @@ export const TripSummaryPage: React.FC = () => {
           <Button 
             onClick={handleSaveQuote} 
             variant="primary"
-            disabled={isSaving || !!savedQuoteId}
+            disabled={isSaving || !!savedQuoteId || !capacityValidation.isValid}
           >
             {isSaving ? 'Saving...' : savedQuoteId ? '✓ Saved' : 'Save Quote'}
           </Button>
-          <Button onClick={handleExportPDF} variant="secondary">
+          <Button onClick={handleExportPDF} variant="secondary" disabled={!capacityValidation.isValid}>
             Export PDF
           </Button>
           <Button onClick={() => navigate('/trip/new')} variant="secondary">

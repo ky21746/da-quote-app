@@ -168,6 +168,7 @@ export const PricingCatalogPage: React.FC = () => {
                 <th className="border border-gray-300 px-3 py-2 text-left">SKU</th>
                 <th className="border border-gray-300 px-3 py-2 text-left">Item Name</th>
                 <th className="border border-gray-300 px-3 py-2 text-right">Base Price</th>
+                <th className="border border-gray-300 px-3 py-2 text-center">Capacity</th>
                 <th className="border border-gray-300 px-3 py-2 text-left">Cost Type</th>
                 <th className="border border-gray-300 px-3 py-2 text-center">Active</th>
                 <th className="border border-gray-300 px-3 py-2 text-left">Notes</th>
@@ -177,7 +178,7 @@ export const PricingCatalogPage: React.FC = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={9} className="border border-gray-300 px-3 py-4 text-center text-gray-500">
+                  <td colSpan={10} className="border border-gray-300 px-3 py-4 text-center text-gray-500">
                     <div className="flex items-center justify-center gap-2">
                       <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -189,7 +190,7 @@ export const PricingCatalogPage: React.FC = () => {
                 </tr>
               ) : filteredItems.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="border border-gray-300 px-3 py-4 text-center text-gray-500">
+                  <td colSpan={10} className="border border-gray-300 px-3 py-4 text-center text-gray-500">
                     No pricing items found
                   </td>
                 </tr>
@@ -214,6 +215,9 @@ export const PricingCatalogPage: React.FC = () => {
                     </td>
                     <td className="border border-gray-300 px-3 py-2 text-right">
                       {typeof item.basePrice === 'number' && !isNaN(item.basePrice) ? formatCurrency(item.basePrice) : 'USD 0.00'}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2 text-center">
+                      {typeof item.capacity === 'number' && Number.isFinite(item.capacity) ? item.capacity : '-'}
                     </td>
                     <td className="border border-gray-300 px-3 py-2">
                       <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">

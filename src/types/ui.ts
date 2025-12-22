@@ -41,6 +41,7 @@ export interface TripDraft {
   manualLineItems?: LineItemDraft[]; // Manual pricing items
   parks?: ParkCard[]; // Park-based planning blocks (deprecated, use tripDays)
   tripDays?: TripDay[]; // Array of days (1 per trip day)
+  itemQuantities?: Record<string, number>; // Per-quote quantity overrides by pricingItemId
   // Pricing adjustments
   unexpectedPercentage?: number; // העמסת בלתי צפוי באחוזים
   localAgentCommissionPercentage?: number; // העמסת אחוז רכב לסוכן מקומי
@@ -166,6 +167,8 @@ export interface PricingItem {
   itemName: string;
   basePrice: number;
   costType: ManualCostType;
+  capacity?: number; // Physical capacity limit (required for relevant fixed items)
+  quantity?: number; // Default quantity for this item (used for fixed items)
   appliesTo: 'Global' | 'Park'; // 'Global' = applies to all parks, 'Park' = park-specific
   active: boolean;
   notes?: string;

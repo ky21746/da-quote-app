@@ -6,7 +6,7 @@ interface TripContextType {
   calculationResult: CalculationResult | null;
   daysBreakdown: DayDraft[];
   scenarioResults: ScenarioResults;
-  setDraft: (draft: TripDraft) => void;
+  setDraft: (draft: TripDraft | null | ((prev: TripDraft | null) => TripDraft | null)) => void;
   setCalculationResult: (result: CalculationResult | null) => void;
   setDaysBreakdown: (days: DayDraft[]) => void;
   setScenarioResults: (results: ScenarioResults) => void;

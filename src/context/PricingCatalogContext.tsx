@@ -45,6 +45,8 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
               itemName: docData.itemName || '',
               basePrice: typeof docData.basePrice === 'number' ? docData.basePrice : 0,
               costType: docData.costType || 'fixed_group',
+              capacity: typeof docData.capacity === 'number' ? docData.capacity : undefined,
+              quantity: typeof docData.quantity === 'number' ? docData.quantity : 1,
               appliesTo: docData.appliesTo || 'Global',
               active: docData.active !== undefined ? docData.active : true,
               notes: docData.notes ?? null,
@@ -88,17 +90,22 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
     }
 
     // Write directly to Firestore
-    const payload = {
+    const payload: Record<string, any> = {
       parkId: itemData.parkId ?? null,
       category: itemData.category,
       itemName: itemData.itemName,
       basePrice: itemData.basePrice,
       costType: itemData.costType,
+      quantity: typeof itemData.quantity === 'number' ? itemData.quantity : 1,
       appliesTo: itemData.appliesTo,
       notes: itemData.notes ?? null,
       active: itemData.active ?? true,
       sku: itemData.sku || null,
     };
+
+    if (typeof itemData.capacity === 'number' && Number.isFinite(itemData.capacity)) {
+      payload.capacity = itemData.capacity;
+    }
 
     console.log('📤 Writing to Firestore:', payload);
     try {
