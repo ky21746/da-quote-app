@@ -12,9 +12,33 @@ export const LogisticsPage: React.FC = () => {
   const progressSteps = [
     'Setup',
     'Parks',
-    'Summary',
+    'Review & Fix',
     'Pricing',
   ];
+
+  const tripDays = draft?.tripDays || [];
+  const totalDays = draft?.days || 0;
+
+  const missingParkDays = Array.from({ length: totalDays }, (_, i) => i + 1)
+    .filter((dayNumber) => {
+      const day = tripDays[dayNumber - 1];
+      return !day?.parkId;
+    });
+
+  const busikaMissingActivitiesDays = tripDays
+    .filter((day) => day?.parkId === 'BUSIKA')
+    .filter((day) => !day.activities || day.activities.length === 0)
+    .map((day) => day.dayNumber);
+
+  const blockedReason = !draft?.name?.trim()
+    ? 'Trip name missing'
+    : missingParkDays.length > 0
+      ? `Park missing on Day ${missingParkDays[0]}`
+      : busikaMissingActivitiesDays.length > 0
+        ? `Busika activities missing on Day ${busikaMissingActivitiesDays[0]}`
+        : null;
+
+  const canProceed = blockedReason === null;
 
   if (!draft) {
     return (
@@ -30,7 +54,7 @@ export const LogisticsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Summary</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Review & Fix</h1>
 
         <ProgressStepper currentStep={3} steps={progressSteps} />
 
@@ -60,12 +84,20 @@ export const LogisticsPage: React.FC = () => {
           <Button onClick={() => navigate(-1)} variant="secondary">
             Back
           </Button>
-          <Button
-            onClick={() => navigate(`/trip/${id}/review`)}
-            variant="primary"
-          >
-            Next: Pricing
-          </Button>
+          <div className="flex flex-col">
+            {!canProceed && blockedReason && (
+              <div className="mb-2 text-sm text-red-700">
+                Cannot continue: {blockedReason}
+              </div>
+            )}
+            <Button
+              onClick={() => navigate(`/trip/${id}/review`)}
+              variant="primary"
+              disabled={!canProceed}
+            >
+              Next: Pricing
+            </Button>
+          </div>
         </div>
       </div>
     </div>

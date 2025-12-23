@@ -27,7 +27,7 @@ export const ReviewPage: React.FC = () => {
   const progressSteps = [
     'Setup',
     'Parks',
-    'Summary',
+    'Review & Fix',
     'Pricing',
   ];
 
@@ -43,6 +43,22 @@ export const ReviewPage: React.FC = () => {
   }
 
   const tripDays = draft.tripDays || [];
+
+  const totalDays = draft.days || 0;
+  const gateErrors: Array<{ dayNumber: number; reason: string }> = [];
+
+  for (let dayNumber = 1; dayNumber <= totalDays; dayNumber += 1) {
+    const day = tripDays[dayNumber - 1];
+    if (!day?.parkId) {
+      gateErrors.push({ dayNumber, reason: `Park missing on Day ${dayNumber}` });
+      continue;
+    }
+    if (day.parkId === 'BUSIKA' && (!day.activities || day.activities.length === 0)) {
+      gateErrors.push({ dayNumber, reason: `Busika activities missing on Day ${dayNumber}` });
+    }
+  }
+
+  const canEnterPricing = gateErrors.length === 0;
 
   const renderDayReview = (day: (typeof tripDays)[0]) => {
     if (!day) return null;
@@ -265,12 +281,27 @@ export const ReviewPage: React.FC = () => {
           <Button onClick={() => navigate(-1)} variant="secondary">
             Back
           </Button>
-          <Button
-            onClick={() => navigate(`/trip/${id}/pricing`)}
-            variant="primary"
-          >
-            Proceed to Pricing
-          </Button>
+          <div className="flex flex-col">
+            {!canEnterPricing && (
+              <div className="mb-2 text-sm text-red-700">
+                <div className="font-medium">Cannot continue:</div>
+                <ul className="mt-1">
+                  {gateErrors.map((e) => (
+                    <li key={`${e.dayNumber}_${e.reason}`}>
+                      Day {e.dayNumber}: {e.reason}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <Button
+              onClick={() => navigate(`/trip/${id}/pricing`)}
+              variant="primary"
+              disabled={!canEnterPricing}
+            >
+              Proceed to Pricing
+            </Button>
+          </div>
         </div>
       </div>
     </div>

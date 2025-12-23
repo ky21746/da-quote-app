@@ -144,7 +144,7 @@ export const PricingPage: React.FC = () => {
   const progressSteps = [
     'Setup',
     'Parks',
-    'Summary',
+    'Review & Fix',
     'Pricing',
   ];
 

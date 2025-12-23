@@ -10,16 +10,20 @@ export const TripDaysEditorPage: React.FC = () => {
   const navigate = useNavigate();
   const { draft } = useTrip();
   
-  // Check if at least one day has a park selected
-  const hasAtLeastOnePark = draft?.tripDays?.some(day => day.parkId) || false;
+  const tripDays = draft?.tripDays || [];
+  const totalDays = draft?.days || 0;
+
+  const missingParkDays = Array.from({ length: totalDays }, (_, i) => i + 1)
+    .filter((dayNumber) => {
+      const day = tripDays[dayNumber - 1];
+      return !day?.parkId;
+    });
   
   const nightsValidation = draft 
     ? validateNights(draft.days, draft.parks || [])
     : { valid: false, totalNights: 0, message: '' };
   
   // Use tripDays validation if available, otherwise fall back to parks validation
-  const tripDays = draft?.tripDays || [];
-
   // Critical correctness rule: Busika requires at least one activity selected per Busika day
   const busikaMissingActivitiesDays = tripDays
     .filter((day) => day?.parkId === 'BUSIKA')
@@ -28,8 +32,16 @@ export const TripDaysEditorPage: React.FC = () => {
 
   const busikaActivitiesValid = busikaMissingActivitiesDays.length === 0;
 
+  const parksValid = missingParkDays.length === 0;
+
+  const blockedReason = !parksValid
+    ? `Park missing on Day ${missingParkDays[0]}`
+    : !busikaActivitiesValid
+      ? `Busika activities missing on Day ${busikaMissingActivitiesDays[0]}`
+      : null;
+
   const canProceed = draft?.tripDays
-    ? (hasAtLeastOnePark && busikaActivitiesValid)
+    ? (parksValid && busikaActivitiesValid)
     : nightsValidation.valid;
 
   const progressSteps = [
@@ -79,23 +91,24 @@ export const TripDaysEditorPage: React.FC = () => {
         {/* Parks Section */}
         <ParksSection />
 
-        {draft?.tripDays && !busikaActivitiesValid && (
-          <div className="mb-4 p-3 border border-red-200 bg-red-50 rounded-lg text-sm text-red-700">
-            Busika activities are required. Please select at least one activity for day(s): {busikaMissingActivitiesDays.join(', ')}.
-          </div>
-        )}
-
         <div className="flex gap-2">
           <Button onClick={() => navigate(-1)} variant="secondary">
             Back
           </Button>
-          <Button
-            onClick={() => navigate(`/trip/${id}/logistics`)}
-            variant="primary"
-            disabled={!canProceed}
-          >
-            Next: Logistics
-          </Button>
+          <div className="flex flex-col">
+            {draft?.tripDays && !canProceed && blockedReason && (
+              <div className="mb-2 text-sm text-red-700">
+                Cannot continue: {blockedReason}
+              </div>
+            )}
+            <Button
+              onClick={() => navigate(`/trip/${id}/logistics`)}
+              variant="primary"
+              disabled={!canProceed}
+            >
+              Next: Logistics
+            </Button>
+          </div>
         </div>
       </div>
     </div>

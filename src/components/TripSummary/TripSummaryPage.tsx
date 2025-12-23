@@ -127,7 +127,7 @@ export const TripSummaryPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Trip Summary</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Itinerary & Quote</h1>
 
         {draft && (
           <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded">
