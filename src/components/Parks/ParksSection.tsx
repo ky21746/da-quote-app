@@ -22,6 +22,7 @@ export const ParksSection: React.FC = () => {
     arrival?: string;
     lodging?: string;
     activities: string[];
+    parkFees?: import('../../types/ui').TripDayParkFee[];
     logistics?: {
       vehicle?: string;
       internalMovements: string[];
@@ -29,6 +30,7 @@ export const ParksSection: React.FC = () => {
     };
   } = draft?.tripDays?.[currentDayIndex] || {
     activities: [],
+    parkFees: [],
     logistics: {
       internalMovements: [],
     },
@@ -51,6 +53,7 @@ export const ParksSection: React.FC = () => {
     arrival?: string;
     lodging?: string;
     activities?: string[];
+    parkFees?: import('../../types/ui').TripDayParkFee[];
     logistics?: {
       vehicle?: string;
       internalMovements?: string[];
@@ -135,6 +138,7 @@ export const ParksSection: React.FC = () => {
         arrival={currentDayData.arrival}
         lodging={currentDayData.lodging}
         activities={currentDayData.activities || []}
+        parkFees={currentDayData.parkFees || []}
         logistics={currentDayData.logistics}
         onUpdate={handleUpdateDay}
         onNextDay={handleNext}

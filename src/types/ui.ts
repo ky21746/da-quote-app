@@ -90,6 +90,12 @@ export interface ParkLogistics {
   notes?: string;
 }
 
+export interface TripDayParkFee {
+  itemId: string; // pricingItemId
+  source: 'auto';
+  excluded: boolean;
+}
+
 // TripDay represents one day in the trip (1, 2, 3... global trip day)
 export interface TripDay {
   dayNumber: number; // 1, 2, 3... (global trip day)
@@ -97,6 +103,7 @@ export interface TripDay {
   arrival?: string; // pricingItemId
   lodging?: string; // pricingItemId
   activities: string[]; // pricingItemIds
+  parkFees?: TripDayParkFee[];
   logistics?: {
     vehicle?: string; // pricingItemId
     internalMovements: string[]; // pricingItemIds

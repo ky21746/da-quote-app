@@ -4,6 +4,7 @@ import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
 import { Calendar, ChevronRight } from 'lucide-react';
 import { useTrip } from '../../context/TripContext';
+import type { TripDayParkFee } from '../../types/ui';
 
 interface TripDayCardProps {
   dayNumber: number; // 1, 2, 3... (global trip day)
@@ -11,6 +12,7 @@ interface TripDayCardProps {
   arrival?: string; // pricingItemId
   lodging?: string; // pricingItemId
   activities: string[]; // pricingItemIds
+  parkFees: TripDayParkFee[];
   logistics?: {
     vehicle?: string; // pricingItemId
     internalMovements: string[]; // pricingItemIds
@@ -21,6 +23,7 @@ interface TripDayCardProps {
     arrival?: string;
     lodging?: string;
     activities?: string[];
+    parkFees?: TripDayParkFee[];
     logistics?: {
       vehicle?: string;
       internalMovements?: string[];
@@ -37,6 +40,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   arrival,
   lodging,
   activities,
+  parkFees,
   logistics,
   onUpdate,
   onNextDay,
@@ -87,13 +91,67 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
             if (selectedParkId) {
               assertValidParkId(selectedParkId);
             }
+
+            const nextParkFees: TripDayParkFee[] = (parkFees || []).filter((f) => f.source !== 'auto');
+            if (selectedParkId) {
+              const activeParkFees = pricingItems.filter(
+                (i) => i.category === 'Park Fees' && i.parkId === selectedParkId && i.active === true
+              );
+
+              for (const item of activeParkFees) {
+                const existing = nextParkFees.find((f) => f.itemId === item.id);
+                if (existing) {
+                  // Never duplicate; if excluded===true we do NOT re-add (and we also don't flip it)
+                  continue;
+                }
+                nextParkFees.push({
+                  itemId: item.id,
+                  source: 'auto',
+                  excluded: false,
+                });
+              }
+            }
             onUpdate({
               parkId: selectedParkId,
               arrival: undefined, // Reset arrival when park changes
+              parkFees: nextParkFees,
             });
           }}
           options={parkOptions}
         />
+
+        {/* Park Fees (Auto-added, cancelable) */}
+        {parkFees && parkFees.length > 0 && (
+          <div className="border border-gray-200 rounded-md p-3">
+            <div className="text-sm font-semibold text-brand-dark mb-2">Park Fees</div>
+            <div className="space-y-2">
+              {parkFees.map((fee) => {
+                const item = pricingItems.find((i) => i.id === fee.itemId);
+                if (!item) return null;
+                const checked = fee.excluded !== true;
+                return (
+                  <label key={fee.itemId} className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => {
+                          const nextFees = (parkFees || []).map((f) =>
+                            f.itemId === fee.itemId ? { ...f, excluded: checked } : f
+                          );
+                          onUpdate({ parkFees: nextFees });
+                        }}
+                        className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-700">{item.itemName}</span>
+                    </div>
+                    <span className="text-xs text-gray-500">Auto-added</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* 2. Arrival to Park (Flight or Vehicle) */}
         {parkId && (

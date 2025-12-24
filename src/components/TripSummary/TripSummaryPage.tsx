@@ -29,6 +29,11 @@ export const TripSummaryPage: React.FC = () => {
 
     if (draft.tripDays && draft.tripDays.length > 0) {
       for (const day of draft.tripDays) {
+        if (day.parkFees && day.parkFees.length > 0) {
+          for (const fee of day.parkFees) {
+            if (fee.excluded !== true) ids.push(fee.itemId);
+          }
+        }
         if (day.arrival) ids.push(day.arrival);
         if (day.lodging) ids.push(day.lodging);
         if (day.activities && day.activities.length > 0) ids.push(...day.activities);

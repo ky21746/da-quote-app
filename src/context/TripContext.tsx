@@ -221,6 +221,9 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const tripDays: TripDay[] = existingTripDays.map((day) => ({
         ...day,
         activities: Array.isArray(day.activities) ? [...day.activities] : [],
+        parkFees: Array.isArray(day.parkFees)
+          ? day.parkFees.map((f) => ({ ...f }))
+          : [],
         logistics: day.logistics
           ? {
               ...day.logistics,
@@ -236,6 +239,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         tripDays.push({
           dayNumber: i + 1,
           activities: [],
+          parkFees: [],
           logistics: {
             internalMovements: [],
           },
@@ -245,16 +249,30 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Update the specific day (deep-clone updates too)
       const normalizedUpdates: Partial<TripDay> = {
         ...updates,
-        activities: Array.isArray(updates.activities) ? [...updates.activities] : updates.activities,
-        logistics: updates.logistics
+      };
+
+      if ('activities' in updates) {
+        normalizedUpdates.activities = Array.isArray(updates.activities)
+          ? [...updates.activities]
+          : updates.activities;
+      }
+
+      if ('parkFees' in updates) {
+        normalizedUpdates.parkFees = Array.isArray(updates.parkFees)
+          ? updates.parkFees.map((f) => ({ ...f }))
+          : updates.parkFees;
+      }
+
+      if ('logistics' in updates) {
+        normalizedUpdates.logistics = updates.logistics
           ? {
               ...updates.logistics,
               internalMovements: Array.isArray(updates.logistics.internalMovements)
                 ? [...updates.logistics.internalMovements]
                 : [],
             }
-          : updates.logistics,
-      };
+          : updates.logistics;
+      }
 
       const updatedTripDays = tripDays.map((day) =>
         day.dayNumber === dayNumber ? { ...day, ...normalizedUpdates } : day

@@ -55,6 +55,40 @@ export function calculatePricingFromCatalog(
       const parkName = getParks().find((p) => p.id === day.parkId)?.label || day.parkId;
       const parkNights = parkNightsMap.get(day.parkId) || 0;
 
+      // Park Fees (auto-added, cancelable)
+      if (day.parkFees && day.parkFees.length > 0) {
+        for (const fee of day.parkFees) {
+          const item = getPricingItemById(pricingItems, fee.itemId);
+          if (!item) continue;
+          if (fee.excluded === true) {
+            breakdown.push({
+              id: `line_day${day.dayNumber}_park_fee_${fee.itemId}`,
+              park: parkName,
+              category: item.category,
+              itemName: `${item.itemName} — Excluded by user`,
+              basePrice: item.basePrice,
+              costType: item.costType,
+              calculatedTotal: 0,
+              perPerson: 0,
+              calculationExplanation: 'Excluded by user',
+            });
+          } else {
+            const { total, explanation } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
+            breakdown.push({
+              id: `line_day${day.dayNumber}_park_fee_${fee.itemId}`,
+              park: parkName,
+              category: item.category,
+              itemName: item.itemName,
+              basePrice: item.basePrice,
+              costType: item.costType,
+              calculatedTotal: total,
+              perPerson: travelers > 0 ? total / travelers : 0,
+              calculationExplanation: explanation,
+            });
+          }
+        }
+      }
+
       // Arrival to Park
       if (day.arrival) {
         const item = getPricingItemById(pricingItems, day.arrival);
