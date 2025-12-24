@@ -4,7 +4,7 @@
 
 - [ ] Task: Add minimal regression checks for Trip Day state updates
    - [x] Task: Write a minimal test (or lightweight check) ensuring partial updates do not overwrite unrelated TripDay fields (e.g., updating activities does not clear parkFees) [a4c59bb]
-   - [ ] Task: Ensure updateTripDay merges updates deterministically (idempotent)
+   - [x] Task: Ensure updateTripDay merges updates deterministically (idempotent) [b2e0068]
 - [ ] Task: Conductor - User Manual Verification 'TripDay State Correctness' (Protocol in workflow.md)
 
 ## Phase 2: Park Switch and Park Fees Isolation
