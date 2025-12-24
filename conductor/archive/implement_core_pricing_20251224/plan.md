@@ -9,15 +9,15 @@
 
 ## Phase 2: Park Switch and Park Fees Isolation
 
-- [ ] Task: Ensure park switch replaces auto-added Park Fees
-   - [ ] Task: On TripDay parkId change, remove all parkFees where source === 'auto' then inject active fees for the new park (no duplicates)
-   - [ ] Task: Confirm park switch does not modify lodging/logistics/activities selections
-- [ ] Task: Conductor - User Manual Verification 'Park Switch + Park Fees' (Protocol in workflow.md)
+- [x] Task: Ensure park switch replaces auto-added Park Fees
+   - [x] Task: On TripDay parkId change, remove all parkFees where source === 'auto' then inject active fees for the new park (no duplicates)
+   - [x] Task: Confirm park switch does not modify lodging/logistics/activities selections
+- [x] Task: Conductor - User Manual Verification 'Park Switch + Park Fees' (Protocol in workflow.md)
 
 ## Phase 3: Activities Independence + Build Verification
 
-- [ ] Task: Ensure activities selection never affects parkFees
-   - [ ] Task: Verify that selecting/deselecting activities does not remove/exclude/toggle any parkFee
-   - [ ] Task: Verify parkFee exclusion is only via explicit checkbox
-- [ ] Task: Run `npm run build` and verify Pricing/Summary no regression
-- [ ] Task: Conductor - User Manual Verification 'Activities Independence + Build' (Protocol in workflow.md)
+- [x] Task: Ensure activities selection never affects parkFees
+   - [x] Task: Verify that selecting/deselecting activities does not remove/exclude/toggle any parkFee
+   - [x] Task: Verify parkFee exclusion is only via explicit checkbox
+- [x] Task: Run `npm run build` and verify Pricing/Summary no regression
+- [x] Task: Conductor - User Manual Verification 'Activities Independence + Build' (Protocol in workflow.md)
