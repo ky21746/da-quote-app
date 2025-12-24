@@ -1,28 +1,46 @@
-# Track: Implement Core Pricing Logic
+# Track: Stabilize TripDay Selection Flow (Park switch + Park Fees + Activities)
 
 ## Specification
 
-This track focuses on implementing the core pricing logic within the `/core/services/PricingEngine.ts` as described in the `README.md`. The goal is to accurately calculate trip quotes based on various factors and apply the correct tax.
+This track focuses on **state correctness and determinism** in the Trip Day selection flow, specifically around:
+
+1. Park switching behavior
+2. Auto-added Park Fees persistence and isolation
+3. Activities selection not impacting Park Fees
+
+### Hard Constraints (MUST NOT)
+
+- **NO pricing engine changes**
+- **NO taxes changes**
+- **NO validator changes**
+- **NO refactors** (only minimal, targeted fixes)
 
 ### Functionality
 
-The `PricingEngine.calculate()` method should:
+The Trip Day selection flow must ensure:
 
-1.  **Process Per-Day Items:** Calculate costs for items that are charged per day.
-2.  **Process Per-Person Items:** Calculate costs for items that are charged per person.
-3.  **Process Accommodation:** Calculate lodging costs based on the number of nights and travelers.
-4.  **Process Activities:** Calculate costs for activities, ensuring they match the selected trip activities.
-5.  **Apply Tax:** Apply a 10% tax rate specific to Uganda to the subtotal.
-6.  **Return Structured Calculation:** Output a `Calculation` entity containing `lineItems`, `subtotalAmount`, `taxesAmount`, and `totalAmount` with the correct currency.
+1. **Park switch replaces auto Park Fees**
+   - On `parkId` change for a Trip Day:
+     - Remove all `parkFees` where `source === 'auto'` (previous park)
+     - Add auto fees for the new park
+     - Do **not** modify user-selected `activities`, `lodging`, or `logistics`
+
+2. **Activities updates do not touch Park Fees**
+   - Selecting/deselecting activities must **never** remove/exclude/toggle/override any Park Fee
+   - Park Fee exclusion is allowed **only** via explicit user checkbox
+
+3. **Deterministic & idempotent state updates**
+   - Re-applying the same selection must not create duplicates
+   - Partial updates must not accidentally overwrite unrelated fields
 
 ### Dependencies
 
--   Relies on `Pricebook` and `Trip` entities from the `/core/domain/entities` layer.
--   Utilizes `Money` value object from `/core/domain/valueObjects` for currency-aware calculations.
+- Trip Day UI and state update path (e.g., TripDayCard / TripContext updateTripDay)
+- Pricing catalog items for identifying Park Fees by `category`, `parkId`, `active`
 
 ### Acceptance Criteria
 
--   The `PricingEngine.calculate()` function correctly processes all specified pricing categories.
--   The 10% Uganda tax is accurately applied to the subtotal.
--   The returned `Calculation` object is correctly structured and contains accurate line items, subtotal, taxes, and total.
--   Unit tests are implemented for the `PricingEngine` to ensure calculation accuracy for various scenarios (e.g., zero travelers, multiple days, different activity combinations, tax application).
+- Switching parks always results in only the correct park's Park Fees being present
+- Selecting/deselecting activities never affects Park Fees
+- `npm run build` passes
+- No regressions in Pricing or Summary
