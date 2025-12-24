@@ -274,9 +274,28 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           : updates.logistics;
       }
 
-      const updatedTripDays = tripDays.map((day) =>
-        day.dayNumber === dayNumber ? { ...day, ...normalizedUpdates } : day
-      );
+      const updatedTripDays = tripDays.map((day) => {
+        if (day.dayNumber !== dayNumber) return day;
+
+        // Correctly merge logistics
+        const updatedLogistics =
+          normalizedUpdates.logistics || day.logistics
+            ? {
+                ...(day.logistics || {}),
+                ...(normalizedUpdates.logistics || {}),
+                internalMovements:
+                  normalizedUpdates.logistics?.internalMovements ||
+                  day.logistics?.internalMovements ||
+                  [],
+              }
+            : undefined;
+
+        return {
+          ...day,
+          ...normalizedUpdates,
+          logistics: updatedLogistics,
+        };
+      });
 
       return {
         ...prev,
