@@ -1,6 +1,6 @@
 # Track Plan: Stabilize TripDay Selection Flow (Park switch + Park Fees + Activities)
 
-## Phase 1: Reproduce and Lock Down State Correctness
+## Phase 1: Reproduce and Lock Down State Correctness [checkpoint: 68f9b8e]
 
 - [x] Task: Add minimal regression checks for Trip Day state updates
    - [x] Task: Write a minimal test (or lightweight check) ensuring partial updates do not overwrite unrelated TripDay fields (e.g., updating activities does not clear parkFees) [a4c59bb]
