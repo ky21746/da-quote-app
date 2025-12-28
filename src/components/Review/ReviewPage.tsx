@@ -53,9 +53,6 @@ export const ReviewPage: React.FC = () => {
       gateErrors.push({ dayNumber, reason: `Park missing on Day ${dayNumber}` });
       continue;
     }
-    if (day.parkId === 'BUSIKA' && (!day.activities || day.activities.length === 0)) {
-      gateErrors.push({ dayNumber, reason: `Busika activities missing on Day ${dayNumber}` });
-    }
   }
 
   const canEnterPricing = gateErrors.length === 0;

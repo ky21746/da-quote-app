@@ -25,18 +25,11 @@ export const LogisticsPage: React.FC = () => {
       return !day?.parkId;
     });
 
-  const busikaMissingActivitiesDays = tripDays
-    .filter((day) => day?.parkId === 'BUSIKA')
-    .filter((day) => !day.activities || day.activities.length === 0)
-    .map((day) => day.dayNumber);
-
   const blockedReason = !draft?.name?.trim()
     ? 'Trip name missing'
     : missingParkDays.length > 0
       ? `Park missing on Day ${missingParkDays[0]}`
-      : busikaMissingActivitiesDays.length > 0
-        ? `Busika activities missing on Day ${busikaMissingActivitiesDays[0]}`
-        : null;
+      : null;
 
   const canProceed = blockedReason === null;
 

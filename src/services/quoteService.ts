@@ -98,11 +98,11 @@ export const quoteService = {
       return parseFloat(numeric) || 0;
     };
 
-    const quoteData = {
+    const quoteData = removeUndefined({
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       status: 'sent',
-      sourceQuoteId: sourceQuoteId || undefined,
+      sourceQuoteId,
       tripName: cleanDraft?.name || 'Untitled Trip',
       travelers: cleanDraft?.travelers || 1,
       days: cleanDraft?.days || 1,
@@ -111,7 +111,7 @@ export const quoteService = {
       calculation: cleanCalculation || {},
       grandTotal: parseAmount(calculation.total),
       pricePerPerson: parseAmount(calculation.pricePerPerson),
-    };
+    });
 
     const quoteRef = doc(collection(db, 'quotes'));
     const counterRef = doc(db, 'meta', 'proposalCounter');
