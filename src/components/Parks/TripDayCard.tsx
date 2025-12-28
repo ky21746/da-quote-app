@@ -12,6 +12,7 @@ interface TripDayCardProps {
   arrival?: string; // pricingItemId
   lodging?: string; // pricingItemId
   activities: string[]; // pricingItemIds
+  extras?: string[]; // pricingItemIds
   parkFees: TripDayParkFee[];
   logistics?: {
     vehicle?: string; // pricingItemId
@@ -23,6 +24,7 @@ interface TripDayCardProps {
     arrival?: string;
     lodging?: string;
     activities?: string[];
+    extras?: string[];
     parkFees?: TripDayParkFee[];
     logistics?: {
       vehicle?: string;
@@ -40,6 +42,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   arrival,
   lodging,
   activities,
+  extras,
   parkFees,
   logistics,
   onUpdate,
@@ -317,6 +320,19 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
               </div>
             )}
           </>
+        )}
+
+        {/* 4b. Extras */}
+        {parkId && (
+          <PricingCatalogMultiSelect
+            label="Extras"
+            selectedIds={extras || []}
+            onChange={(pricingItemIds) => onUpdate({ extras: pricingItemIds })}
+            category="Extras"
+            parkId={parkId}
+            items={pricingItems}
+            isLoading={catalogLoading}
+          />
         )}
 
         {/* 5. Logistics */}

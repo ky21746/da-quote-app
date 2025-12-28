@@ -148,6 +148,25 @@ export function calculatePricingFromCatalog(
         });
       }
 
+      // Extras
+      if (day.extras && Array.isArray(day.extras) && day.extras.length > 0) {
+        const extraItems = getPricingItemsByIds(pricingItems, day.extras);
+        extraItems.forEach((item, idx) => {
+          const { total, explanation } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
+          breakdown.push({
+            id: `line_day${day.dayNumber}_extra_${idx}`,
+            park: parkName,
+            category: item.category,
+            itemName: item.itemName,
+            basePrice: item.basePrice,
+            costType: item.costType,
+            calculatedTotal: total,
+            perPerson: travelers > 0 ? total / travelers : 0,
+            calculationExplanation: explanation,
+          });
+        });
+      }
+
       // Logistics - Vehicle
       if (day.logistics?.vehicle) {
         const item = getPricingItemById(pricingItems, day.logistics.vehicle);

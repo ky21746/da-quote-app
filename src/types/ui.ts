@@ -103,6 +103,7 @@ export interface TripDay {
   arrival?: string; // pricingItemId
   lodging?: string; // pricingItemId
   activities: string[]; // pricingItemIds
+  extras?: string[]; // pricingItemIds
   parkFees?: TripDayParkFee[];
   logistics?: {
     vehicle?: string; // pricingItemId

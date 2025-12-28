@@ -22,6 +22,7 @@ export const ParksSection: React.FC = () => {
     arrival?: string;
     lodging?: string;
     activities: string[];
+    extras?: string[];
     parkFees?: import('../../types/ui').TripDayParkFee[];
     logistics?: {
       vehicle?: string;
@@ -30,6 +31,7 @@ export const ParksSection: React.FC = () => {
     };
   } = draft?.tripDays?.[currentDayIndex] || {
     activities: [],
+    extras: [],
     parkFees: [],
     logistics: {
       internalMovements: [],
@@ -53,6 +55,7 @@ export const ParksSection: React.FC = () => {
     arrival?: string;
     lodging?: string;
     activities?: string[];
+    extras?: string[];
     parkFees?: import('../../types/ui').TripDayParkFee[];
     logistics?: {
       vehicle?: string;
@@ -63,6 +66,7 @@ export const ParksSection: React.FC = () => {
     // Ensure logistics.internalMovements is always an array
     const normalizedUpdates: Partial<import('../../types/ui').TripDay> = {
       ...updates,
+      extras: updates.extras || undefined,
       logistics: updates.logistics
         ? {
           ...updates.logistics,
@@ -138,6 +142,7 @@ export const ParksSection: React.FC = () => {
         arrival={currentDayData.arrival}
         lodging={currentDayData.lodging}
         activities={currentDayData.activities || []}
+        extras={currentDayData.extras || []}
         parkFees={currentDayData.parkFees || []}
         logistics={currentDayData.logistics}
         onUpdate={handleUpdateDay}
