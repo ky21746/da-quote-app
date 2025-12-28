@@ -134,6 +134,14 @@ export const TripSummaryPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
+        {savedReferenceNumber !== null && (
+          <div className="mb-4 p-3 bg-brand-olive/5 border border-brand-olive/20 rounded">
+            <div className="text-xs font-semibold text-brand-olive/80 uppercase tracking-wide">Proposal Ref</div>
+            <div className="text-xl font-bold text-brand-dark">
+              217-{String(savedReferenceNumber - 217000).padStart(3, '0')}
+            </div>
+          </div>
+        )}
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Itinerary & Quote</h1>
 
         {draft && (
@@ -142,11 +150,6 @@ export const TripSummaryPage: React.FC = () => {
             <p className="text-sm text-gray-600">
               {draft.travelers} travelers • {draft.days} days • {draft.tier}
             </p>
-            {savedReferenceNumber !== null && (
-              <p className="text-sm text-gray-600 mt-1">
-                Proposal Ref: 217-{String(savedReferenceNumber - 217000).padStart(3, '0')}
-              </p>
-            )}
           </div>
         )}
 
