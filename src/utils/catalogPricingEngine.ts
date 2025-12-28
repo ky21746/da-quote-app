@@ -9,6 +9,7 @@ export interface PricingLineItem {
   itemName: string;
   basePrice: number;
   costType: ManualCostType;
+  quantity?: number;
   calculatedTotal: number;
   perPerson: number;
   calculationExplanation: string;
@@ -131,7 +132,7 @@ export function calculatePricingFromCatalog(
       if (day.activities && day.activities.length > 0) {
         const activityItems = getPricingItemsByIds(pricingItems, day.activities);
         activityItems.forEach((item, idx) => {
-          const { total, explanation } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
+          const { total, explanation, quantity } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
           breakdown.push({
             id: `line_day${day.dayNumber}_activity_${idx}`,
             park: parkName,
@@ -139,6 +140,7 @@ export function calculatePricingFromCatalog(
             itemName: item.itemName,
             basePrice: item.basePrice,
             costType: item.costType,
+            quantity: item.category === 'Activities' ? quantity : undefined,
             calculatedTotal: total,
             perPerson: travelers > 0 ? total / travelers : 0,
             calculationExplanation: explanation,
@@ -255,7 +257,7 @@ export function calculatePricingFromCatalog(
     // Activities
     const activityItems = getPricingItemsByIds(pricingItems, card.activities);
     activityItems.forEach((item, idx) => {
-      const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights, itemQuantities);
+      const { total, explanation, quantity } = calculateItemTotal(item, travelers, days, parkNights, itemQuantities);
       breakdown.push({
         id: `line_${card.id}_activity_${idx}`,
         park: parkName,
@@ -263,6 +265,7 @@ export function calculatePricingFromCatalog(
         itemName: item.itemName,
         basePrice: item.basePrice,
         costType: item.costType,
+        quantity: item.category === 'Activities' ? quantity : undefined,
         calculatedTotal: total,
         perPerson: travelers > 0 ? total / travelers : 0,
         calculationExplanation: explanation,
@@ -367,22 +370,28 @@ function calculateItemTotal(
   days: number,
   nights: number,
   itemQuantities: Record<string, number>
-): { total: number; explanation: string } {
+): { total: number; explanation: string; quantity: number } {
   let total = 0;
   let explanation = '';
 
   const rawQuantity = itemQuantities[item.id] ?? item.quantity ?? 1;
   const quantity = Number.isFinite(rawQuantity) && rawQuantity > 0 ? Math.floor(rawQuantity) : 1;
 
+  const isActivity = item.category === 'Activities';
+
   switch (item.costType) {
     case 'fixed_group':
-      total = item.basePrice * quantity;
-      explanation = `${item.basePrice} × ${quantity} (fixed group)`;
+      total = item.basePrice * (isActivity ? 1 : quantity);
+      explanation = isActivity
+        ? `${item.basePrice} (fixed group)`
+        : `${item.basePrice} × ${quantity} (fixed group)`;
       break;
 
     case 'fixed_per_day':
-      total = item.basePrice * days * quantity;
-      explanation = `${item.basePrice} × ${days} days × ${quantity}`;
+      total = item.basePrice * days * (isActivity ? 1 : quantity);
+      explanation = isActivity
+        ? `${item.basePrice} × ${days} days`
+        : `${item.basePrice} × ${days} days × ${quantity}`;
       break;
 
     case 'per_person':
@@ -415,6 +424,11 @@ function calculateItemTotal(
       explanation = 'Unknown cost type';
   }
 
-  return { total, explanation };
+  if (isActivity && quantity !== 1) {
+    total = total * quantity;
+    explanation = `${explanation} × ${quantity}`;
+  }
+
+  return { total, explanation, quantity };
 }
 

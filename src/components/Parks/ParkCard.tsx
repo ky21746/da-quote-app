@@ -212,12 +212,70 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             <PricingCatalogMultiSelect
               label="Activities"
               selectedIds={card.activities || []}
-              onChange={(pricingItemIds) => onUpdate({ activities: pricingItemIds })}
+              onChange={(pricingItemIds) => {
+                onUpdate({ activities: pricingItemIds });
+
+                setDraft((prev) => {
+                  if (!prev) return prev;
+                  const nextItemQuantities: Record<string, number> = {
+                    ...(prev.itemQuantities || {}),
+                  };
+                  for (const id of pricingItemIds || []) {
+                    if (nextItemQuantities[id] === undefined) {
+                      nextItemQuantities[id] = 1;
+                    }
+                  }
+                  return {
+                    ...prev,
+                    itemQuantities: nextItemQuantities,
+                  };
+                });
+              }}
               category="Activities"
               parkId={card.parkId}
               items={pricingItems}
               isLoading={catalogLoading}
             />
+
+            {(card.activities || []).length > 0 && (
+              <div className="mt-2 border border-gray-200 rounded-md p-3">
+                <div className="text-sm font-semibold text-brand-dark mb-2">Activity Quantities</div>
+                <div className="space-y-2">
+                  {(card.activities || []).map((activityId) => {
+                    const item = pricingItems.find((i) => i.id === activityId);
+                    if (!item) return null;
+                    return (
+                      <div key={activityId} className="flex items-center justify-between gap-3">
+                        <div className="text-sm text-gray-700">{item.itemName}</div>
+                        <select
+                          className="px-2 py-1 border border-gray-300 rounded-md text-sm"
+                          value={draft?.itemQuantities?.[activityId] ?? 1}
+                          onChange={(e) => {
+                            const newQty = Number(e.target.value);
+                            setDraft((prev) => {
+                              if (!prev) return prev;
+                              return {
+                                ...prev,
+                                itemQuantities: {
+                                  ...(prev.itemQuantities || {}),
+                                  [activityId]: newQty,
+                                },
+                              };
+                            });
+                          }}
+                        >
+                          {getQuantityOptions(1).map((n) => (
+                            <option key={n} value={n}>
+                              {n}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* 6. Logistics - park-level */}
             <div className="border-t border-gray-200 pt-4">

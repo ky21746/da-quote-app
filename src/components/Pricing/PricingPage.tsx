@@ -25,7 +25,7 @@ function convertToCalculationResult(
     }
     categoryMap.get(item.category)!.push({
       description: `${item.itemName} (${item.park})`,
-      quantity: 1,
+      quantity: item.quantity ?? 1,
       unitPrice: formatCurrency(item.basePrice),
       total: formatCurrency(item.calculatedTotal),
     });
