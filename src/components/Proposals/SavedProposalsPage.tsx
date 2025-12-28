@@ -9,6 +9,14 @@ export const SavedProposalsPage: React.FC = () => {
   const [quotes, setQuotes] = useState<SavedQuote[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/trip/new');
+    }
+  };
+
   useEffect(() => {
     let cancelled = false;
     setIsLoading(true);
@@ -44,9 +52,14 @@ export const SavedProposalsPage: React.FC = () => {
       <div className="max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Saved Proposals</h1>
-          <Button onClick={() => navigate('/trip/new')} variant="secondary">
-            New Trip
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleBack} variant="secondary">
+              Back
+            </Button>
+            <Button onClick={() => navigate('/trip/new')} variant="secondary">
+              New Trip
+            </Button>
+          </div>
         </div>
 
         {isLoading && <div className="text-sm text-gray-600">Loading...</div>}
