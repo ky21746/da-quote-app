@@ -13,9 +13,9 @@ export interface SavedQuote {
   days: number;
   tier: string;
   draft: TripDraft;
-  calculation: CalculationResult;
-  grandTotal: number;
-  pricePerPerson: number;
+  calculation?: CalculationResult;
+  grandTotal?: number;
+  pricePerPerson?: number;
 }
 
 function removeUndefined(obj: any): any {
@@ -82,6 +82,40 @@ export const quoteService = {
     });
 
     return { id: quoteRef.id, referenceNumber };
+  },
+
+  async saveDraft(draft: TripDraft): Promise<string> {
+    const cleanDraft = removeUndefined(draft);
+
+    const draftData = {
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      status: 'draft',
+      tripName: cleanDraft?.name || 'Untitled Trip',
+      travelers: cleanDraft?.travelers || 1,
+      days: cleanDraft?.days || 1,
+      tier: cleanDraft?.tier || 'base',
+      draft: cleanDraft || {},
+    };
+
+    const quoteRef = doc(collection(db, 'quotes'));
+    await runTransaction(db, async (tx) => {
+      tx.set(quoteRef, draftData);
+    });
+    return quoteRef.id;
+  },
+
+  async updateDraft(id: string, draft: TripDraft): Promise<void> {
+    const cleanDraft = removeUndefined(draft);
+    await updateDoc(doc(db, 'quotes', id), {
+      updatedAt: serverTimestamp(),
+      status: 'draft',
+      tripName: cleanDraft?.name || 'Untitled Trip',
+      travelers: cleanDraft?.travelers || 1,
+      days: cleanDraft?.days || 1,
+      tier: cleanDraft?.tier || 'base',
+      draft: cleanDraft || {},
+    });
   },
 
   async getQuotes(): Promise<SavedQuote[]> {

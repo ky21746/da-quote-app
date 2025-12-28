@@ -1,12 +1,15 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { TripDraft, CalculationResult, DayDraft, ScenarioResults, ParkCard, DayCard, TripDay } from '../types/ui';
+import { quoteService } from '../services/quoteService';
 
 interface TripContextType {
   draft: TripDraft | null;
+  draftQuoteId: string | null;
   calculationResult: CalculationResult | null;
   daysBreakdown: DayDraft[];
   scenarioResults: ScenarioResults;
   setDraft: (draft: TripDraft | null | ((prev: TripDraft | null) => TripDraft | null)) => void;
+  setDraftQuoteId: (id: string | null) => void;
   setCalculationResult: (result: CalculationResult | null) => void;
   setDaysBreakdown: (days: DayDraft[]) => void;
   setScenarioResults: (results: ScenarioResults) => void;
@@ -23,6 +26,7 @@ const TripContext = createContext<TripContextType | undefined>(undefined);
 
 // Storage key for trip draft persistence
 const TRIP_DRAFT_STORAGE_KEY = 'da-trip-draft';
+const DRAFT_QUOTE_ID_STORAGE_KEY = 'da-draft-quote-id';
 
 export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Load draft from localStorage on mount
@@ -36,6 +40,14 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Ignore parse errors
     }
     return null;
+  });
+
+  const [draftQuoteId, setDraftQuoteIdState] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(DRAFT_QUOTE_ID_STORAGE_KEY);
+    } catch {
+      return null;
+    }
   });
 
   const [calculationResult, setCalculationResult] = useState<CalculationResult | null>(null);
@@ -59,6 +71,77 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [draft]);
 
+  useEffect(() => {
+    try {
+      if (draftQuoteId) {
+        localStorage.setItem(DRAFT_QUOTE_ID_STORAGE_KEY, draftQuoteId);
+      } else {
+        localStorage.removeItem(DRAFT_QUOTE_ID_STORAGE_KEY);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, [draftQuoteId]);
+
+  // If we don't have a local draft but we have a Firestore draftQuoteId, hydrate draft from Firestore
+  useEffect(() => {
+    let cancelled = false;
+    if (draft) return;
+    if (!draftQuoteId) return;
+
+    quoteService
+      .getQuote(draftQuoteId)
+      .then((q) => {
+        if (cancelled) return;
+        if (q?.status === 'draft' && q?.draft) {
+          setDraftState(q.draft);
+        }
+      })
+      .catch(() => {
+        // Ignore load errors
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [draft, draftQuoteId, calculationResult]);
+
+  // Firestore autosave (debounced)
+  const autosaveTimerRef = useRef<number | null>(null);
+  const autosaveInFlightRef = useRef(false);
+
+  useEffect(() => {
+    if (!draft) return;
+    if (calculationResult) return;
+
+    if (autosaveTimerRef.current) {
+      window.clearTimeout(autosaveTimerRef.current);
+    }
+
+    autosaveTimerRef.current = window.setTimeout(async () => {
+      if (autosaveInFlightRef.current) return;
+      autosaveInFlightRef.current = true;
+      try {
+        if (!draftQuoteId) {
+          const id = await quoteService.saveDraft(draft);
+          setDraftQuoteIdState(id);
+        } else {
+          await quoteService.updateDraft(draftQuoteId, draft);
+        }
+      } catch {
+        // Ignore autosave errors
+      } finally {
+        autosaveInFlightRef.current = false;
+      }
+    }, 800);
+
+    return () => {
+      if (autosaveTimerRef.current) {
+        window.clearTimeout(autosaveTimerRef.current);
+      }
+    };
+  }, [draft, draftQuoteId, calculationResult]);
+
   // Wrapper to ensure state updates trigger localStorage save
   const setDraft = (newDraft: TripDraft | null | ((prev: TripDraft | null) => TripDraft | null)) => {
     if (typeof newDraft === 'function') {
@@ -66,6 +149,10 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } else {
       setDraftState(newDraft);
     }
+  };
+
+  const setDraftQuoteId = (id: string | null) => {
+    setDraftQuoteIdState(id);
   };
 
 
@@ -306,19 +393,23 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const clearDraft = () => {
     setDraft(null);
+    setDraftQuoteId(null);
     setDaysBreakdown([]);
     setScenarioResults({ base: null, quality: null, premium: null });
     localStorage.removeItem(TRIP_DRAFT_STORAGE_KEY);
+    localStorage.removeItem(DRAFT_QUOTE_ID_STORAGE_KEY);
   };
 
   return (
     <TripContext.Provider
       value={{
         draft,
+        draftQuoteId,
         calculationResult,
         daysBreakdown,
         scenarioResults,
         setDraft,
+        setDraftQuoteId,
         setCalculationResult,
         setDaysBreakdown,
         setScenarioResults,
