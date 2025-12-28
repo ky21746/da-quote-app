@@ -8,6 +8,7 @@ export interface SavedQuote {
   updatedAt: Date;
   status: 'draft' | 'sent' | 'accepted' | 'rejected';
   referenceNumber?: number;
+  sourceQuoteId?: string;
   tripName: string;
   travelers: number;
   days: number;
@@ -84,6 +85,59 @@ export const quoteService = {
     return { id: quoteRef.id, referenceNumber };
   },
 
+  async saveFinalQuote(
+    draft: TripDraft,
+    calculation: CalculationResult,
+    sourceQuoteId?: string
+  ): Promise<{ id: string; referenceNumber: number }> {
+    const cleanDraft = removeUndefined(draft);
+    const cleanCalculation = removeUndefined(calculation);
+
+    const parseAmount = (amount: string): number => {
+      const numeric = amount.replace(/[^0-9.]/g, '');
+      return parseFloat(numeric) || 0;
+    };
+
+    const quoteData = {
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      status: 'sent',
+      sourceQuoteId: sourceQuoteId || undefined,
+      tripName: cleanDraft?.name || 'Untitled Trip',
+      travelers: cleanDraft?.travelers || 1,
+      days: cleanDraft?.days || 1,
+      tier: cleanDraft?.tier || 'base',
+      draft: cleanDraft || {},
+      calculation: cleanCalculation || {},
+      grandTotal: parseAmount(calculation.total),
+      pricePerPerson: parseAmount(calculation.pricePerPerson),
+    };
+
+    const quoteRef = doc(collection(db, 'quotes'));
+    const counterRef = doc(db, 'meta', 'proposalCounter');
+
+    const referenceNumber = await runTransaction(db, async (tx) => {
+      const counterSnap = await tx.get(counterRef);
+      const current = (counterSnap.data() as any)?.current ?? 217000;
+      const next = current + 1;
+
+      if (counterSnap.exists()) {
+        tx.update(counterRef, { current: next });
+      } else {
+        tx.set(counterRef, { current: next });
+      }
+
+      tx.set(quoteRef, {
+        ...quoteData,
+        referenceNumber: next,
+      });
+
+      return next;
+    });
+
+    return { id: quoteRef.id, referenceNumber };
+  },
+
   async saveDraft(draft: TripDraft): Promise<string> {
     const cleanDraft = removeUndefined(draft);
 
@@ -122,6 +176,18 @@ export const quoteService = {
     const q = query(collection(db, 'quotes'), orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
     return snapshot.docs.map(d => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate?.() || new Date(), updatedAt: d.data().updatedAt?.toDate?.() || new Date() })) as SavedQuote[];
+  },
+
+  async getFinalQuotes(): Promise<SavedQuote[]> {
+    const q = query(collection(db, 'quotes'), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    const all = snapshot.docs.map(d => ({
+      id: d.id,
+      ...d.data(),
+      createdAt: d.data().createdAt?.toDate?.() || new Date(),
+      updatedAt: d.data().updatedAt?.toDate?.() || new Date(),
+    })) as SavedQuote[];
+    return all.filter((q) => q.status === 'sent');
   },
 
   async getQuote(id: string): Promise<SavedQuote | null> {

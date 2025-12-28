@@ -15,12 +15,13 @@ import { validateCapacity } from '../../core/validators/CapacityValidator';
 export const TripSummaryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { calculationResult, draft, scenarioResults, setScenarioResults } = useTrip();
+  const { calculationResult, draft, scenarioResults, setScenarioResults, sourceQuoteId, setDraftQuoteId, setSourceQuoteId } = useTrip();
   const { items: pricingItems } = usePricingCatalog();
   const { calculateScenarios, isCalculating: isCalculatingScenarios, error: scenarioError } =
     useScenarioComparison();
   const [showComparison, setShowComparison] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isFinalizing, setIsFinalizing] = useState(false);
   const [savedQuoteId, setSavedQuoteId] = useState<string | null>(null);
   const [savedReferenceNumber, setSavedReferenceNumber] = useState<number | null>(null);
 
@@ -116,6 +117,25 @@ export const TripSummaryPage: React.FC = () => {
     if (!draft || !calculationResult) return;
     if (!capacityValidation.isValid) return;
     await pdfService.generateQuotePDF(draft, calculationResult, savedQuoteId || undefined);
+  };
+
+  const handleFinalizeProposal = async () => {
+    if (!draft || !calculationResult) return;
+    if (!capacityValidation.isValid) return;
+    setIsFinalizing(true);
+    try {
+      const result = await quoteService.saveFinalQuote(draft, calculationResult, sourceQuoteId || undefined);
+      setSavedQuoteId(result.id);
+      setSavedReferenceNumber(result.referenceNumber);
+      setDraftQuoteId(null);
+      setSourceQuoteId(null);
+      navigate(`/proposals/${result.id}`);
+    } catch (error: any) {
+      console.error('Failed to finalize proposal:', error);
+      alert(`Failed to finalize proposal: ${error?.message || 'Unknown error'}`);
+    } finally {
+      setIsFinalizing(false);
+    }
   };
 
   if (!calculationResult) {
@@ -299,8 +319,18 @@ export const TripSummaryPage: React.FC = () => {
           >
             {isSaving ? 'Saving...' : savedQuoteId ? '✓ Saved' : 'Save Quote'}
           </Button>
+          <Button
+            onClick={handleFinalizeProposal}
+            variant="primary"
+            disabled={isFinalizing || !capacityValidation.isValid}
+          >
+            {isFinalizing ? 'Finalizing...' : 'Finalize Proposal'}
+          </Button>
           <Button onClick={handleExportPDF} variant="secondary" disabled={!capacityValidation.isValid}>
             Export PDF
+          </Button>
+          <Button onClick={() => navigate('/proposals')} variant="secondary">
+            Saved Proposals
           </Button>
           <Button onClick={() => navigate('/trip/new')} variant="secondary">
             New Trip

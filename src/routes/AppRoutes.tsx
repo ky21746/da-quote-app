@@ -8,6 +8,8 @@ import { LogisticsPage } from '../pages/LogisticsPage';
 import { ReviewPage } from '../pages/ReviewPage';
 import { PricingPage } from '../pages/PricingPage';
 import { PricingCatalogPage } from '../pages/PricingCatalogPage';
+import { SavedProposalsPage } from '../pages/SavedProposalsPage';
+import { ProposalViewPage } from '../pages/ProposalViewPage';
 import FirestoreProbe from '../debug/FirestoreProbe';
 
 export const AppRoutes: React.FC = () => {
@@ -20,6 +22,8 @@ export const AppRoutes: React.FC = () => {
       <Route path="/trip/:id/pricing" element={<PricingPage />} />
       <Route path="/trip/:id/pricing/manual" element={<ManualPricingPage />} />
       <Route path="/trip/:id/summary" element={<TripSummaryPage />} />
+      <Route path="/proposals" element={<SavedProposalsPage />} />
+      <Route path="/proposals/:id" element={<ProposalViewPage />} />
       <Route path="/admin/pricing-catalog" element={<PricingCatalogPage />} />
       <Route path="/debug/firestore" element={<FirestoreProbe />} />
       <Route path="/trip" element={<Navigate to="/trip/new" replace />} />

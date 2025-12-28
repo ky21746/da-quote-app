@@ -5,11 +5,13 @@ import { quoteService } from '../services/quoteService';
 interface TripContextType {
   draft: TripDraft | null;
   draftQuoteId: string | null;
+  sourceQuoteId: string | null;
   calculationResult: CalculationResult | null;
   daysBreakdown: DayDraft[];
   scenarioResults: ScenarioResults;
   setDraft: (draft: TripDraft | null | ((prev: TripDraft | null) => TripDraft | null)) => void;
   setDraftQuoteId: (id: string | null) => void;
+  setSourceQuoteId: (id: string | null) => void;
   setCalculationResult: (result: CalculationResult | null) => void;
   setDaysBreakdown: (days: DayDraft[]) => void;
   setScenarioResults: (results: ScenarioResults) => void;
@@ -27,6 +29,7 @@ const TripContext = createContext<TripContextType | undefined>(undefined);
 // Storage key for trip draft persistence
 const TRIP_DRAFT_STORAGE_KEY = 'da-trip-draft';
 const DRAFT_QUOTE_ID_STORAGE_KEY = 'da-draft-quote-id';
+const SOURCE_QUOTE_ID_STORAGE_KEY = 'da-source-quote-id';
 
 export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Load draft from localStorage on mount
@@ -45,6 +48,14 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [draftQuoteId, setDraftQuoteIdState] = useState<string | null>(() => {
     try {
       return localStorage.getItem(DRAFT_QUOTE_ID_STORAGE_KEY);
+    } catch {
+      return null;
+    }
+  });
+
+  const [sourceQuoteId, setSourceQuoteIdState] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(SOURCE_QUOTE_ID_STORAGE_KEY);
     } catch {
       return null;
     }
@@ -82,6 +93,18 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Ignore storage errors
     }
   }, [draftQuoteId]);
+
+  useEffect(() => {
+    try {
+      if (sourceQuoteId) {
+        localStorage.setItem(SOURCE_QUOTE_ID_STORAGE_KEY, sourceQuoteId);
+      } else {
+        localStorage.removeItem(SOURCE_QUOTE_ID_STORAGE_KEY);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, [sourceQuoteId]);
 
   // If we don't have a local draft but we have a Firestore draftQuoteId, hydrate draft from Firestore
   useEffect(() => {
@@ -153,6 +176,10 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const setDraftQuoteId = (id: string | null) => {
     setDraftQuoteIdState(id);
+  };
+
+  const setSourceQuoteId = (id: string | null) => {
+    setSourceQuoteIdState(id);
   };
 
 
@@ -394,10 +421,12 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const clearDraft = () => {
     setDraft(null);
     setDraftQuoteId(null);
+    setSourceQuoteId(null);
     setDaysBreakdown([]);
     setScenarioResults({ base: null, quality: null, premium: null });
     localStorage.removeItem(TRIP_DRAFT_STORAGE_KEY);
     localStorage.removeItem(DRAFT_QUOTE_ID_STORAGE_KEY);
+    localStorage.removeItem(SOURCE_QUOTE_ID_STORAGE_KEY);
   };
 
   return (
@@ -405,11 +434,13 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       value={{
         draft,
         draftQuoteId,
+        sourceQuoteId,
         calculationResult,
         daysBreakdown,
         scenarioResults,
         setDraft,
         setDraftQuoteId,
+        setSourceQuoteId,
         setCalculationResult,
         setDaysBreakdown,
         setScenarioResults,

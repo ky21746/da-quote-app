@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { Settings, FileText } from 'lucide-react';
 
 export default function AppHeader() {
   const navigate = useNavigate();
@@ -22,14 +22,25 @@ export default function AppHeader() {
         </div>
       </div>
 
-      <button
-        onClick={() => navigate('/admin/pricing-catalog')}
-        className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors"
-        aria-label="Settings"
-        title="Pricing Catalog"
-      >
-        <Settings size={20} strokeWidth={1.5} className="text-brand-dark" />
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => navigate('/proposals')}
+          className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors"
+          aria-label="Saved Proposals"
+          title="Saved Proposals"
+        >
+          <FileText size={20} strokeWidth={1.5} className="text-brand-dark" />
+        </button>
+
+        <button
+          onClick={() => navigate('/admin/pricing-catalog')}
+          className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors"
+          aria-label="Settings"
+          title="Pricing Catalog"
+        >
+          <Settings size={20} strokeWidth={1.5} className="text-brand-dark" />
+        </button>
+      </div>
     </header>
   );
 }
