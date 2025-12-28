@@ -22,6 +22,7 @@ export const TripSummaryPage: React.FC = () => {
   const [showComparison, setShowComparison] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [savedQuoteId, setSavedQuoteId] = useState<string | null>(null);
+  const [savedReferenceNumber, setSavedReferenceNumber] = useState<number | null>(null);
 
   const selectedPricingItemIds = React.useMemo(() => {
     if (!draft) return [];
@@ -96,9 +97,10 @@ export const TripSummaryPage: React.FC = () => {
     if (!capacityValidation.isValid) return;
     setIsSaving(true);
     try {
-      const quoteId = await quoteService.saveQuote(draft, calculationResult);
-      setSavedQuoteId(quoteId);
-      alert(`Quote saved! ID: ${quoteId}`);
+      const result = await quoteService.saveQuote(draft, calculationResult);
+      setSavedQuoteId(result.id);
+      setSavedReferenceNumber(result.referenceNumber);
+      alert(`Quote saved! ID: ${result.id}`);
     } catch (error: any) {
       console.error('Failed to save quote:', error);
       console.error('Error code:', error?.code);
@@ -140,6 +142,11 @@ export const TripSummaryPage: React.FC = () => {
             <p className="text-sm text-gray-600">
               {draft.travelers} travelers • {draft.days} days • {draft.tier}
             </p>
+            {savedReferenceNumber !== null && (
+              <p className="text-sm text-gray-600 mt-1">
+                Proposal Ref: 217-{String(savedReferenceNumber - 217000).padStart(3, '0')}
+              </p>
+            )}
           </div>
         )}
 

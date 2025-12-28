@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, getDoc, updateDoc, doc, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, getDoc, updateDoc, doc, query, orderBy, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { TripDraft, CalculationResult } from '../types/ui';
 
@@ -7,6 +7,7 @@ export interface SavedQuote {
   createdAt: Date;
   updatedAt: Date;
   status: 'draft' | 'sent' | 'accepted' | 'rejected';
+  referenceNumber?: number;
   tripName: string;
   travelers: number;
   days: number;
@@ -34,7 +35,7 @@ function removeUndefined(obj: any): any {
 }
 
 export const quoteService = {
-  async saveQuote(draft: TripDraft, calculation: CalculationResult): Promise<string> {
+  async saveQuote(draft: TripDraft, calculation: CalculationResult): Promise<{ id: string; referenceNumber: number }> {
     const cleanDraft = removeUndefined(draft);
     const cleanCalculation = removeUndefined(calculation);
     
@@ -45,8 +46,8 @@ export const quoteService = {
     };
     
     const quoteData = {
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
       status: 'draft',
       tripName: cleanDraft?.name || 'Untitled Trip',
       travelers: cleanDraft?.travelers || 1,
@@ -57,8 +58,30 @@ export const quoteService = {
       grandTotal: parseAmount(calculation.total),
       pricePerPerson: parseAmount(calculation.pricePerPerson),
     };
-    const docRef = await addDoc(collection(db, 'quotes'), quoteData);
-    return docRef.id;
+
+    const quoteRef = doc(collection(db, 'quotes'));
+    const counterRef = doc(db, 'meta', 'proposalCounter');
+
+    const referenceNumber = await runTransaction(db, async (tx) => {
+      const counterSnap = await tx.get(counterRef);
+      const current = (counterSnap.data() as any)?.current ?? 217000;
+      const next = current + 1;
+
+      if (counterSnap.exists()) {
+        tx.update(counterRef, { current: next });
+      } else {
+        tx.set(counterRef, { current: next });
+      }
+
+      tx.set(quoteRef, {
+        ...quoteData,
+        referenceNumber: next,
+      });
+
+      return next;
+    });
+
+    return { id: quoteRef.id, referenceNumber };
   },
 
   async getQuotes(): Promise<SavedQuote[]> {
