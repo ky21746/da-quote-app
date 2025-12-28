@@ -6,7 +6,7 @@ import { TripDraft, TripTier } from '../../types/ui';
 
 export const TripBuilderPage: React.FC = () => {
   const navigate = useNavigate();
-  const { setDraft } = useTrip();
+  const { setDraft, setDraftQuoteId, setSourceQuoteId, setReferenceNumber } = useTrip();
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -41,6 +41,10 @@ export const TripBuilderPage: React.FC = () => {
       days: formData.days,
       tier: formData.tier,
     };
+
+    setDraftQuoteId(null);
+    setSourceQuoteId(null);
+    setReferenceNumber(null);
     setDraft(draft);
 
     // Navigate to Phase 2: Parks

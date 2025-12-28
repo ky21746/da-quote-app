@@ -15,7 +15,7 @@ import { validateCapacity } from '../../core/validators/CapacityValidator';
 export const TripSummaryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { calculationResult, draft, scenarioResults, setScenarioResults, sourceQuoteId, setDraftQuoteId, setSourceQuoteId } = useTrip();
+  const { calculationResult, draft, scenarioResults, setScenarioResults, sourceQuoteId, setDraftQuoteId, setSourceQuoteId, setReferenceNumber } = useTrip();
   const { items: pricingItems } = usePricingCatalog();
   const { calculateScenarios, isCalculating: isCalculatingScenarios, error: scenarioError } =
     useScenarioComparison();
@@ -101,6 +101,7 @@ export const TripSummaryPage: React.FC = () => {
       const result = await quoteService.saveQuote(draft, calculationResult);
       setSavedQuoteId(result.id);
       setSavedReferenceNumber(result.referenceNumber);
+      setReferenceNumber(result.referenceNumber);
       alert(`Quote saved! ID: ${result.id}`);
     } catch (error: any) {
       console.error('Failed to save quote:', error);
@@ -127,6 +128,7 @@ export const TripSummaryPage: React.FC = () => {
       const result = await quoteService.saveFinalQuote(draft, calculationResult, sourceQuoteId || undefined);
       setSavedQuoteId(result.id);
       setSavedReferenceNumber(result.referenceNumber);
+      setReferenceNumber(result.referenceNumber);
       setDraftQuoteId(null);
       setSourceQuoteId(null);
       navigate(`/proposals/${result.id}`);

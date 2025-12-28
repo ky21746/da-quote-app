@@ -8,7 +8,7 @@ import { validateNights } from '../../utils/tripValidation';
 export const TripDaysEditorPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { draft } = useTrip();
+  const { draft, referenceNumber } = useTrip();
   
   const tripDays = draft?.tripDays || [];
   const totalDays = draft?.days || 0;
@@ -39,6 +39,10 @@ export const TripDaysEditorPage: React.FC = () => {
     'Pricing',
   ];
 
+  const formatReferenceNumber = (n: number) => {
+    return `217-${String(n - 217000).padStart(3, '0')}`;
+  };
+
   if (!draft) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8 flex items-center justify-center">
@@ -61,6 +65,11 @@ export const TripDaysEditorPage: React.FC = () => {
         <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded-lg">
           <h2 className="font-semibold text-gray-700 mb-3">Trip Summary</h2>
           <div className="space-y-2 text-sm text-gray-600">
+            {typeof referenceNumber === 'number' && (
+              <div>
+                <span className="font-medium">Proposal Ref:</span> {formatReferenceNumber(referenceNumber)}
+              </div>
+            )}
             <div>
               <span className="font-medium">Trip Name:</span> {draft.name}
             </div>

@@ -7,7 +7,7 @@ import { useTrip } from '../../context/TripContext';
 export const ProposalViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { setDraft, setCalculationResult, setDraftQuoteId, setSourceQuoteId } = useTrip();
+  const { setDraft, setCalculationResult, setDraftQuoteId, setSourceQuoteId, setReferenceNumber } = useTrip();
 
   const [isLoading, setIsLoading] = useState(false);
   const [quote, setQuote] = useState<SavedQuote | null>(null);
@@ -52,6 +52,7 @@ export const ProposalViewPage: React.FC = () => {
     setCalculationResult(null);
     setDraftQuoteId(null);
     setSourceQuoteId(quote.id);
+    setReferenceNumber(typeof quote.referenceNumber === 'number' ? quote.referenceNumber : null);
 
     navigate('/trip/draft/edit');
   };

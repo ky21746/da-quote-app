@@ -6,12 +6,14 @@ interface TripContextType {
   draft: TripDraft | null;
   draftQuoteId: string | null;
   sourceQuoteId: string | null;
+  referenceNumber: number | null;
   calculationResult: CalculationResult | null;
   daysBreakdown: DayDraft[];
   scenarioResults: ScenarioResults;
   setDraft: (draft: TripDraft | null | ((prev: TripDraft | null) => TripDraft | null)) => void;
   setDraftQuoteId: (id: string | null) => void;
   setSourceQuoteId: (id: string | null) => void;
+  setReferenceNumber: (referenceNumber: number | null) => void;
   setCalculationResult: (result: CalculationResult | null) => void;
   setDaysBreakdown: (days: DayDraft[]) => void;
   setScenarioResults: (results: ScenarioResults) => void;
@@ -30,6 +32,7 @@ const TripContext = createContext<TripContextType | undefined>(undefined);
 const TRIP_DRAFT_STORAGE_KEY = 'da-trip-draft';
 const DRAFT_QUOTE_ID_STORAGE_KEY = 'da-draft-quote-id';
 const SOURCE_QUOTE_ID_STORAGE_KEY = 'da-source-quote-id';
+const REFERENCE_NUMBER_STORAGE_KEY = 'da-reference-number';
 
 export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Load draft from localStorage on mount
@@ -56,6 +59,17 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [sourceQuoteId, setSourceQuoteIdState] = useState<string | null>(() => {
     try {
       return localStorage.getItem(SOURCE_QUOTE_ID_STORAGE_KEY);
+    } catch {
+      return null;
+    }
+  });
+
+  const [referenceNumber, setReferenceNumberState] = useState<number | null>(() => {
+    try {
+      const raw = localStorage.getItem(REFERENCE_NUMBER_STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = Number(raw);
+      return Number.isFinite(parsed) ? parsed : null;
     } catch {
       return null;
     }
@@ -105,6 +119,18 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Ignore storage errors
     }
   }, [sourceQuoteId]);
+
+  useEffect(() => {
+    try {
+      if (typeof referenceNumber === 'number') {
+        localStorage.setItem(REFERENCE_NUMBER_STORAGE_KEY, String(referenceNumber));
+      } else {
+        localStorage.removeItem(REFERENCE_NUMBER_STORAGE_KEY);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, [referenceNumber]);
 
   // If we don't have a local draft but we have a Firestore draftQuoteId, hydrate draft from Firestore
   useEffect(() => {
@@ -180,6 +206,10 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const setSourceQuoteId = (id: string | null) => {
     setSourceQuoteIdState(id);
+  };
+
+  const setReferenceNumber = (next: number | null) => {
+    setReferenceNumberState(next);
   };
 
 
@@ -422,11 +452,13 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setDraft(null);
     setDraftQuoteId(null);
     setSourceQuoteId(null);
+    setReferenceNumber(null);
     setDaysBreakdown([]);
     setScenarioResults({ base: null, quality: null, premium: null });
     localStorage.removeItem(TRIP_DRAFT_STORAGE_KEY);
     localStorage.removeItem(DRAFT_QUOTE_ID_STORAGE_KEY);
     localStorage.removeItem(SOURCE_QUOTE_ID_STORAGE_KEY);
+    localStorage.removeItem(REFERENCE_NUMBER_STORAGE_KEY);
   };
 
   return (
@@ -435,12 +467,14 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         draft,
         draftQuoteId,
         sourceQuoteId,
+        referenceNumber,
         calculationResult,
         daysBreakdown,
         scenarioResults,
         setDraft,
         setDraftQuoteId,
         setSourceQuoteId,
+        setReferenceNumber,
         setCalculationResult,
         setDaysBreakdown,
         setScenarioResults,

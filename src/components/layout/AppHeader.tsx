@@ -1,8 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import { Settings, FileText } from 'lucide-react';
+import { useTrip } from '../../context/TripContext';
 
 export default function AppHeader() {
   const navigate = useNavigate();
+  const { referenceNumber } = useTrip();
+
+  const formatReferenceNumber = (n: number) => {
+    return `217-${String(n - 217000).padStart(3, '0')}`;
+  };
 
   return (
     <header className="w-full h-16 md:h-20 flex items-center justify-between px-4 md:px-6 lg:px-8 border-b border-brand-olive/20 bg-white">
@@ -20,6 +26,17 @@ export default function AppHeader() {
         <div className="font-bold text-lg text-brand-dark">
           Discover Africa
         </div>
+
+        {typeof referenceNumber === 'number' && (
+          <div className="ml-2 px-3 py-1 rounded border border-brand-olive/20 bg-brand-olive/5">
+            <div className="text-[10px] font-semibold text-brand-olive/80 uppercase tracking-wide">
+              Proposal Ref
+            </div>
+            <div className="text-sm font-bold text-brand-dark">
+              {formatReferenceNumber(referenceNumber)}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-2">
