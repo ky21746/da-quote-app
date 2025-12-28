@@ -24,24 +24,12 @@ export const TripDaysEditorPage: React.FC = () => {
     : { valid: false, totalNights: 0, message: '' };
   
   // Use tripDays validation if available, otherwise fall back to parks validation
-  // Critical correctness rule: Busika requires at least one activity selected per Busika day
-  const busikaMissingActivitiesDays = tripDays
-    .filter((day) => day?.parkId === 'BUSIKA')
-    .filter((day) => !day.activities || day.activities.length === 0)
-    .map((day) => day.dayNumber);
-
-  const busikaActivitiesValid = busikaMissingActivitiesDays.length === 0;
-
   const parksValid = missingParkDays.length === 0;
 
-  const blockedReason = !parksValid
-    ? `Park missing on Day ${missingParkDays[0]}`
-    : !busikaActivitiesValid
-      ? `Busika activities missing on Day ${busikaMissingActivitiesDays[0]}`
-      : null;
+  const blockedReason = !parksValid ? `Park missing on Day ${missingParkDays[0]}` : null;
 
   const canProceed = draft?.tripDays
-    ? (parksValid && busikaActivitiesValid)
+    ? parksValid
     : nightsValidation.valid;
 
   const progressSteps = [
