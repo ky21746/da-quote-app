@@ -4,7 +4,7 @@ import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
 import { Calendar, ChevronRight } from 'lucide-react';
 import { useTrip } from '../../context/TripContext';
-import type { TripDayParkFee } from '../../types/ui';
+import type { TripDayParkFee, FreeHandLine } from '../../types/ui';
 
 interface TripDayCardProps {
   dayNumber: number; // 1, 2, 3... (global trip day)
@@ -13,6 +13,7 @@ interface TripDayCardProps {
   lodging?: string; // pricingItemId
   activities: string[]; // pricingItemIds
   extras?: string[]; // pricingItemIds
+  freeHandLines?: FreeHandLine[];
   parkFees: TripDayParkFee[];
   logistics?: {
     vehicle?: string; // pricingItemId
@@ -25,6 +26,7 @@ interface TripDayCardProps {
     lodging?: string;
     activities?: string[];
     extras?: string[];
+    freeHandLines?: FreeHandLine[];
     parkFees?: TripDayParkFee[];
     logistics?: {
       vehicle?: string;
@@ -43,6 +45,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   lodging,
   activities,
   extras,
+  freeHandLines,
   parkFees,
   logistics,
   onUpdate,
@@ -71,6 +74,30 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   const selectedVehicleItem = logistics?.vehicle
     ? pricingItems.find((i) => i.id === logistics.vehicle) || null
     : null;
+
+  const safeFreeHandLines = Array.isArray(freeHandLines) ? freeHandLines : [];
+
+  const addFreeHandLine = () => {
+    const id = `fh_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    onUpdate({
+      freeHandLines: [
+        ...safeFreeHandLines,
+        { id, description: '', amount: 0 },
+      ],
+    });
+  };
+
+  const updateFreeHandLine = (lineId: string, updates: Partial<FreeHandLine>) => {
+    onUpdate({
+      freeHandLines: safeFreeHandLines.map((l) => (l.id === lineId ? { ...l, ...updates } : l)),
+    });
+  };
+
+  const removeFreeHandLine = (lineId: string) => {
+    onUpdate({
+      freeHandLines: safeFreeHandLines.filter((l) => l.id !== lineId),
+    });
+  };
 
   const parkOptions = [
     { value: '', label: 'Select a park...' },
@@ -453,6 +480,54 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
             />
           </div>
         )}
+
+        {/* Free Hand Lines */}
+        <div className="border-t border-gray-200 pt-4">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-semibold text-brand-dark">One-off Expenses</h4>
+            <button
+              type="button"
+              onClick={addFreeHandLine}
+              className="text-sm font-medium text-brand-olive hover:underline"
+            >
+              + Add
+            </button>
+          </div>
+
+          {safeFreeHandLines.length === 0 ? (
+            <div className="text-sm text-gray-500">No one-off expenses added.</div>
+          ) : (
+            <div className="space-y-2">
+              {safeFreeHandLines.map((line) => (
+                <div key={line.id} className="flex gap-2 items-center">
+                  <Input
+                    label="Description"
+                    value={line.description}
+                    onChange={(v) => updateFreeHandLine(line.id, { description: String(v) })}
+                    placeholder="e.g., Park tip / Permit / Donation"
+                  />
+                  <Input
+                    label="Price (USD)"
+                    type="number"
+                    value={line.amount}
+                    onChange={(v) => {
+                      const num = Number(v);
+                      updateFreeHandLine(line.id, { amount: Number.isFinite(num) ? num : 0 });
+                    }}
+                    min={0}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeFreeHandLine(line.id)}
+                    className="mt-6 text-sm font-medium text-red-600 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {!isLastDay && onNextDay && (

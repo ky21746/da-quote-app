@@ -96,6 +96,12 @@ export interface TripDayParkFee {
   excluded: boolean;
 }
 
+export interface FreeHandLine {
+  id: string;
+  description: string;
+  amount: number;
+}
+
 // TripDay represents one day in the trip (1, 2, 3... global trip day)
 export interface TripDay {
   dayNumber: number; // 1, 2, 3... (global trip day)
@@ -104,6 +110,7 @@ export interface TripDay {
   lodging?: string; // pricingItemId
   activities: string[]; // pricingItemIds
   extras?: string[]; // pricingItemIds
+  freeHandLines?: FreeHandLine[];
   parkFees?: TripDayParkFee[];
   logistics?: {
     vehicle?: string; // pricingItemId

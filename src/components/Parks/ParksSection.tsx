@@ -23,6 +23,7 @@ export const ParksSection: React.FC = () => {
     lodging?: string;
     activities: string[];
     extras?: string[];
+    freeHandLines?: import('../../types/ui').FreeHandLine[];
     parkFees?: import('../../types/ui').TripDayParkFee[];
     logistics?: {
       vehicle?: string;
@@ -56,6 +57,7 @@ export const ParksSection: React.FC = () => {
     lodging?: string;
     activities?: string[];
     extras?: string[];
+    freeHandLines?: import('../../types/ui').FreeHandLine[];
     parkFees?: import('../../types/ui').TripDayParkFee[];
     logistics?: {
       vehicle?: string;
@@ -143,6 +145,7 @@ export const ParksSection: React.FC = () => {
         lodging={currentDayData.lodging}
         activities={currentDayData.activities || []}
         extras={currentDayData.extras || []}
+        freeHandLines={currentDayData.freeHandLines || []}
         parkFees={currentDayData.parkFees || []}
         logistics={currentDayData.logistics}
         onUpdate={handleUpdateDay}

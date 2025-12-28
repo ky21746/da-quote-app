@@ -148,6 +148,25 @@ export function calculatePricingFromCatalog(
         });
       }
 
+      if (day.freeHandLines && Array.isArray(day.freeHandLines) && day.freeHandLines.length > 0) {
+        day.freeHandLines.forEach((line, idx) => {
+          const amount = typeof line.amount === 'number' && Number.isFinite(line.amount) ? line.amount : 0;
+          const description = (line.description || '').trim();
+          if (!description && amount === 0) return;
+          breakdown.push({
+            id: `line_day${day.dayNumber}_freehand_${idx}`,
+            park: parkName,
+            category: 'Extras',
+            itemName: description || 'One-off expense',
+            basePrice: amount,
+            costType: 'fixed_group',
+            calculatedTotal: amount,
+            perPerson: travelers > 0 ? amount / travelers : 0,
+            calculationExplanation: 'Free hand item',
+          });
+        });
+      }
+
       // Extras
       if (day.extras && Array.isArray(day.extras) && day.extras.length > 0) {
         const extraItems = getPricingItemsByIds(pricingItems, day.extras);
