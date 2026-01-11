@@ -22,6 +22,8 @@ export const PARKS: Array<{ id: string; label: string }> = [
   { id: 'ZIWA', label: 'Ziwa Rhino Sanctuary' },
   { id: 'BUSIKA', label: 'Busika' },
   { id: 'ENTEBBE', label: 'Entebbe' },
+  { id: 'LAKE_BUNYONYI', label: 'Lake Bunyonyi' },
+  { id: 'JINJA', label: 'Jinja' },
 ];
 
 /**
