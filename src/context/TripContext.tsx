@@ -17,6 +17,7 @@ interface TripContextType {
   setCalculationResult: (result: CalculationResult | null) => void;
   setDaysBreakdown: (days: DayDraft[]) => void;
   setScenarioResults: (results: ScenarioResults) => void;
+  setTravelers: (travelers: number) => void;
   updateDay: (dayNumber: number, updates: Partial<DayDraft>) => void;
   addParkCard: () => void;
   updateParkCard: (cardId: string, updates: Partial<ParkCard>) => void;
@@ -210,6 +211,24 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const setReferenceNumber = (next: number | null) => {
     setReferenceNumberState(next);
+  };
+
+  const resetCalculatedState = () => {
+    setCalculationResult(null);
+    setScenarioResults({ base: null, quality: null, premium: null });
+    setDaysBreakdown([]);
+  };
+
+  const setTravelers = (travelers: number) => {
+    const safe = Math.max(1, Math.floor(travelers));
+    setDraftState((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        travelers: safe,
+      };
+    });
+    resetCalculatedState();
   };
 
 
@@ -478,6 +497,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCalculationResult,
         setDaysBreakdown,
         setScenarioResults,
+        setTravelers,
         updateDay,
         addParkCard,
         updateParkCard,

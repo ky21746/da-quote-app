@@ -145,7 +145,7 @@ export const TripSummaryPage: React.FC = () => {
       <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8 flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600 mb-4">No calculation result found.</p>
-          <Button onClick={() => navigate('/trip/new')}>Start New Trip</Button>
+          <Button onClick={() => navigate(`/trip/${id}/pricing`)}>Go to Pricing</Button>
         </div>
       </div>
     );

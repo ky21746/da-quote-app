@@ -4,7 +4,7 @@ import { useTrip } from '../../context/TripContext';
 
 export default function AppHeader() {
   const navigate = useNavigate();
-  const { referenceNumber } = useTrip();
+  const { referenceNumber, draft, setTravelers } = useTrip();
 
   const formatReferenceNumber = (n: number) => {
     return `217-${String(n - 217000).padStart(3, '0')}`;
@@ -40,6 +40,23 @@ export default function AppHeader() {
       </div>
 
       <div className="flex items-center gap-2">
+        {draft && (
+          <div className="flex items-center gap-2 mr-2">
+            <div className="flex flex-col">
+              <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
+                People
+              </div>
+              <input
+                type="number"
+                min={1}
+                value={draft.travelers}
+                onChange={(e) => setTravelers(Number(e.target.value))}
+                className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+              />
+            </div>
+          </div>
+        )}
+
         <button
           onClick={() => navigate('/proposals')}
           className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors"
