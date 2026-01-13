@@ -95,7 +95,6 @@ export const TripSummaryPage: React.FC = () => {
 
   const handleSaveQuote = async () => {
     if (!draft || !calculationResult) return;
-    if (!capacityValidation.isValid) return;
     setIsSaving(true);
     try {
       const result = await quoteService.saveQuote(draft, calculationResult);
@@ -116,13 +115,11 @@ export const TripSummaryPage: React.FC = () => {
 
   const handleExportPDF = async () => {
     if (!draft || !calculationResult) return;
-    if (!capacityValidation.isValid) return;
     await pdfService.generateQuotePDF(draft, calculationResult, savedQuoteId || undefined);
   };
 
   const handleFinalizeProposal = async () => {
     if (!draft || !calculationResult) return;
-    if (!capacityValidation.isValid) return;
     setIsFinalizing(true);
     try {
       const result = await quoteService.saveFinalQuote(draft, calculationResult, sourceQuoteId || undefined);
@@ -317,18 +314,18 @@ export const TripSummaryPage: React.FC = () => {
           <Button 
             onClick={handleSaveQuote} 
             variant="primary"
-            disabled={isSaving || !!savedQuoteId || !capacityValidation.isValid}
+            disabled={isSaving || !!savedQuoteId}
           >
             {isSaving ? 'Saving...' : savedQuoteId ? '✓ Saved' : 'Save Quote'}
           </Button>
           <Button
             onClick={handleFinalizeProposal}
             variant="primary"
-            disabled={isFinalizing || !capacityValidation.isValid}
+            disabled={isFinalizing}
           >
             {isFinalizing ? 'Finalizing...' : 'Finalize Proposal'}
           </Button>
-          <Button onClick={handleExportPDF} variant="secondary" disabled={!capacityValidation.isValid}>
+          <Button onClick={handleExportPDF} variant="secondary">
             Export PDF
           </Button>
           <Button onClick={() => navigate('/proposals')} variant="secondary">

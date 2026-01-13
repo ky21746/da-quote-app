@@ -399,9 +399,6 @@ export const PricingPage: React.FC = () => {
           </Button>
           <Button
             onClick={() => {
-              if (!capacityValidation.isValid) {
-                return;
-              }
               // Update draft with adjustments
               if (draft) {
                 setDraft({
@@ -429,7 +426,6 @@ export const PricingPage: React.FC = () => {
               navigate(`/trip/${id}/summary`);
             }}
             variant="primary"
-            disabled={!capacityValidation.isValid}
           >
             Proceed
           </Button>
