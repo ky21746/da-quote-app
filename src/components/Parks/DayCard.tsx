@@ -56,14 +56,21 @@ export const DayCard: React.FC<DayCardProps> = ({
             const nextItemQuantities: Record<string, number> = {
               ...(prev.itemQuantities || {}),
             };
+
+            const nextSources: Record<string, 'auto' | 'manual'> = {
+              ...(prev.itemQuantitySources || {}),
+            };
+
             for (const id of pricingItemIds || []) {
               if (nextItemQuantities[id] === undefined) {
                 nextItemQuantities[id] = 1;
+                nextSources[id] = nextSources[id] || 'auto';
               }
             }
             return {
               ...prev,
               itemQuantities: nextItemQuantities,
+              itemQuantitySources: nextSources,
             };
           });
         }}
@@ -95,6 +102,10 @@ export const DayCard: React.FC<DayCardProps> = ({
                           itemQuantities: {
                             ...(prev.itemQuantities || {}),
                             [activityId]: newQty,
+                          },
+                          itemQuantitySources: {
+                            ...(prev.itemQuantitySources || {}),
+                            [activityId]: 'manual',
                           },
                         };
                       });

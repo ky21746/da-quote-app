@@ -199,12 +199,17 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                     ...(prev.itemQuantities || {}),
                   };
 
+                  const nextSources: Record<string, 'auto' | 'manual'> = {
+                    ...(prev.itemQuantitySources || {}),
+                  };
+
                   if (pricingItemId) {
                     const selected = pricingItems.find((i) => i.id === pricingItemId);
                     const capacity = selected?.capacity;
                     if (typeof capacity === 'number' && Number.isFinite(capacity)) {
                       if (nextItemQuantities[pricingItemId] === undefined) {
                         nextItemQuantities[pricingItemId] = getDefaultQuantity(capacity);
+                        nextSources[pricingItemId] = nextSources[pricingItemId] || 'auto';
                       }
                     }
                   }
@@ -212,6 +217,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                   return {
                     ...prev,
                     itemQuantities: nextItemQuantities,
+                    itemQuantitySources: nextSources,
                   };
                 });
               }}
@@ -242,6 +248,10 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                           itemQuantities: {
                             ...(prev.itemQuantities || {}),
                             [arrival]: newQty,
+                          },
+                          itemQuantitySources: {
+                            ...(prev.itemQuantitySources || {}),
+                            [arrival]: 'manual',
                           },
                         };
                       });
@@ -289,15 +299,21 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                     ...(prev.itemQuantities || {}),
                   };
 
+                  const nextSources: Record<string, 'auto' | 'manual'> = {
+                    ...(prev.itemQuantitySources || {}),
+                  };
+
                   for (const id of pricingItemIds || []) {
                     if (nextItemQuantities[id] === undefined) {
                       nextItemQuantities[id] = 1;
+                      nextSources[id] = nextSources[id] || 'auto';
                     }
                   }
 
                   return {
                     ...prev,
                     itemQuantities: nextItemQuantities,
+                    itemQuantitySources: nextSources,
                   };
                 });
               }}
@@ -329,6 +345,10 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                                 itemQuantities: {
                                   ...(prev.itemQuantities || {}),
                                   [activityId]: newQty,
+                                },
+                                itemQuantitySources: {
+                                  ...(prev.itemQuantitySources || {}),
+                                  [activityId]: 'manual',
                                 },
                               };
                             });
@@ -388,12 +408,17 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                       ...(prev.itemQuantities || {}),
                     };
 
+                    const nextSources: Record<string, 'auto' | 'manual'> = {
+                      ...(prev.itemQuantitySources || {}),
+                    };
+
                     if (pricingItemId) {
                       const selected = pricingItems.find((i) => i.id === pricingItemId);
                       const capacity = selected?.capacity;
                       if (typeof capacity === 'number' && Number.isFinite(capacity)) {
                         if (nextItemQuantities[pricingItemId] === undefined) {
                           nextItemQuantities[pricingItemId] = getDefaultQuantity(capacity);
+                          nextSources[pricingItemId] = nextSources[pricingItemId] || 'auto';
                         }
                       }
                     }
@@ -401,6 +426,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                     return {
                       ...prev,
                       itemQuantities: nextItemQuantities,
+                      itemQuantitySources: nextSources,
                     };
                   });
                 }}
@@ -431,6 +457,10 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                             itemQuantities: {
                               ...(prev.itemQuantities || {}),
                               [logistics.vehicle!]: newQty,
+                            },
+                            itemQuantitySources: {
+                              ...(prev.itemQuantitySources || {}),
+                              [logistics.vehicle!]: 'manual',
                             },
                           };
                         });

@@ -42,6 +42,7 @@ export interface TripDraft {
   parks?: ParkCard[]; // Park-based planning blocks (deprecated, use tripDays)
   tripDays?: TripDay[]; // Array of days (1 per trip day)
   itemQuantities?: Record<string, number>; // Per-quote quantity overrides by pricingItemId
+  itemQuantitySources?: Record<string, 'auto' | 'manual'>; // Tracks whether itemQuantities overrides are auto-set or manually set
   // Pricing adjustments
   unexpectedPercentage?: number; // העמסת בלתי צפוי באחוזים
   localAgentCommissionPercentage?: number; // העמסת אחוז רכב לסוכן מקומי

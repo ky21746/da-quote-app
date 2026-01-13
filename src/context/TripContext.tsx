@@ -223,9 +223,38 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const safe = Math.max(1, Math.floor(travelers));
     setDraftState((prev) => {
       if (!prev) return prev;
+
+      const prevTravelers = prev.travelers;
+      const isDecrease = safe < prevTravelers;
+
+      if (!isDecrease) {
+        return {
+          ...prev,
+          travelers: safe,
+        };
+      }
+
+      const sources: Record<string, 'auto' | 'manual'> = {
+        ...(prev.itemQuantitySources || {}),
+      };
+
+      const nextItemQuantities: Record<string, number> = {
+        ...(prev.itemQuantities || {}),
+      };
+      const nextSources: Record<string, 'auto' | 'manual'> = { ...sources };
+
+      for (const [itemId, source] of Object.entries(sources)) {
+        if (source === 'auto') {
+          delete nextItemQuantities[itemId];
+          delete nextSources[itemId];
+        }
+      }
+
       return {
         ...prev,
         travelers: safe,
+        itemQuantities: nextItemQuantities,
+        itemQuantitySources: nextSources,
       };
     });
     resetCalculatedState();

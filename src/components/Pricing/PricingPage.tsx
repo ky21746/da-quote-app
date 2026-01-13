@@ -246,6 +246,10 @@ export const PricingPage: React.FC = () => {
                             ...(draft.itemQuantities || {}),
                             [action.itemId]: action.requiredQuantity,
                           },
+                          itemQuantitySources: {
+                            ...(draft.itemQuantitySources || {}),
+                            [action.itemId]: 'auto',
+                          },
                         });
                       }}
                     >
