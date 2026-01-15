@@ -1,4 +1,4 @@
-import { collection, getDocs, getDoc, updateDoc, doc, query, orderBy, runTransaction, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, getDoc, updateDoc, deleteDoc, doc, query, orderBy, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { TripDraft, CalculationResult } from '../types/ui';
 
@@ -197,6 +197,10 @@ export const quoteService = {
   },
 
   async updateStatus(id: string, status: SavedQuote['status']): Promise<void> {
-    await updateDoc(doc(db, 'quotes', id), { status, updatedAt: new Date() });
+    await updateDoc(doc(db, 'quotes', id), { status, updatedAt: serverTimestamp() });
+  },
+
+  async deleteQuote(id: string): Promise<void> {
+    await deleteDoc(doc(db, 'quotes', id));
   }
 };
