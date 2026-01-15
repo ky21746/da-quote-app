@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, deleteField } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { PricingItem } from '../types/ui';
 
@@ -120,7 +120,45 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
 
   const updateItem = async (id: string, updates: Partial<PricingItem>) => {
     const docRef = doc(db, 'pricingCatalog', id);
-    await updateDoc(docRef, updates as any);
+
+    const payload: Record<string, any> = {};
+
+    for (const [key, value] of Object.entries(updates)) {
+      if (value === undefined) {
+        payload[key] = deleteField();
+        continue;
+      }
+      payload[key] = value;
+    }
+
+    if ('capacity' in updates) {
+      const cap = (updates as any).capacity;
+      if (typeof cap === 'number' && Number.isFinite(cap)) {
+        payload.capacity = cap;
+      } else {
+        payload.capacity = deleteField();
+      }
+    }
+
+    if ('sku' in updates) {
+      const sku = (updates as any).sku;
+      if (typeof sku === 'string' && sku.trim()) {
+        payload.sku = sku.trim();
+      } else {
+        payload.sku = deleteField();
+      }
+    }
+
+    if ('notes' in updates) {
+      const notes = (updates as any).notes;
+      if (typeof notes === 'string' && notes.trim()) {
+        payload.notes = notes.trim();
+      } else {
+        payload.notes = deleteField();
+      }
+    }
+
+    await updateDoc(docRef, payload);
     console.log('FIRESTORE WRITE OK');
   };
 
