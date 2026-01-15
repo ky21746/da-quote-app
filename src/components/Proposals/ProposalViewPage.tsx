@@ -54,7 +54,7 @@ export const ProposalViewPage: React.FC = () => {
     setSourceQuoteId(quote.id);
     setReferenceNumber(typeof quote.referenceNumber === 'number' ? quote.referenceNumber : null);
 
-    navigate('/trip/draft/edit');
+    navigate(`/trip/${quote.id}/edit`);
   };
 
   return (
