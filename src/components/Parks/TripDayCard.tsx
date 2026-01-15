@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
@@ -55,6 +55,18 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   const { items: pricingItems, isLoading: catalogLoading } = usePricingCatalog();
   const { draft, setDraft } = useTrip();
 
+  const getInitialOpenSection = () => {
+    if (!parkId) return null;
+    if (!arrival) return 'arrival';
+    if (!lodging) return 'lodging';
+    if (!activities || activities.length === 0) return 'activities';
+    return null;
+  };
+
+  const [openSection, setOpenSection] = useState<
+    null | 'fees' | 'arrival' | 'lodging' | 'activities' | 'extras' | 'logistics' | 'one_off'
+  >(() => getInitialOpenSection());
+
   const travelers = draft?.travelers || 0;
 
   const getDefaultQuantity = (capacity: number): number => {
@@ -104,6 +116,36 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
     ...getParks().map((park) => ({ value: park.id, label: park.label })),
   ];
 
+  const Section: React.FC<{
+    id: NonNullable<typeof openSection>;
+    title: string;
+    summary?: string;
+    children: React.ReactNode;
+    disabled?: boolean;
+  }> = ({ id, title, summary, children, disabled }) => {
+    const isOpen = openSection === id;
+
+    return (
+      <div className="border border-gray-200 rounded-md">
+        <button
+          type="button"
+          disabled={disabled}
+          className={`w-full px-3 py-2 flex items-center justify-between gap-3 text-left ${disabled
+            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            : 'bg-gray-50 hover:bg-gray-100'} rounded-md`}
+          onClick={() => setOpenSection((prev) => (prev === id ? null : id))}
+        >
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-brand-dark">{title}</div>
+            {summary && <div className="text-xs text-gray-500 truncate">{summary}</div>}
+          </div>
+          <div className="text-xs font-medium text-gray-600">{isOpen ? 'Hide' : 'Edit'}</div>
+        </button>
+        {isOpen && <div className="p-3">{children}</div>}
+      </div>
+    );
+  };
+
   return (
     <div className="border border-gray-300 rounded-lg p-4 md:p-6 lg:p-8 bg-white">
       <div className="flex items-center gap-2 mb-4">
@@ -146,14 +188,26 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
               arrival: undefined, // Reset arrival when park changes
               parkFees: nextParkFees,
             });
+
+            setOpenSection(() => {
+              if (!selectedParkId) return null;
+              return 'arrival';
+            });
           }}
           options={parkOptions}
         />
 
-        {/* Park Fees (Auto-added, cancelable) */}
-        {parkFees && parkFees.length > 0 && (
-          <div className="border border-gray-200 rounded-md p-3">
-            <div className="text-sm font-semibold text-brand-dark mb-2">Park Fees</div>
+        <Section
+          id="fees"
+          title="Park Fees"
+          summary={
+            parkFees && parkFees.length > 0
+              ? `${(parkFees || []).filter((f) => f.excluded !== true).length} selected`
+              : 'None'
+          }
+          disabled={!parkId}
+        >
+          {parkFees && parkFees.length > 0 ? (
             <div className="space-y-2">
               {parkFees.map((fee) => {
                 const item = pricingItems.find((i) => i.id === fee.itemId);
@@ -180,8 +234,10 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                 );
               })}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="text-sm text-gray-500">No park fees for this day.</div>
+          )}
+        </Section>
 
         {/* 2. Arrival to Park (Flight or Vehicle) */}
         {parkId && (

@@ -4,11 +4,15 @@ import { useTrip } from '../../context/TripContext';
 import { Button, ProgressStepper } from '../common';
 import { ParksSection } from '../Parks';
 import { validateNights } from '../../utils/tripValidation';
+import { useActiveTripContext } from '../../hooks/useActiveTripContext';
 
 export const TripDaysEditorPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { draft, referenceNumber } = useTrip();
+  const { activeTripId } = useActiveTripContext();
+
+  const tripId = activeTripId ?? id ?? null;
   
   const tripDays = draft?.tripDays || [];
   const totalDays = draft?.days || 0;
@@ -99,7 +103,13 @@ export const TripDaysEditorPage: React.FC = () => {
               </div>
             )}
             <Button
-              onClick={() => navigate(`/trip/${id}/logistics`)}
+              onClick={() => {
+                if (!tripId) {
+                  navigate('/trip/new');
+                  return;
+                }
+                navigate(`/trip/${tripId}/logistics`);
+              }}
               variant="primary"
               disabled={!canProceed}
             >

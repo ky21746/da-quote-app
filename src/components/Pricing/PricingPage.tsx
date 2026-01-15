@@ -8,6 +8,7 @@ import { calculatePricingFromCatalog, PricingResult } from '../../utils/catalogP
 import { CalculationResult, CategoryBreakdown, LineItemDisplay } from '../../types/ui';
 import { formatCurrency } from '../../utils/currencyFormatter';
 import { validateCapacity } from '../../core/validators/CapacityValidator';
+import { useActiveTripContext } from '../../hooks/useActiveTripContext';
 
 /**
  * Convert PricingResult to CalculationResult format for TripSummaryPage
@@ -65,6 +66,12 @@ export const PricingPage: React.FC = () => {
   const navigate = useNavigate();
   const { draft, setDraft, setCalculationResult } = useTrip();
   const { items: pricingItems } = usePricingCatalog();
+  const { activeTripId } = useActiveTripContext();
+
+  const tripId = activeTripId ?? id ?? null;
+
+  const [showLineItems, setShowLineItems] = useState(false);
+  const [showPricingAdjustments, setShowPricingAdjustments] = useState(true);
 
   const selectedPricingItemIds = useMemo(() => {
     if (!draft) return [];
@@ -216,10 +223,92 @@ export const PricingPage: React.FC = () => {
 
         <ProgressStepper currentStep={4} steps={progressSteps} />
 
-        {/* Pricing Table (Read-only from Catalog) */}
+        <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-gray-800">Final Output</h2>
+              <div className="text-xs text-gray-500">Calculated from catalog + adjustments</div>
+            </div>
+            <button
+              type="button"
+              className="shrink-0 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white hover:bg-gray-100"
+              onClick={() => setShowPricingAdjustments((v) => !v)}
+            >
+              {showPricingAdjustments ? 'Hide adjustments' : 'Show adjustments'}
+            </button>
+          </div>
+
+          <div className="mt-4 space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Travelers:</span>
+              <span className="font-semibold text-gray-800">{travelers}</span>
+            </div>
+            <div className="flex justify-between pt-2 border-t border-gray-200">
+              <span className="text-gray-600">Base Total:</span>
+              <span className="font-semibold text-gray-800">
+                {formatCurrency(adjustments.baseTotal)}
+              </span>
+            </div>
+            {unexpectedPercentage > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">
+                  Contingency (Unforeseen Costs) ({unexpectedPercentage}%):
+                </span>
+                <span className="font-semibold text-gray-800">
+                  {formatCurrency(adjustments.unexpectedAmount)}
+                </span>
+              </div>
+            )}
+            {localAgentCommissionPercentage > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">
+                  Local Agent Commission ({localAgentCommissionPercentage}%):
+                </span>
+                <span className="font-semibold text-gray-800">
+                  {formatCurrency(adjustments.localAgentCommissionAmount)}
+                </span>
+              </div>
+            )}
+            {myProfitPercentage > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Profit Margin ({myProfitPercentage}%):</span>
+                <span className="font-semibold text-gray-800">
+                  {formatCurrency(adjustments.myProfitAmount)}
+                </span>
+              </div>
+            )}
+            <div className="flex justify-between pt-2 border-t border-gray-200">
+              <span className="font-semibold text-gray-800">Grand Total:</span>
+              <span className="font-bold text-lg text-gray-900">
+                {formatCurrency(adjustments.finalTotal)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Final Price Per Person:</span>
+              <span className="font-semibold text-gray-800">
+                {formatCurrency(travelers > 0 ? adjustments.finalTotal / travelers : 0)}
+              </span>
+            </div>
+          </div>
+        </div>
+
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Line Items</h2>
-          <PricingTable lines={basePricingResult.breakdown} />
+          <div className="flex items-center justify-between gap-4 mb-3">
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-gray-800">Line Items</h2>
+              <div className="text-xs text-gray-500">
+                {basePricingResult.breakdown.length} items
+              </div>
+            </div>
+            <button
+              type="button"
+              className="shrink-0 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white hover:bg-gray-100"
+              onClick={() => setShowLineItems((v) => !v)}
+            >
+              {showLineItems ? 'Hide table' : 'Show table'}
+            </button>
+          </div>
+          {showLineItems && <PricingTable lines={basePricingResult.breakdown} />}
         </div>
 
         {!capacityValidation.isValid && (
@@ -281,116 +370,58 @@ export const PricingPage: React.FC = () => {
           </div>
         )}
 
-        {/* Pricing Adjustments */}
-        <div className="mb-6 p-4 md:p-6 bg-blue-50 rounded-lg border border-blue-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Pricing Adjustments</h2>
-          <div className="space-y-4">
-            <Input
-              label="Contingency (Unforeseen Costs) (%)"
-              type="number"
-              value={unexpectedPercentage}
-              onChange={(value) => {
-                const numValue = typeof value === 'number' ? value : Number(value);
-                setUnexpectedPercentage(numValue);
-                if (draft) {
-                  setDraft({ ...draft, unexpectedPercentage: numValue });
-                }
-              }}
-              min={0}
-              max={100}
-              step={0.1}
-            />
-            <Input
-              label="Local Agent Commission (%)"
-              type="number"
-              value={localAgentCommissionPercentage}
-              onChange={(value) => {
-                const numValue = typeof value === 'number' ? value : Number(value);
-                setLocalAgentCommissionPercentage(numValue);
-                if (draft) {
-                  setDraft({ ...draft, localAgentCommissionPercentage: numValue });
-                }
-              }}
-              min={0}
-              max={100}
-              step={0.1}
-            />
-            <Input
-              label="Profit Margin (%)"
-              type="number"
-              value={myProfitPercentage}
-              onChange={(value) => {
-                const numValue = typeof value === 'number' ? value : Number(value);
-                setMyProfitPercentage(numValue);
-                if (draft) {
-                  setDraft({ ...draft, myProfitPercentage: numValue });
-                }
-              }}
-              min={0}
-              max={100}
-              step={0.1}
-            />
-          </div>
-        </div>
-
-        {/* Final Output Section */}
-        <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded-lg border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">Final Output</h2>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Travelers:</span>
-              <span className="font-semibold text-gray-800">{travelers}</span>
-            </div>
-            <div className="flex justify-between pt-2 border-t border-gray-200">
-              <span className="text-gray-600">Base Total:</span>
-              <span className="font-semibold text-gray-800">
-                {formatCurrency(adjustments.baseTotal)}
-              </span>
-            </div>
-            {unexpectedPercentage > 0 && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Contingency (Unforeseen Costs) ({unexpectedPercentage}%):
-                </span>
-                <span className="font-semibold text-gray-800">
-                  {formatCurrency(adjustments.unexpectedAmount)}
-                </span>
-              </div>
-            )}
-            {localAgentCommissionPercentage > 0 && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Local Agent Commission ({localAgentCommissionPercentage}%):
-                </span>
-                <span className="font-semibold text-gray-800">
-                  {formatCurrency(adjustments.localAgentCommissionAmount)}
-                </span>
-              </div>
-            )}
-            {myProfitPercentage > 0 && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Profit Margin ({myProfitPercentage}%):
-                </span>
-                <span className="font-semibold text-gray-800">
-                  {formatCurrency(adjustments.myProfitAmount)}
-                </span>
-              </div>
-            )}
-            <div className="flex justify-between pt-2 border-t border-gray-200">
-              <span className="font-semibold text-gray-800">Grand Total:</span>
-              <span className="font-bold text-lg text-gray-900">
-                {formatCurrency(adjustments.finalTotal)}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Final Price Per Person:</span>
-              <span className="font-semibold text-gray-800">
-                {formatCurrency(travelers > 0 ? adjustments.finalTotal / travelers : 0)}
-              </span>
+        {showPricingAdjustments && (
+          <div className="mb-6 p-4 md:p-6 bg-blue-50 rounded-lg border border-blue-200">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Pricing Adjustments</h2>
+            <div className="space-y-4">
+              <Input
+                label="Contingency (Unforeseen Costs) (%)"
+                type="number"
+                value={unexpectedPercentage}
+                onChange={(value) => {
+                  const numValue = typeof value === 'number' ? value : Number(value);
+                  setUnexpectedPercentage(numValue);
+                  if (draft) {
+                    setDraft({ ...draft, unexpectedPercentage: numValue });
+                  }
+                }}
+                min={0}
+                max={100}
+                step={0.1}
+              />
+              <Input
+                label="Local Agent Commission (%)"
+                type="number"
+                value={localAgentCommissionPercentage}
+                onChange={(value) => {
+                  const numValue = typeof value === 'number' ? value : Number(value);
+                  setLocalAgentCommissionPercentage(numValue);
+                  if (draft) {
+                    setDraft({ ...draft, localAgentCommissionPercentage: numValue });
+                  }
+                }}
+                min={0}
+                max={100}
+                step={0.1}
+              />
+              <Input
+                label="Profit Margin (%)"
+                type="number"
+                value={myProfitPercentage}
+                onChange={(value) => {
+                  const numValue = typeof value === 'number' ? value : Number(value);
+                  setMyProfitPercentage(numValue);
+                  if (draft) {
+                    setDraft({ ...draft, myProfitPercentage: numValue });
+                  }
+                }}
+                min={0}
+                max={100}
+                step={0.1}
+              />
             </div>
           </div>
-        </div>
+        )}
 
         {/* Navigation Controls */}
         <div className="flex gap-2">
@@ -418,12 +449,16 @@ export const PricingPage: React.FC = () => {
               };
               const calculationResult = convertToCalculationResult(
                 adjustedResult,
-                id || 'draft'
+                tripId || 'draft'
               );
               // Save to context so TripSummaryPage can display it
               setCalculationResult(calculationResult);
               // Navigate to summary
-              navigate(`/trip/${id}/summary`);
+              if (!tripId) {
+                navigate('/trip/new');
+                return;
+              }
+              navigate(`/trip/${tripId}/summary`);
             }}
             variant="primary"
           >

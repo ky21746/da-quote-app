@@ -3,11 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTrip } from '../../context/TripContext';
 import { Button, ProgressStepper } from '../common';
 import { LogisticsSection } from './LogisticsSection';
+import { useActiveTripContext } from '../../hooks/useActiveTripContext';
 
 export const LogisticsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { draft } = useTrip();
+  const { activeTripId } = useActiveTripContext();
+
+  const tripId = activeTripId ?? id ?? null;
 
   const progressSteps = [
     'Setup',
@@ -84,7 +88,13 @@ export const LogisticsPage: React.FC = () => {
               </div>
             )}
             <Button
-              onClick={() => navigate(`/trip/${id}/review`)}
+              onClick={() => {
+                if (!tripId) {
+                  navigate('/trip/new');
+                  return;
+                }
+                navigate(`/trip/${tripId}/review`);
+              }}
               variant="primary"
               disabled={!canProceed}
             >

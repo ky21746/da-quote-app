@@ -7,12 +7,16 @@ import { getPricingItemById, getPricingItemsByIds } from '../../utils/pricingCat
 import { getParks, assertValidParkId } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
 import { Calendar, AlertCircle } from 'lucide-react';
+import { useActiveTripContext } from '../../hooks/useActiveTripContext';
 
 export const ReviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { draft } = useTrip();
   const { items: pricingItems } = usePricingCatalog();
+  const { activeTripId } = useActiveTripContext();
+
+  const tripId = activeTripId ?? id ?? null;
 
   const getParkName = (parkId?: string): string => {
     if (!parkId) return 'Not selected';
@@ -102,7 +106,13 @@ export const ReviewPage: React.FC = () => {
             )}
           </div>
           <Button
-            onClick={() => navigate(`/trip/${id}/edit`)}
+            onClick={() => {
+              if (!tripId) {
+                navigate('/trip/new');
+                return;
+              }
+              navigate(`/trip/${tripId}/edit`);
+            }}
             variant="secondary"
             type="button"
           >
@@ -292,7 +302,13 @@ export const ReviewPage: React.FC = () => {
               </div>
             )}
             <Button
-              onClick={() => navigate(`/trip/${id}/pricing`)}
+              onClick={() => {
+                if (!tripId) {
+                  navigate('/trip/new');
+                  return;
+                }
+                navigate(`/trip/${tripId}/pricing`);
+              }}
               variant="primary"
               disabled={!canEnterPricing}
             >
