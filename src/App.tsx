@@ -4,6 +4,7 @@ import { TripProvider } from './context/TripContext';
 import { PricingCatalogProvider } from './context/PricingCatalogContext';
 import AppHeader from './components/layout/AppHeader';
 import { AppRoutes } from './routes/AppRoutes';
+import VersionBadge from './components/layout/VersionBadge';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -13,6 +14,7 @@ export const App: React.FC = () => {
         <PricingCatalogProvider>
           <AppHeader />
           <AppRoutes />
+          <VersionBadge />
         </PricingCatalogProvider>
       </TripProvider>
     </BrowserRouter>
