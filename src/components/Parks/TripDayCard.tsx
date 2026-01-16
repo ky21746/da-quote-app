@@ -86,6 +86,32 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   const selectedVehicleItem = logistics?.vehicle
     ? pricingItems.find((i) => i.id === logistics.vehicle) || null
     : null;
+  const selectedLodgingItem = lodging
+    ? pricingItems.find((i) => i.id === lodging) || null
+    : null;
+
+  const landingFeeItems = pricingItems.filter((i) => {
+    const name = (i.itemName || '').toLowerCase();
+    return name.includes('aircraft landing fee');
+  });
+
+  const isAirArrival = (() => {
+    const name = (selectedArrivalItem?.itemName || '').toLowerCase();
+    return name.includes('helicopter') || name.includes('fixed wing') || name.includes('fixed-wing');
+  })();
+
+  const isHelicopter = (() => {
+    const name = (selectedArrivalItem?.itemName || '').toLowerCase();
+    return name.includes('helicopter');
+  })();
+
+  const derivedLandingFeeItem = (() => {
+    if (!isAirArrival) return null;
+    if (isHelicopter) {
+      return landingFeeItems.find((i) => (i.itemName || '').toLowerCase().includes('helicopter')) || null;
+    }
+    return landingFeeItems.find((i) => (i.itemName || '').toLowerCase().includes('fix wing') || (i.itemName || '').toLowerCase().includes('fixed wing')) || null;
+  })();
 
   const safeFreeHandLines = Array.isArray(freeHandLines) ? freeHandLines : [];
 
@@ -246,7 +272,48 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
               label="Arrival to Park (Flight or Vehicle)"
               value={arrival}
               onChange={(pricingItemId) => {
-                onUpdate({ arrival: pricingItemId });
+                const nextArrivalItem = pricingItemId
+                  ? pricingItems.find((i) => i.id === pricingItemId) || null
+                  : null;
+
+                const isAirArrival = (() => {
+                  const name = (nextArrivalItem?.itemName || '').toLowerCase();
+                  return name.includes('helicopter') || name.includes('fixed wing') || name.includes('fixed-wing');
+                })();
+
+                const nextIsHelicopter = (() => {
+                  const name = (nextArrivalItem?.itemName || '').toLowerCase();
+                  return name.includes('helicopter');
+                })();
+
+                const nextLandingFeeItem = (() => {
+                  if (!isAirArrival) return null;
+                  if (nextIsHelicopter) {
+                    return landingFeeItems.find((i) => (i.itemName || '').toLowerCase().includes('helicopter')) || null;
+                  }
+                  return landingFeeItems.find((i) => (i.itemName || '').toLowerCase().includes('fix wing') || (i.itemName || '').toLowerCase().includes('fixed wing')) || null;
+                })();
+
+                const autoLandingFeeId = nextLandingFeeItem ? nextLandingFeeItem.id : null;
+
+                const isLandingFeeItemId = (itemId: string) =>
+                  landingFeeItems.some((i) => i.id === itemId);
+
+                const prevFees = Array.isArray(parkFees) ? parkFees : [];
+                const withoutAutoLanding = prevFees.filter((f) => !isLandingFeeItemId(f.itemId));
+
+                const nextFees = (() => {
+                  if (!autoLandingFeeId) return withoutAutoLanding;
+                  const existing = prevFees.find((f) => f.itemId === autoLandingFeeId);
+                  if (existing) return withoutAutoLanding.concat(existing);
+                  return withoutAutoLanding.concat({
+                    itemId: autoLandingFeeId,
+                    source: 'auto',
+                    excluded: false,
+                  });
+                })();
+
+                onUpdate({ arrival: pricingItemId, parkFees: nextFees });
 
                 setDraft((prev) => {
                   if (!prev) return prev;
@@ -324,6 +391,54 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                   </div>
                 </div>
               )}
+
+            {/* Aircraft Landing Fee - inline control */}
+            {isAirArrival && derivedLandingFeeItem && (
+              <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                <label className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={(() => {
+                        const fee = (parkFees || []).find((f) => f.itemId === derivedLandingFeeItem.id);
+                        return fee ? fee.excluded !== true : false;
+                      })()}
+                      onChange={() => {
+                        const prevFees = Array.isArray(parkFees) ? parkFees : [];
+                        const existing = prevFees.find((f) => f.itemId === derivedLandingFeeItem.id);
+                        
+                        if (existing) {
+                          const nextFees = prevFees.map((f) =>
+                            f.itemId === derivedLandingFeeItem.id
+                              ? { ...f, excluded: !f.excluded }
+                              : f
+                          );
+                          onUpdate({ parkFees: nextFees });
+                        } else {
+                          onUpdate({
+                            parkFees: [...prevFees, {
+                              itemId: derivedLandingFeeItem.id,
+                              source: 'auto',
+                              excluded: false,
+                            }],
+                          });
+                        }
+                      }}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-700">
+                        {isHelicopter ? 'Helicopter landing fee' : 'Fixed-wing aircraft landing fee'}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        ${derivedLandingFeeItem.basePrice?.toFixed(2) || '0.00'} per landing
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-xs text-gray-400 italic">Auto</span>
+                </label>
+              </div>
+            )}
           </div>
         )}
 

@@ -63,36 +63,16 @@ const logisticsData = [
     active: true,
     notes: 'FNR rate – per boat per 24h',
   },
-  // Aircraft Landing Fees
+  // Aircraft Landing Fee
   {
     parkId: null,
     category: 'Logistics',
-    itemName: 'Aircraft Landing Fee – 7–14 Seats',
-    basePrice: 40,
+    itemName: 'Aircraft Landing Fee',
+    basePrice: 100,
     costType: 'fixed_group',
     appliesTo: 'Global',
     active: true,
-    notes: 'FNR rate – per landing',
-  },
-  {
-    parkId: null,
-    category: 'Logistics',
-    itemName: 'Aircraft Landing Fee – 15–20 Seats',
-    basePrice: 50,
-    costType: 'fixed_group',
-    appliesTo: 'Global',
-    active: true,
-    notes: 'FNR rate – per landing',
-  },
-  {
-    parkId: null,
-    category: 'Logistics',
-    itemName: 'Aircraft Landing Fee – Helicopter',
-    basePrice: 125,
-    costType: 'fixed_group',
-    appliesTo: 'Global',
-    active: true,
-    notes: 'FNR rate – per landing',
+    notes: 'FNR rate – per landing (helicopter or fixed-wing)',
   },
 ];
 
