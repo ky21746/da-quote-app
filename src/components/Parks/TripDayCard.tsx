@@ -662,7 +662,10 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
               })}
               category="Logistics"
               parkId={parkId}
-              items={pricingItems}
+              items={pricingItems.filter((item) => {
+                const name = (item.itemName || '').toLowerCase();
+                return !name.includes('aircraft landing fee');
+              })}
               isLoading={catalogLoading}
             />
 
