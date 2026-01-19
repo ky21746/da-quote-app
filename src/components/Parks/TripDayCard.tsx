@@ -86,9 +86,6 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   const selectedVehicleItem = logistics?.vehicle
     ? pricingItems.find((i) => i.id === logistics.vehicle) || null
     : null;
-  const selectedLodgingItem = lodging
-    ? pricingItems.find((i) => i.id === lodging) || null
-    : null;
 
   const landingFeeItems = pricingItems.filter((i) => {
     const name = (i.itemName || '').toLowerCase();

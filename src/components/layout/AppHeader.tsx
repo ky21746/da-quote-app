@@ -74,19 +74,25 @@ export default function AppHeader() {
   return (
     <header className="w-full h-16 md:h-20 flex items-center justify-between px-4 md:px-6 lg:px-8 border-b border-brand-olive/20 bg-white">
       <div className="flex items-center gap-3">
-        {/* לוגו - שים את הקובץ ב-public/logo.png או public/assets/logo.svg */}
-        <img 
-          src="/logo.png" 
-          alt="Discover Africa"
-          className="h-10 w-auto"
-          onError={(e) => {
-            // אם אין לוגו, הסתר את התמונה
-            e.currentTarget.style.display = 'none';
-          }}
-        />
-        <div className="font-bold text-lg text-brand-dark">
-          Discover Africa
-        </div>
+        <button
+          onClick={() => navigate('/trip/new')}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          aria-label="Back to Home"
+        >
+          {/* לוגו - שים את הקובץ ב-public/logo.png או public/assets/logo.svg */}
+          <img 
+            src="/logo.png" 
+            alt="Discover Africa"
+            className="h-10 w-auto"
+            onError={(e) => {
+              // אם אין לוגו, הסתר את התמונה
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+          <div className="font-bold text-lg text-brand-dark">
+            Discover Africa
+          </div>
+        </button>
 
         {typeof referenceNumber === 'number' && (
           <div className="ml-2 px-3 py-1 rounded border border-brand-olive/20 bg-brand-olive/5">
