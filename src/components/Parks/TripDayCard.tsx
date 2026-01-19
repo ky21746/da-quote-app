@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
+import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
 import { Calendar, ChevronRight } from 'lucide-react';
@@ -441,7 +441,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
 
         {/* 3. Lodging */}
         {parkId && (
-          <PricingCatalogSelect
+          <SearchablePricingCatalogSelect
             label="Lodging"
             value={lodging}
             onChange={(pricingItemId) => onUpdate({ lodging: pricingItemId })}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParkCard as ParkCardType } from '../../types/ui';
-import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
+import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
 import { Trees } from 'lucide-react';
@@ -208,7 +208,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             </div>
 
             {/* 4. Lodging - park-level (applies to all nights) */}
-            <PricingCatalogSelect
+            <SearchablePricingCatalogSelect
               label="Lodging (all nights)"
               value={card.lodging}
               onChange={(pricingItemId) => onUpdate({ lodging: pricingItemId })}
