@@ -78,11 +78,22 @@ export const SearchablePricingCatalogSelect: React.FC<SearchablePricingCatalogSe
 
   const isDisabled = propDisabled || isLoading;
 
-  const displayText = useMemo(() => {
-    if (isLoading) return 'Loading...';
-    if (!selectedItem) return 'Not selected';
-    return `${selectedItem.itemName} - ${formatCurrency(selectedItem.basePrice)} (${selectedItem.costType.replace(/_/g, ' ')})`;
-  }, [selectedItem, isLoading]);
+  // Parse hotel name and room details from itemName
+  const parseItemName = (itemName: string) => {
+    // Pattern: "Hotel Name – Room Type – Details"
+    const parts = itemName.split('–').map(p => p.trim());
+    if (parts.length >= 2) {
+      return {
+        hotelName: parts[0],
+        roomDetails: parts.slice(1).join(' – ')
+      };
+    }
+    // Old format without hotel name - show as single line
+    return {
+      hotelName: '',
+      roomDetails: itemName
+    };
+  };
 
   return (
     <div className="mb-4" ref={containerRef}>
@@ -102,11 +113,32 @@ export const SearchablePricingCatalogSelect: React.FC<SearchablePricingCatalogSe
             isDisabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white cursor-pointer'
           }`}
         >
-          <span className={selectedItem ? 'text-gray-900' : 'text-gray-400'}>
-            {displayText}
-          </span>
+          {isLoading ? (
+            <span className="text-gray-400">Loading...</span>
+          ) : !selectedItem ? (
+            <span className="text-gray-400">Not selected</span>
+          ) : (() => {
+              const { hotelName, roomDetails } = parseItemName(selectedItem.itemName);
+              return hotelName ? (
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-gray-900 truncate">
+                    {hotelName}
+                  </div>
+                  <div className="text-sm text-gray-600 truncate">
+                    {roomDetails}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 min-w-0">
+                  <div className="text-gray-900 truncate">
+                    {roomDetails}
+                  </div>
+                </div>
+              );
+            })()
+          }
           <svg
-            className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'transform rotate-180' : ''}`}
+            className={`w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ml-2 ${isOpen ? 'transform rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -144,29 +176,47 @@ export const SearchablePricingCatalogSelect: React.FC<SearchablePricingCatalogSe
                   No results found for "{searchTerm}"
                 </div>
               ) : (
-                searchFilteredItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleSelect(item.id)}
-                    className={`w-full text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-50 focus:outline-none border-b border-gray-100 ${
-                      item.id === value ? 'bg-blue-100 font-medium' : ''
-                    }`}
-                  >
-                    <div className="flex justify-between items-start gap-2">
-                      <span className="text-sm flex-1">{item.itemName}</span>
-                      <span className="text-sm font-semibold text-brand-olive whitespace-nowrap">
-                        {formatCurrency(item.basePrice)}
-                      </span>
-                    </div>
-                    <div className="text-xs text-gray-500 mt-0.5">
-                      {item.costType.replace(/_/g, ' ')}
-                      {item.notes && (
-                        <span className="ml-2 text-gray-400">• {item.notes.substring(0, 60)}{item.notes.length > 60 ? '...' : ''}</span>
-                      )}
-                    </div>
-                  </button>
-                ))
+                searchFilteredItems.map((item) => {
+                  const { hotelName, roomDetails } = parseItemName(item.itemName);
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => handleSelect(item.id)}
+                      className={`w-full text-left px-3 py-2 hover:bg-blue-50 focus:bg-blue-50 focus:outline-none border-b border-gray-100 ${
+                        item.id === value ? 'bg-blue-100' : ''
+                      }`}
+                    >
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="flex-1 min-w-0">
+                          {hotelName ? (
+                            <>
+                              <div className="font-semibold text-gray-900 text-sm">
+                                {hotelName}
+                              </div>
+                              <div className="text-sm text-gray-600 mt-0.5">
+                                {roomDetails}
+                              </div>
+                            </>
+                          ) : (
+                            <div className="text-sm text-gray-900">
+                              {roomDetails}
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-sm font-semibold text-brand-olive whitespace-nowrap">
+                          {formatCurrency(item.basePrice)}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {item.costType.replace(/_/g, ' ')}
+                        {item.notes && (
+                          <span className="ml-2 text-gray-400">• {item.notes.substring(0, 60)}{item.notes.length > 60 ? '...' : ''}</span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })
               )}
             </div>
 
