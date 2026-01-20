@@ -59,7 +59,8 @@ export const ImportLemalaWildwatersHierarchical: React.FC = () => {
             <li>2 Room Types: Standard Suite, Private Pool Suite</li>
             <li>3 Seasons: High, Mid, Low</li>
             <li>Multiple occupancy options (Single/Double/Triple/Suite)</li>
-            <li>Additional fees: Room Levy ($2/room/day) + Community Fee ($10/room/stay)</li>
+            <li><strong>Additional fee:</strong> $12 Community and Government Contribution (per booking)</li>
+            <li><strong>Restrictions:</strong> No family room, max 3 people, no guests below 16 years</li>
             <li>All pricing stored in metadata (editable in catalog table)</li>
           </ul>
         </p>

@@ -15,7 +15,7 @@ const lemalaWildwatersHierarchical = {
   appliesTo: 'Park',
   active: true,
   sku: 'LWL-HIER',
-  notes: 'Hierarchical pricing - use Configure button. Includes room levy $2/room/day + community fee $10/room/stay',
+  notes: 'Hierarchical pricing - use Configure button. NOTE: No family room available, maximum 3 people per room, no guests below 16 years. $12 community and government contribution per booking (separate charge).',
   
   metadata: {
     type: 'hierarchical',
@@ -87,16 +87,18 @@ const lemalaWildwatersHierarchical = {
       }
     },
     additionalFees: {
-      roomLevy: {
-        amount: 2,
-        unit: 'per room per day',
-        description: 'Room Levy'
-      },
-      communityFee: {
-        amount: 10,
-        unit: 'per room per stay',
-        description: 'Community Contribution Fee'
+      communityGovernmentFee: {
+        amount: 12,
+        unit: 'per booking',
+        description: 'Community and Government Contribution',
+        note: 'Separate charge - applies to every booking'
       }
+    },
+    restrictions: {
+      noFamilyRoom: true,
+      maxOccupancy: 3,
+      minAge: 16,
+      description: 'No family room available. Maximum 3 people per room. No guests below 16 years.'
     }
   }
 };

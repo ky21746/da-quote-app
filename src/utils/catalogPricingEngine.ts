@@ -113,18 +113,49 @@ export function calculatePricingFromCatalog(
       if (day.lodging) {
         const item = getPricingItemById(pricingItems, day.lodging);
         if (item) {
-          const { total, explanation } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
-          breakdown.push({
-            id: `line_day${day.dayNumber}_lodging`,
-            park: parkName,
-            category: item.category,
-            itemName: item.itemName,
-            basePrice: item.basePrice,
-            costType: item.costType,
-            calculatedTotal: total,
-            perPerson: travelers > 0 ? total / travelers : 0,
-            calculationExplanation: explanation,
-          });
+          // Check if this is hierarchical lodging with config
+          if (item.costType === 'hierarchical_lodging' && day.lodgingConfig) {
+            const config = day.lodgingConfig;
+            const configuredPrice = config.price;
+            
+            // Calculate total based on price type
+            let total = 0;
+            let explanation = '';
+            
+            if (config.priceType === 'perRoom' || config.priceType === 'perVilla') {
+              total = configuredPrice;
+              explanation = `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${config.priceType === 'perVilla' ? 'per villa' : 'per room'}`;
+            } else if (config.priceType === 'perPerson') {
+              total = configuredPrice * travelers;
+              explanation = `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${travelers} travelers`;
+            }
+            
+            breakdown.push({
+              id: `line_day${day.dayNumber}_lodging`,
+              park: parkName,
+              category: item.category,
+              itemName: `${item.itemName} (${config.roomTypeName})`,
+              basePrice: configuredPrice,
+              costType: item.costType,
+              calculatedTotal: total,
+              perPerson: travelers > 0 ? total / travelers : 0,
+              calculationExplanation: explanation,
+            });
+          } else {
+            // Regular lodging calculation
+            const { total, explanation } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
+            breakdown.push({
+              id: `line_day${day.dayNumber}_lodging`,
+              park: parkName,
+              category: item.category,
+              itemName: item.itemName,
+              basePrice: item.basePrice,
+              costType: item.costType,
+              calculatedTotal: total,
+              perPerson: travelers > 0 ? total / travelers : 0,
+              calculationExplanation: explanation,
+            });
+          }
         }
       }
 
@@ -455,6 +486,13 @@ function calculateItemTotal(
     case 'per_guide':
       total = item.basePrice;
       explanation = `${item.basePrice} (per guide)`;
+      break;
+
+    case 'hierarchical_lodging':
+      // Hierarchical lodging should be handled separately with lodgingConfig
+      // If we reach here, config is missing
+      total = 0;
+      explanation = 'Unknown cost type (hierarchical lodging - use Configure button)';
       break;
 
     default:
