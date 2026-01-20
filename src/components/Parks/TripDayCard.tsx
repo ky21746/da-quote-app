@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
+import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect, LodgingConfigModal } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
-import { Calendar, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronRight, Settings } from 'lucide-react';
 import { useTrip } from '../../context/TripContext';
 import type { TripDayParkFee, FreeHandLine } from '../../types/ui';
 
@@ -11,6 +11,15 @@ interface TripDayCardProps {
   parkId?: string;
   arrival?: string; // pricingItemId
   lodging?: string; // pricingItemId
+  lodgingConfig?: {
+    roomType: string;
+    roomTypeName: string;
+    season: string;
+    seasonName: string;
+    occupancy: string;
+    price: number;
+    priceType: 'perRoom' | 'perPerson' | 'perVilla';
+  };
   activities: string[]; // pricingItemIds
   extras?: string[]; // pricingItemIds
   freeHandLines?: FreeHandLine[];
@@ -24,6 +33,15 @@ interface TripDayCardProps {
     parkId?: string;
     arrival?: string;
     lodging?: string;
+    lodgingConfig?: {
+      roomType: string;
+      roomTypeName: string;
+      season: string;
+      seasonName: string;
+      occupancy: string;
+      price: number;
+      priceType: 'perRoom' | 'perPerson' | 'perVilla';
+    };
     activities?: string[];
     extras?: string[];
     freeHandLines?: FreeHandLine[];
@@ -43,6 +61,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   parkId,
   arrival,
   lodging,
+  lodgingConfig,
   activities,
   extras,
   freeHandLines,
@@ -66,6 +85,8 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   const [openSection, setOpenSection] = useState<
     null | 'fees' | 'arrival' | 'lodging' | 'activities' | 'extras' | 'logistics' | 'one_off'
   >(() => getInitialOpenSection());
+  
+  const [isLodgingModalOpen, setIsLodgingModalOpen] = useState(false);
 
   const travelers = draft?.travelers || 0;
 
@@ -440,17 +461,96 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
         )}
 
         {/* 3. Lodging */}
-        {parkId && (
-          <SearchablePricingCatalogSelect
-            label="Lodging"
-            value={lodging}
-            onChange={(pricingItemId) => onUpdate({ lodging: pricingItemId })}
-            category="Lodging"
-            parkId={parkId}
-            items={pricingItems}
-            isLoading={catalogLoading}
-          />
-        )}
+        {parkId && (() => {
+          const selectedLodgingItem = lodging
+            ? pricingItems.find((i) => i.id === lodging)
+            : null;
+          
+          // Support both "hierarchical_lodging" and "hierarchical lodging"
+          const costType = selectedLodgingItem?.costType || '';
+          const isHierarchical = costType === 'hierarchical_lodging' || (costType as string) === 'hierarchical lodging';
+          const metadata = selectedLodgingItem?.metadata as any;
+
+          // Debug logging
+          if (selectedLodgingItem) {
+            console.log('🏨 Selected Lodging Item:', {
+              name: selectedLodgingItem.itemName,
+              costType: selectedLodgingItem.costType,
+              isHierarchical,
+              hasMetadata: !!metadata,
+              metadata: metadata
+            });
+          }
+
+          return (
+            <div className="space-y-2">
+              <div className="flex gap-2 items-end">
+                <div className="flex-1 mb-[-1rem]">
+                  <SearchablePricingCatalogSelect
+                    label="Lodging"
+                    value={lodging}
+                    onChange={(pricingItemId) => onUpdate({ lodging: pricingItemId })}
+                    category="Lodging"
+                    parkId={parkId}
+                    items={pricingItems}
+                    isLoading={catalogLoading}
+                  />
+                </div>
+                {isHierarchical && metadata && (
+                  <button
+                    onClick={() => setIsLodgingModalOpen(true)}
+                    className="px-4 py-2 bg-brand-gold text-white rounded-lg hover:bg-brand-gold/90 transition-colors flex items-center gap-2 h-[42px]"
+                    title="Configure room, season, and occupancy"
+                  >
+                    <Settings size={18} />
+                    Configure
+                  </button>
+                )}
+              </div>
+
+              {/* Display selected config */}
+              {isHierarchical && lodgingConfig && (
+                <div className="mt-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="text-sm font-semibold text-green-800 mb-2">Selected Configuration:</div>
+                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                    <div>
+                      <span className="font-medium">Room:</span> {lodgingConfig.roomTypeName}
+                    </div>
+                    <div>
+                      <span className="font-medium">Season:</span> {lodgingConfig.seasonName}
+                    </div>
+                    <div>
+                      <span className="font-medium">Occupancy:</span> {lodgingConfig.occupancy.replace(/_/g, ' ')}
+                    </div>
+                    <div>
+                      <span className="font-medium">Price:</span> ${lodgingConfig.price.toLocaleString()}/{lodgingConfig.priceType === 'perRoom' ? 'room' : lodgingConfig.priceType === 'perVilla' ? 'villa' : 'person'}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsLodgingModalOpen(true)}
+                    className="mt-3 text-sm text-blue-600 hover:text-blue-800 underline"
+                  >
+                    Change Configuration
+                  </button>
+                </div>
+              )}
+
+              {isHierarchical && metadata && selectedLodgingItem && (
+                <LodgingConfigModal
+                  isOpen={isLodgingModalOpen}
+                  onClose={() => setIsLodgingModalOpen(false)}
+                  hotelName={selectedLodgingItem.itemName}
+                  metadata={metadata}
+                  onConfirm={(config) => {
+                    console.log('Lodging config selected:', config);
+                    onUpdate({ lodgingConfig: config });
+                    setIsLodgingModalOpen(false);
+                  }}
+                />
+              )}
+            </div>
+          );
+        })()}
 
         {/* 4. Activities */}
         {parkId && (

@@ -8,6 +8,7 @@ export * from './PricingCatalogSelect';
 export * from './SearchablePricingCatalogSelect';
 export * from './PricingCatalogMultiSelect';
 export * from './LodgingSelector';
+export * from './LodgingConfigModal';
 export * from './VehicleSelector';
 export * from './DomesticFlightSelector';
 export * from './ParksSelector';

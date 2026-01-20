@@ -1,5 +1,5 @@
 /**
- * Delete ONLY Nile Safari Lodge lodging items
+ * Delete ONLY Para Safari Lodge lodging items
  */
 
 import React, { useState } from 'react';
@@ -7,7 +7,7 @@ import { Button } from '../common';
 import { collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 
-export const DeleteOldLodgingItems: React.FC = () => {
+export const DeleteParaSafariItems: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [result, setResult] = useState<{
     deleted: number;
@@ -15,7 +15,7 @@ export const DeleteOldLodgingItems: React.FC = () => {
   } | null>(null);
 
   const handleDelete = async () => {
-    if (!window.confirm('This will delete ALL Nile Safari Lodge lodging items. Continue?')) {
+    if (!window.confirm('This will delete ALL Para Safari Lodge lodging items. Continue?')) {
       return;
     }
 
@@ -37,9 +37,8 @@ export const DeleteOldLodgingItems: React.FC = () => {
         const item = docSnap.data();
         const itemName = item.itemName || '';
         
-        // Delete ONLY items that contain "Nile Safari Lodge"
-        // This includes both old format and new hierarchical format
-        if (itemName.includes('Nile Safari Lodge') || itemName === 'Nile Safari Lodge') {
+        // Delete ONLY items that contain "Para Safari Lodge"
+        if (itemName.includes('Para Safari Lodge') || itemName === 'Para Safari Lodge') {
           await deleteDoc(doc(db, 'pricingCatalog', docSnap.id));
           console.log(`✅ Deleted: ${itemName}`);
           deletedItems.push(itemName);
@@ -48,7 +47,7 @@ export const DeleteOldLodgingItems: React.FC = () => {
       }
 
       setResult({ deleted, items: deletedItems });
-      console.log(`\n📊 Deletion Summary: ${deleted} Nile Safari Lodge items deleted`);
+      console.log(`\n📊 Deletion Summary: ${deleted} Para Safari Lodge items deleted`);
     } catch (error) {
       console.error('Delete failed:', error);
       setResult({ deleted: 0, items: [] });
@@ -59,9 +58,9 @@ export const DeleteOldLodgingItems: React.FC = () => {
 
   return (
     <div className="p-6 bg-red-50 border border-red-200 rounded-lg shadow">
-      <h2 className="text-2xl font-bold mb-4 text-red-800">Delete Nile Safari Lodge Items</h2>
+      <h2 className="text-2xl font-bold mb-4 text-red-800">Delete Para Safari Lodge Items</h2>
       <p className="text-gray-700 mb-4">
-        This will delete ALL lodging items that contain "Nile Safari Lodge" in the name.
+        This will delete ALL lodging items that contain "Para Safari Lodge" in the name.
         Check the browser console for detailed results.
       </p>
       
@@ -71,7 +70,7 @@ export const DeleteOldLodgingItems: React.FC = () => {
           disabled={isDeleting}
           variant="secondary"
         >
-          {isDeleting ? 'Deleting...' : 'Delete Nile Safari Lodge Items'}
+          {isDeleting ? 'Deleting...' : 'Delete Para Safari Lodge Items'}
         </Button>
       </div>
 
@@ -94,10 +93,10 @@ export const DeleteOldLodgingItems: React.FC = () => {
         <p className="text-sm text-blue-800">
           <strong>This will delete:</strong>
           <ul className="list-disc list-inside mt-2">
-            <li>All items containing "Nile Safari Lodge"</li>
+            <li>All items containing "Para Safari Lodge"</li>
             <li>Both old and new format items</li>
             <li>All seasonal variations (Low/High Season)</li>
-            <li>All room types (Deluxe Banda, Exclusive Banda, Family Villa)</li>
+            <li>All room types (Signature Cottage, Classic Room, Deluxe Family Room)</li>
           </ul>
         </p>
       </div>

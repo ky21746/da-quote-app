@@ -51,6 +51,7 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
               active: docData.active !== undefined ? docData.active : true,
               notes: docData.notes ?? null,
               sku: docData.sku || undefined,
+              metadata: docData.metadata || undefined,
             };
 
             // Validate required fields

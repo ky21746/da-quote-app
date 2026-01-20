@@ -39,7 +39,21 @@ export const SearchablePricingCatalogSelect: React.FC<SearchablePricingCatalogSe
     assertValidParkId(parkId);
   }
 
-  const filteredItems = useMemo(() => getCatalogItemsForPark(items, parkId, category), [items, parkId, category]);
+  const filteredItems = useMemo(() => {
+    const result = getCatalogItemsForPark(items, parkId, category);
+    
+    // Debug logging for Lodging in Murchison
+    if (category === 'Lodging' && parkId === 'MURCHISON') {
+      console.log('🔍 Lodging items for MURCHISON:', {
+        totalItems: items.length,
+        filteredCount: result.length,
+        filtered: result.map(i => ({ name: i.itemName, costType: i.costType, parkId: i.parkId })),
+        allLodging: items.filter(i => i.category === 'Lodging' && i.parkId === 'MURCHISON').map(i => ({ name: i.itemName, active: i.active, costType: i.costType }))
+      });
+    }
+    
+    return result;
+  }, [items, parkId, category]);
   const selectedItem = value ? getPricingItemById(items, value) : null;
 
   const searchFilteredItems = useMemo(() => {
@@ -204,13 +218,16 @@ export const SearchablePricingCatalogSelect: React.FC<SearchablePricingCatalogSe
                             </div>
                           )}
                         </div>
-                        <span className="text-sm font-semibold text-brand-olive whitespace-nowrap">
-                          {formatCurrency(item.basePrice)}
-                        </span>
+                        {/* Hide price for hierarchical lodging */}
+                        {item.costType !== 'hierarchical_lodging' && (
+                          <span className="text-sm font-semibold text-brand-olive whitespace-nowrap">
+                            {formatCurrency(item.basePrice)}
+                          </span>
+                        )}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
-                        {item.costType.replace(/_/g, ' ')}
-                        {item.notes && (
+                        {item.costType === 'hierarchical_lodging' ? 'Hierarchical pricing - use Configure button' : item.costType.replace(/_/g, ' ')}
+                        {item.notes && item.costType !== 'hierarchical_lodging' && (
                           <span className="ml-2 text-gray-400">• {item.notes.substring(0, 60)}{item.notes.length > 60 ? '...' : ''}</span>
                         )}
                       </div>

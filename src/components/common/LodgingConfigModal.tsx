@@ -1,0 +1,318 @@
+import React, { useState, useMemo } from 'react';
+import { Button } from './Button';
+import { X } from 'lucide-react';
+
+interface LodgingMetadata {
+  type: 'hierarchical';
+  rooms: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    pricing: {
+      [season: string]: {
+        [occupancy: string]: number | { perRoom?: number; perPerson?: number; perVilla?: number };
+      };
+    };
+  }>;
+  seasons: {
+    [key: string]: {
+      name: string;
+      description: string;
+    };
+  };
+}
+
+interface LodgingConfig {
+  hotelName: string;
+  roomType: string;
+  roomTypeName: string;
+  season: string;
+  seasonName: string;
+  occupancy: string;
+  price: number;
+  priceType: 'perRoom' | 'perPerson' | 'perVilla';
+}
+
+interface LodgingConfigModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  hotelName: string;
+  metadata: LodgingMetadata;
+  onConfirm: (config: LodgingConfig) => void;
+}
+
+export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
+  isOpen,
+  onClose,
+  hotelName,
+  metadata,
+  onConfirm,
+}) => {
+  const [step, setStep] = useState(1);
+  const [selectedRoom, setSelectedRoom] = useState<string>('');
+  const [selectedSeason, setSelectedSeason] = useState<string>('');
+  const [selectedOccupancy, setSelectedOccupancy] = useState<string>('');
+
+  if (!isOpen) return null;
+
+  const currentRoom = metadata.rooms.find(r => r.id === selectedRoom);
+  const availableOccupancies = currentRoom && selectedSeason
+    ? Object.keys(currentRoom.pricing[selectedSeason] || {})
+    : [];
+
+  const calculatePrice = (): { price: number; priceType: 'perRoom' | 'perPerson' | 'perVilla' } | null => {
+    if (!currentRoom || !selectedSeason || !selectedOccupancy) return null;
+    
+    const priceData = currentRoom.pricing[selectedSeason]?.[selectedOccupancy];
+    if (!priceData) return null;
+
+    if (typeof priceData === 'number') {
+      return { price: priceData, priceType: 'perPerson' };
+    }
+
+    if (priceData.perRoom) {
+      return { price: priceData.perRoom, priceType: 'perRoom' };
+    }
+    if (priceData.perPerson) {
+      return { price: priceData.perPerson, priceType: 'perPerson' };
+    }
+    if (priceData.perVilla) {
+      return { price: priceData.perVilla, priceType: 'perVilla' };
+    }
+
+    return null;
+  };
+
+  const priceInfo = calculatePrice();
+
+  const handleConfirm = () => {
+    if (!currentRoom || !selectedSeason || !selectedOccupancy || !priceInfo) return;
+
+    const seasonInfo = metadata.seasons[selectedSeason];
+    
+    onConfirm({
+      hotelName,
+      roomType: selectedRoom,
+      roomTypeName: currentRoom.name,
+      season: selectedSeason,
+      seasonName: seasonInfo.name,
+      occupancy: selectedOccupancy,
+      price: priceInfo.price,
+      priceType: priceInfo.priceType,
+    });
+
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setStep(1);
+    setSelectedRoom('');
+    setSelectedSeason('');
+    setSelectedOccupancy('');
+    onClose();
+  };
+
+  const formatOccupancyLabel = (key: string): string => {
+    const labels: Record<string, string> = {
+      'double': 'Adult Double',
+      'single': 'Adult Single',
+      'triple': 'Triple Occupancy',
+      'child_5_15': 'Child 5-15 years',
+      'child_0_4': 'Child 0-4 years (FOC)',
+      'villa': 'Villa (1-8 guests)',
+    };
+    return labels[key] || key;
+  };
+
+  const formatPrice = (price: number, type: string): string => {
+    if (price === 0) return 'FOC';
+    const suffix = type === 'perRoom' ? '/room' : type === 'perVilla' ? '/villa' : '/person';
+    return `$${price.toLocaleString()}${suffix}`;
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Configure: {hotelName}</h2>
+            <p className="text-sm text-gray-500 mt-1">Step {step} of 3</p>
+          </div>
+          <button
+            onClick={handleClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="px-6 pt-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className={`text-xs font-medium ${step >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>Room Type</span>
+            <span className={`text-xs font-medium ${step >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>Season</span>
+            <span className={`text-xs font-medium ${step >= 3 ? 'text-blue-600' : 'text-gray-400'}`}>Occupancy</span>
+          </div>
+          <div className="flex gap-2">
+            <div className={`h-2 flex-1 rounded-full ${step >= 1 ? 'bg-blue-600' : 'bg-gray-200'}`} />
+            <div className={`h-2 flex-1 rounded-full ${step >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`} />
+            <div className={`h-2 flex-1 rounded-full ${step >= 3 ? 'bg-blue-600' : 'bg-gray-200'}`} />
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          {/* Step 1: Room Type */}
+          {step === 1 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Select Room Type</h3>
+              <div className="space-y-3">
+                {metadata.rooms.map((room) => (
+                  <button
+                    key={room.id}
+                    onClick={() => setSelectedRoom(room.id)}
+                    className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                      selectedRoom === room.id
+                        ? 'border-blue-600 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="font-semibold text-gray-900">{room.name}</div>
+                    {room.description && (
+                      <div className="text-sm text-gray-600 mt-1">{room.description}</div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Season */}
+          {step === 2 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Select Season</h3>
+              <div className="space-y-3">
+                {Object.entries(metadata.seasons).map(([key, season]) => (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedSeason(key)}
+                    className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                      selectedSeason === key
+                        ? 'border-blue-600 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="font-semibold text-gray-900">{season.name}</div>
+                    <div className="text-sm text-gray-600 mt-1">{season.description}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Occupancy */}
+          {step === 3 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Select Occupancy</h3>
+              <div className="space-y-3">
+                {availableOccupancies.map((occupancy) => {
+                  const priceData = currentRoom?.pricing[selectedSeason]?.[occupancy];
+                  let price = 0;
+                  let priceType = 'perPerson';
+
+                  if (typeof priceData === 'number') {
+                    price = priceData;
+                  } else if (priceData) {
+                    if (priceData.perRoom) {
+                      price = priceData.perRoom;
+                      priceType = 'perRoom';
+                    } else if (priceData.perPerson) {
+                      price = priceData.perPerson;
+                      priceType = 'perPerson';
+                    } else if (priceData.perVilla) {
+                      price = priceData.perVilla;
+                      priceType = 'perVilla';
+                    }
+                  }
+
+                  return (
+                    <button
+                      key={occupancy}
+                      onClick={() => setSelectedOccupancy(occupancy)}
+                      className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                        selectedOccupancy === occupancy
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div className="font-semibold text-gray-900">
+                          {formatOccupancyLabel(occupancy)}
+                        </div>
+                        <div className="text-lg font-bold text-blue-600">
+                          {formatPrice(price, priceType)}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Summary */}
+              {priceInfo && (
+                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="text-sm font-semibold text-green-800 mb-2">Selection Summary:</div>
+                  <div className="text-sm text-gray-700 space-y-1">
+                    <div><strong>Room:</strong> {currentRoom?.name}</div>
+                    <div><strong>Season:</strong> {metadata.seasons[selectedSeason].name}</div>
+                    <div><strong>Occupancy:</strong> {formatOccupancyLabel(selectedOccupancy)}</div>
+                    <div className="pt-2 border-t border-green-300 mt-2">
+                      <strong>Price:</strong> {formatPrice(priceInfo.price, priceInfo.priceType)}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between items-center p-6 border-t border-gray-200 bg-gray-50">
+          <div>
+            {step > 1 && (
+              <Button
+                onClick={() => setStep(step - 1)}
+                variant="secondary"
+              >
+                ← Back
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={handleClose} variant="secondary">
+              Cancel
+            </Button>
+            {step < 3 ? (
+              <Button
+                onClick={() => setStep(step + 1)}
+                variant="primary"
+                disabled={step === 1 && !selectedRoom || step === 2 && !selectedSeason}
+              >
+                Next →
+              </Button>
+            ) : (
+              <Button
+                onClick={handleConfirm}
+                variant="primary"
+                disabled={!selectedOccupancy}
+              >
+                Add to Trip
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

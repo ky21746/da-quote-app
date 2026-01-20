@@ -109,6 +109,15 @@ export interface TripDay {
   parkId?: string;
   arrival?: string; // pricingItemId
   lodging?: string; // pricingItemId
+  lodgingConfig?: {
+    roomType: string;
+    roomTypeName: string;
+    season: string;
+    seasonName: string;
+    occupancy: string;
+    price: number;
+    priceType: 'perRoom' | 'perPerson' | 'perVilla';
+  }; // For hierarchical lodging
   activities: string[]; // pricingItemIds
   extras?: string[]; // pricingItemIds
   freeHandLines?: FreeHandLine[];
@@ -164,7 +173,8 @@ export type ManualCostType =
   | 'per_person_per_day'
   | 'per_night'
   | 'per_night_per_person'
-  | 'per_guide';
+  | 'per_guide'
+  | 'hierarchical_lodging';
 
 export type PricingCategory =
   | 'Aviation'
@@ -189,6 +199,7 @@ export interface PricingItem {
   active: boolean;
   notes?: string;
   sku?: string;
+  metadata?: any; // For hierarchical pricing structures (lodging with rooms/seasons/occupancy)
 }
 
 export interface ManualPricingLineItem {
