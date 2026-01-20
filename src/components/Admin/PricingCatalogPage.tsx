@@ -10,6 +10,7 @@ import { DeleteParaSafariItems } from './DeleteParaSafariItems';
 import { ImportParaSafariHierarchical } from './ImportParaSafariHierarchical';
 import { DeleteLemalaWildwatersItems } from './DeleteLemalaWildwatersItems';
 import { ImportLemalaWildwatersHierarchical } from './ImportLemalaWildwatersHierarchical';
+import { EditHierarchicalPricingModal } from './EditHierarchicalPricingModal';
 import { getParks } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
 
@@ -19,6 +20,8 @@ export const PricingCatalogPage: React.FC = () => {
   const { items, addItem, updateItem, deleteItem, isLoading } = usePricingCatalog();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PricingItem | null>(null);
+  const [isHierarchicalModalOpen, setIsHierarchicalModalOpen] = useState(false);
+  const [hierarchicalEditingItem, setHierarchicalEditingItem] = useState<PricingItem | null>(null);
 
   // Filters - default to 'all' to show all items including newly added ones
   const [parkFilter, setParkFilter] = useState<string>('all');
@@ -88,6 +91,23 @@ export const PricingCatalogPage: React.FC = () => {
     } catch (error) {
       console.error('❌ Error saving item:', error);
       alert(`Error saving item: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleEditHierarchicalPricing = (item: PricingItem) => {
+    setHierarchicalEditingItem(item);
+    setIsHierarchicalModalOpen(true);
+  };
+
+  const handleSaveHierarchicalPricing = async (updatedMetadata: any) => {
+    if (!hierarchicalEditingItem) return;
+    
+    try {
+      await updateItem(hierarchicalEditingItem.id, { metadata: updatedMetadata });
+      console.log('✅ Hierarchical pricing updated successfully');
+    } catch (error) {
+      console.error('❌ Error updating hierarchical pricing:', error);
+      alert(`Error updating pricing: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -272,12 +292,21 @@ export const PricingCatalogPage: React.FC = () => {
                     </td>
                     <td className="border border-gray-300 px-3 py-2 text-center">
                       <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => handleEdit(item)}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                        >
-                          Edit
-                        </button>
+                        {item.costType === 'hierarchical_lodging' ? (
+                          <button
+                            onClick={() => handleEditHierarchicalPricing(item)}
+                            className="text-brand-gold hover:text-brand-gold/80 text-sm font-medium"
+                          >
+                            Edit Pricing
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleEdit(item)}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          >
+                            Edit
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDelete(item.id)}
                           className="text-red-600 hover:text-red-800 text-sm font-medium"
@@ -300,6 +329,17 @@ export const PricingCatalogPage: React.FC = () => {
           onSave={handleSave}
           editingItem={editingItem}
         />
+
+        {/* Edit Hierarchical Pricing Modal */}
+        {hierarchicalEditingItem && (
+          <EditHierarchicalPricingModal
+            isOpen={isHierarchicalModalOpen}
+            onClose={() => setIsHierarchicalModalOpen(false)}
+            itemName={hierarchicalEditingItem.itemName}
+            metadata={hierarchicalEditingItem.metadata || {}}
+            onSave={handleSaveHierarchicalPricing}
+          />
+        )}
       </div>
     </div>
   );
