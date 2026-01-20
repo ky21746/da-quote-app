@@ -26,10 +26,10 @@ const paraSafariHierarchical = {
         description: '4 pax',
         pricing: {
           high: {
-            fourPax: { perRoom: 3266, perPerson: 817 }
+            fourPax: { perRoom: 3266 }
           },
           low: {
-            fourPax: { perRoom: 3110, perPerson: 778 }
+            fourPax: { perRoom: 3110 }
           }
         }
       },
@@ -39,10 +39,10 @@ const paraSafariHierarchical = {
         description: '4 pax',
         pricing: {
           high: {
-            fourPax: { perRoom: 809, perPerson: 202 }
+            fourPax: { perRoom: 809 }
           },
           low: {
-            fourPax: { perRoom: 770, perPerson: 193 }
+            fourPax: { perRoom: 770 }
           }
         }
       },
@@ -52,10 +52,10 @@ const paraSafariHierarchical = {
         description: '4 pax',
         pricing: {
           high: {
-            fourPax: { perRoom: 901, perPerson: 225 }
+            fourPax: { perRoom: 901 }
           },
           low: {
-            fourPax: { perRoom: 858, perPerson: 215 }
+            fourPax: { perRoom: 858 }
           }
         }
       }

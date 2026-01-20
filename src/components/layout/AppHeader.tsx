@@ -1,12 +1,21 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Settings, FileText } from 'lucide-react';
 import { useTrip } from '../../context/TripContext';
 import { useActiveTripContext } from '../../hooks/useActiveTripContext';
+import { useAuth } from '../../context/AuthContext';
+import { UserMenu } from '../Auth/UserMenu';
 
 export default function AppHeader() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, isAdmin } = useAuth();
   const { referenceNumber, draft, draftQuoteId, calculationResult, setTravelers } = useTrip();
   const { activeTripId, activeStep, proposalIdFromUrl } = useActiveTripContext();
+
+  // Don't show header on login page
+  if (location.pathname === '/login') {
+    return null;
+  }
 
   const getStepButtonClassName = (step: typeof activeStep) => {
     const isActive = step !== null && step === activeStep;
@@ -154,14 +163,18 @@ export default function AppHeader() {
           <FileText size={20} strokeWidth={1.5} className="text-brand-dark" />
         </button>
 
-        <button
-          onClick={() => navigate('/admin/pricing-catalog')}
-          className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors"
-          aria-label="Settings"
-          title="Pricing Catalog"
-        >
-          <Settings size={20} strokeWidth={1.5} className="text-brand-dark" />
-        </button>
+        {isAdmin && (
+          <button
+            onClick={() => navigate('/admin/pricing-catalog')}
+            className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors"
+            aria-label="Settings"
+            title="Pricing Catalog"
+          >
+            <Settings size={20} strokeWidth={1.5} className="text-brand-dark" />
+          </button>
+        )}
+
+        {user && <UserMenu />}
       </div>
     </header>
   );

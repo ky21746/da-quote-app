@@ -1,5 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { LoginPage } from '../components/Auth/LoginPage';
+import { ProtectedRoute } from '../components/Auth/ProtectedRoute';
 import { TripBuilderPage } from '../pages/TripBuilderPage';
 import { TripSummaryPage } from '../pages/TripSummaryPage';
 import { TripDaysEditorPage } from '../pages/TripDaysEditorPage';
@@ -15,17 +17,21 @@ import FirestoreProbe from '../debug/FirestoreProbe';
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path="/trip/new" element={<TripBuilderPage />} />
-      <Route path="/trip/:id/edit" element={<TripDaysEditorPage />} />
-      <Route path="/trip/:id/logistics" element={<LogisticsPage />} />
-      <Route path="/trip/:id/review" element={<ReviewPage />} />
-      <Route path="/trip/:id/pricing" element={<PricingPage />} />
-      <Route path="/trip/:id/pricing/manual" element={<ManualPricingPage />} />
-      <Route path="/trip/:id/summary" element={<TripSummaryPage />} />
-      <Route path="/proposals" element={<SavedProposalsPage />} />
-      <Route path="/proposals/:id" element={<ProposalViewPage />} />
-      <Route path="/admin/pricing-catalog" element={<PricingCatalogPage />} />
-      <Route path="/debug/firestore" element={<FirestoreProbe />} />
+      <Route path="/login" element={<LoginPage />} />
+      
+      <Route path="/trip/new" element={<ProtectedRoute><TripBuilderPage /></ProtectedRoute>} />
+      <Route path="/trip/:id/edit" element={<ProtectedRoute><TripDaysEditorPage /></ProtectedRoute>} />
+      <Route path="/trip/:id/logistics" element={<ProtectedRoute><LogisticsPage /></ProtectedRoute>} />
+      <Route path="/trip/:id/review" element={<ProtectedRoute><ReviewPage /></ProtectedRoute>} />
+      <Route path="/trip/:id/pricing" element={<ProtectedRoute><PricingPage /></ProtectedRoute>} />
+      <Route path="/trip/:id/pricing/manual" element={<ProtectedRoute><ManualPricingPage /></ProtectedRoute>} />
+      <Route path="/trip/:id/summary" element={<ProtectedRoute><TripSummaryPage /></ProtectedRoute>} />
+      <Route path="/proposals" element={<ProtectedRoute><SavedProposalsPage /></ProtectedRoute>} />
+      <Route path="/proposals/:id" element={<ProtectedRoute><ProposalViewPage /></ProtectedRoute>} />
+      
+      <Route path="/admin/pricing-catalog" element={<ProtectedRoute requireAdmin><PricingCatalogPage /></ProtectedRoute>} />
+      <Route path="/debug/firestore" element={<ProtectedRoute requireAdmin><FirestoreProbe /></ProtectedRoute>} />
+      
       <Route path="/trip" element={<Navigate to="/trip/new" replace />} />
       <Route path="/" element={<Navigate to="/trip/new" replace />} />
     </Routes>

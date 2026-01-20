@@ -4,12 +4,6 @@ import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { Button, Select } from '../common';
 import { PricingItem } from '../../types/ui';
 import { AddPricingItemModal } from './AddPricingItemModal';
-import { DeleteOldLodgingItems } from './DeleteOldLodgingItems';
-import { ImportNileSafariHierarchical } from './ImportNileSafariHierarchical';
-import { DeleteParaSafariItems } from './DeleteParaSafariItems';
-import { ImportParaSafariHierarchical } from './ImportParaSafariHierarchical';
-import { DeleteLemalaWildwatersItems } from './DeleteLemalaWildwatersItems';
-import { ImportLemalaWildwatersHierarchical } from './ImportLemalaWildwatersHierarchical';
 import { EditHierarchicalPricingModal } from './EditHierarchicalPricingModal';
 import { getParks } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
@@ -154,35 +148,6 @@ export const PricingCatalogPage: React.FC = () => {
               + Add Pricing Item
             </Button>
           </div>
-        </div>
-
-
-
-        {/* Nile Safari Lodge - New Hierarchical Structure */}
-        <div className="mb-6 space-y-4">
-          {/* Step 1: Delete old items */}
-          <DeleteOldLodgingItems />
-          
-          {/* Step 2: Import new hierarchical structure */}
-          <ImportNileSafariHierarchical />
-        </div>
-
-        {/* Para Safari Lodge - New Hierarchical Structure */}
-        <div className="mb-6 space-y-4">
-          {/* Step 1: Delete old items */}
-          <DeleteParaSafariItems />
-          
-          {/* Step 2: Import new hierarchical structure */}
-          <ImportParaSafariHierarchical />
-        </div>
-
-        {/* Lemala Wildwaters Lodge - New Hierarchical Structure */}
-        <div className="mb-6 space-y-4">
-          {/* Step 1: Delete old items */}
-          <DeleteLemalaWildwatersItems />
-          
-          {/* Step 2: Import new hierarchical structure */}
-          <ImportLemalaWildwatersHierarchical />
         </div>
 
         {/* Filter Bar */}

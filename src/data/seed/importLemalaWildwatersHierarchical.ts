@@ -48,13 +48,13 @@ const lemalaWildwatersHierarchical = {
         description: 'Maximum occupancy 2 adults',
         pricing: {
           high: {
-            suite: { perRoom: 1300.00, perPerson: 650.00 }
+            suite: { perRoom: 1300.00 }
           },
           mid: {
-            suite: { perRoom: 1120.00, perPerson: 560.00 }
+            suite: { perRoom: 1120.00 }
           },
           low: {
-            suite: { perRoom: 1000.00, perPerson: 500.00 }
+            suite: { perRoom: 1000.00 }
           }
         }
       }

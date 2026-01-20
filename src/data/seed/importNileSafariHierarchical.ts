@@ -66,10 +66,10 @@ const nileSafariHierarchical = {
         description: '1-8 Guests (4 Adults + 4 Children 0-15)',
         pricing: {
           high: {
-            villa: { perVilla: 4406, perPerson: 551 }
+            villa: { perVilla: 4406 }
           },
           low: {
-            villa: { perVilla: 3075, perPerson: 384 }
+            villa: { perVilla: 3075 }
           }
         }
       }
