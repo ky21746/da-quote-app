@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { TripProvider } from './context/TripContext';
 import { PricingCatalogProvider } from './context/PricingCatalogContext';
+import { ScenarioComparisonProvider } from './context/ScenarioComparisonContext';
 import AppHeader from './components/layout/AppHeader';
 import { AppRoutes } from './routes/AppRoutes';
 import VersionBadge from './components/layout/VersionBadge';
@@ -14,9 +15,11 @@ export const App: React.FC = () => {
       <AuthProvider>
         <TripProvider>
           <PricingCatalogProvider>
-            <AppHeader />
-            <AppRoutes />
-            <VersionBadge />
+            <ScenarioComparisonProvider>
+              <AppHeader />
+              <AppRoutes />
+              <VersionBadge />
+            </ScenarioComparisonProvider>
           </PricingCatalogProvider>
         </TripProvider>
       </AuthProvider>

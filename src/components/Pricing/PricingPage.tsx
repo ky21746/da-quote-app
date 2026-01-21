@@ -9,6 +9,8 @@ import { CalculationResult, CategoryBreakdown, LineItemDisplay } from '../../typ
 import { formatCurrency } from '../../utils/currencyFormatter';
 import { validateCapacity } from '../../core/validators/CapacityValidator';
 import { useActiveTripContext } from '../../hooks/useActiveTripContext';
+import { useScenarioDuplication } from '../../hooks/useScenarioDuplication';
+import { ScenarioComparisonView } from './ScenarioComparisonView';
 
 /**
  * Convert PricingResult to CalculationResult format for TripSummaryPage
@@ -143,6 +145,10 @@ export const PricingPage: React.FC = () => {
   const [myProfitPercentage, setMyProfitPercentage] = useState<number>(
     draft?.myProfitPercentage || 0
   );
+
+  // Scenario comparison
+  const { scenarios, duplicateScenario, createBaseScenario } = useScenarioDuplication();
+  const [showScenarioComparison, setShowScenarioComparison] = useState(false);
 
   // Update local state when draft changes
   useEffect(() => {
@@ -370,6 +376,11 @@ export const PricingPage: React.FC = () => {
           </div>
         )}
 
+        {/* Scenario Comparison */}
+        {showScenarioComparison && scenarios.length > 0 && (
+          <ScenarioComparisonView scenarios={scenarios} pricingItems={pricingItems} />
+        )}
+
         {showPricingAdjustments && (
           <div className="mb-6 p-4 md:p-6 bg-blue-50 rounded-lg border border-blue-200">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Pricing Adjustments</h2>
@@ -424,10 +435,31 @@ export const PricingPage: React.FC = () => {
         )}
 
         {/* Navigation Controls */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button onClick={() => navigate(-1)} variant="secondary">
             Back
           </Button>
+          <Button
+            onClick={() => {
+              if (!draft) return;
+              if (scenarios.length === 0) {
+                createBaseScenario(draft);
+              }
+              duplicateScenario(draft);
+              setShowScenarioComparison(true);
+            }}
+            variant="secondary"
+          >
+            Duplicate Scenario
+          </Button>
+          {scenarios.length > 0 && (
+            <Button
+              onClick={() => setShowScenarioComparison((v) => !v)}
+              variant="secondary"
+            >
+              {showScenarioComparison ? 'Hide' : 'Show'} Comparison
+            </Button>
+          )}
           <Button
             onClick={() => {
               // Update draft with adjustments
