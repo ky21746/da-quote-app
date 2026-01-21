@@ -12,7 +12,7 @@ function inferCapacityFromName(itemName: string): number | null {
   const upToMatch = name.match(/up\s*to\s*(\d+)\s*seats?/i);
   if (upToMatch) return Number(upToMatch[1]);
 
-  const rangeMatch = name.match(/(\d+)\s*[–\-]\s*(\d+)\s*seats?/i);
+  const rangeMatch = name.match(/(\d+)\s*[–-]\s*(\d+)\s*seats?/i);
   if (rangeMatch) return Number(rangeMatch[2]);
 
   // Known aircraft/vehicle models used in existing seed data

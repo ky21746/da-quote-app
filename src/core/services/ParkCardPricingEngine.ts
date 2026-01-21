@@ -1,4 +1,4 @@
-import { TripDraft, ParkCard, PricingModel } from '../../types/ui';
+import { TripDraft, PricingModel } from '../../types/ui';
 import {
   getArrivalOption,
   getLodgingOption,

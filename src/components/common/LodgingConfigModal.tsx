@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Button } from './Button';
 import { X } from 'lucide-react';
 
@@ -353,7 +353,7 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
               <Button
                 onClick={() => setStep(step + 1)}
                 variant="primary"
-                disabled={step === 1 && !selectedRoom || step === 2 && !selectedSeason}
+                disabled={(step === 1 && !selectedRoom) || (step === 2 && !selectedSeason)}
               >
                 Next →
               </Button>

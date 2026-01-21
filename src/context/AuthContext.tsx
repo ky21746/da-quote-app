@@ -127,8 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(user);
       
       if (user) {
-        const profile = await fetchUserProfile(user);
-        setUserProfile(profile);
+        await fetchUserProfile(user);
       } else {
         setUserProfile(null);
       }
@@ -137,6 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const signInWithGoogle = async () => {

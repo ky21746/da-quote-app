@@ -137,6 +137,7 @@ const lodgingData = [
   },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface LodgingData {
   parkId: string;
   category: string;

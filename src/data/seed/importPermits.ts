@@ -62,6 +62,7 @@ const permitsData = [
   },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface PermitData {
   parkId: string;
   category: string;

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { AccessDenied } from './AccessDenied';
-import { Button } from '../common';
 
 export const LoginPage: React.FC = () => {
   const { signInWithGoogle, user } = useAuth();

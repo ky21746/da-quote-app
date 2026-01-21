@@ -76,6 +76,7 @@ const aviationLogisticsData = [
   },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface AviationLogisticsData {
   parkId: string | null;
   category: string;

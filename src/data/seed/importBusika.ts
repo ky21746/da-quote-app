@@ -345,6 +345,7 @@ const busikaData = [
   },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface BusikaData {
   parkId: string;
   category: string;

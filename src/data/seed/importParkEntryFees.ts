@@ -129,6 +129,7 @@ const parkEntryFeesData = [
   },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface ParkEntryFeeData {
   parkId: string;
   category: string;

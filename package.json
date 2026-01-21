@@ -27,6 +27,8 @@
     "build": "node scripts/run-with-version.js build",
     "test": "node scripts/run-with-version.js test",
     "test:unit": "react-scripts test --testPathPattern=__tests__.*\\.test\\. --watchAll=false",
+    "lint": "eslint src --ext .ts,.tsx --max-warnings 0",
+    "typecheck": "tsc --noEmit",
     "eject": "react-scripts eject",
     "deploy": "npm run build && firebase deploy --only hosting"
   },

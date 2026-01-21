@@ -281,6 +281,7 @@ const activitiesData = [
   },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface ActivityData {
   parkId: string;
   category: string;

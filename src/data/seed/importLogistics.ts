@@ -76,6 +76,7 @@ const logisticsData = [
   },
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface LogisticsData {
   parkId: string | null;
   category: string;
