@@ -21,9 +21,15 @@ service cloud.firestore {
                       get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
     
-    // Quotes - authenticated users can read and write
-    match /quotes/{document=**} {
-      allow read, write: if request.auth != null;
+    // Quotes - owner-based access control
+    match /quotes/{quoteId} {
+      // Create: must be authenticated and set userId to own uid
+      allow create: if request.auth != null && 
+                       request.resource.data.userId == request.auth.uid;
+      
+      // Read/Update/Delete: must be authenticated and own the quote
+      allow read, update, delete: if request.auth != null && 
+                                     resource.data.userId == request.auth.uid;
     }
     
     // All other collections - require authentication

@@ -1,5 +1,5 @@
 import { collection, getDocs, getDoc, updateDoc, deleteDoc, doc, query, orderBy, runTransaction, serverTimestamp } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db, auth } from '../lib/firebase';
 import { TripDraft, CalculationResult } from '../types/ui';
 
 export interface SavedQuote {
@@ -46,7 +46,14 @@ export const quoteService = {
       return parseFloat(numeric) || 0;
     };
     
+    // Get current user ID for ownership
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+      throw new Error('User must be authenticated to save quote');
+    }
+
     const quoteData = {
+      userId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       status: 'draft',
@@ -98,7 +105,14 @@ export const quoteService = {
       return parseFloat(numeric) || 0;
     };
 
+    // Get current user ID for ownership
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+      throw new Error('User must be authenticated to save final quote');
+    }
+
     const quoteData = removeUndefined({
+      userId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       status: 'sent',
@@ -141,7 +155,14 @@ export const quoteService = {
   async saveDraft(draft: TripDraft): Promise<string> {
     const cleanDraft = removeUndefined(draft);
 
+    // Get current user ID for ownership
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+      throw new Error('User must be authenticated to save draft');
+    }
+
     const draftData = {
+      userId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       status: 'draft',

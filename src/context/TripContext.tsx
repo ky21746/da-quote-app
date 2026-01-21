@@ -36,6 +36,11 @@ const SOURCE_QUOTE_ID_STORAGE_KEY = 'da-source-quote-id';
 const REFERENCE_NUMBER_STORAGE_KEY = 'da-reference-number';
 
 export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Track localStorage quota failures
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
+  const lastQuotaErrorRef = useRef<number>(0);
+  const QUOTA_ERROR_COOLDOWN = 30000; // 30 seconds
+
   // Load draft from localStorage on mount
   const [draft, setDraftState] = useState<TripDraft | null>(() => {
     try {
@@ -89,13 +94,38 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (draft) {
       try {
         localStorage.setItem(TRIP_DRAFT_STORAGE_KEY, JSON.stringify(draft));
-      } catch {
-        // Ignore storage errors
+        // Clear quota exceeded flag on successful write
+        if (quotaExceeded) {
+          setQuotaExceeded(false);
+        }
+      } catch (error) {
+        // Check if it's a quota exceeded error
+        const isQuotaError = error instanceof DOMException && 
+          (error.name === 'QuotaExceededError' || error.code === 22);
+        
+        if (isQuotaError) {
+          const now = Date.now();
+          // Only show warning if cooldown period has passed
+          if (now - lastQuotaErrorRef.current > QUOTA_ERROR_COOLDOWN) {
+            lastQuotaErrorRef.current = now;
+            setQuotaExceeded(true);
+            alert(
+              'Warning: Your trip data is too large to save locally. ' +
+              'Please save your quote to the cloud or reduce the trip complexity. ' +
+              'Your work may be lost if you close this page.'
+            );
+          }
+        }
+        // Continue without crashing
       }
     } else {
-      localStorage.removeItem(TRIP_DRAFT_STORAGE_KEY);
+      try {
+        localStorage.removeItem(TRIP_DRAFT_STORAGE_KEY);
+      } catch {
+        // Ignore errors on removal
+      }
     }
-  }, [draft]);
+  }, [draft, quotaExceeded]);
 
   useEffect(() => {
     try {
@@ -104,8 +134,9 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } else {
         localStorage.removeItem(DRAFT_QUOTE_ID_STORAGE_KEY);
       }
-    } catch {
-      // Ignore storage errors
+    } catch (error) {
+      // Graceful failure - app continues to work
+      console.error('Failed to save draftQuoteId to localStorage:', error);
     }
   }, [draftQuoteId]);
 
@@ -116,8 +147,9 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } else {
         localStorage.removeItem(SOURCE_QUOTE_ID_STORAGE_KEY);
       }
-    } catch {
-      // Ignore storage errors
+    } catch (error) {
+      // Graceful failure - app continues to work
+      console.error('Failed to save sourceQuoteId to localStorage:', error);
     }
   }, [sourceQuoteId]);
 
@@ -128,8 +160,9 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } else {
         localStorage.removeItem(REFERENCE_NUMBER_STORAGE_KEY);
       }
-    } catch {
-      // Ignore storage errors
+    } catch (error) {
+      // Graceful failure - app continues to work
+      console.error('Failed to save referenceNumber to localStorage:', error);
     }
   }, [referenceNumber]);
 
