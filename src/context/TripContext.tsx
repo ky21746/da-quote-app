@@ -40,6 +40,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [quotaExceeded, setQuotaExceeded] = useState(false);
   const lastQuotaErrorRef = useRef<number>(0);
   const QUOTA_ERROR_COOLDOWN = 30000; // 30 seconds
+  const STORAGE_DEBOUNCE_MS = 500; // Batch writes every 500ms
 
   // Load draft from localStorage on mount
   const [draft, setDraftState] = useState<TripDraft | null>(() => {
@@ -89,14 +90,40 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     premium: null,
   });
 
-  // Save draft to localStorage on every change
+  // Batch all localStorage writes with debouncing to reduce write operations
   useEffect(() => {
-    if (draft) {
+    const timer = setTimeout(() => {
       try {
-        localStorage.setItem(TRIP_DRAFT_STORAGE_KEY, JSON.stringify(draft));
-        // Clear quota exceeded flag on successful write
-        if (quotaExceeded) {
-          setQuotaExceeded(false);
+        // Write draft
+        if (draft) {
+          localStorage.setItem(TRIP_DRAFT_STORAGE_KEY, JSON.stringify(draft));
+          // Clear quota exceeded flag on successful write
+          if (quotaExceeded) {
+            setQuotaExceeded(false);
+          }
+        } else {
+          localStorage.removeItem(TRIP_DRAFT_STORAGE_KEY);
+        }
+
+        // Write draftQuoteId
+        if (draftQuoteId) {
+          localStorage.setItem(DRAFT_QUOTE_ID_STORAGE_KEY, draftQuoteId);
+        } else {
+          localStorage.removeItem(DRAFT_QUOTE_ID_STORAGE_KEY);
+        }
+
+        // Write sourceQuoteId
+        if (sourceQuoteId) {
+          localStorage.setItem(SOURCE_QUOTE_ID_STORAGE_KEY, sourceQuoteId);
+        } else {
+          localStorage.removeItem(SOURCE_QUOTE_ID_STORAGE_KEY);
+        }
+
+        // Write referenceNumber
+        if (typeof referenceNumber === 'number') {
+          localStorage.setItem(REFERENCE_NUMBER_STORAGE_KEY, String(referenceNumber));
+        } else {
+          localStorage.removeItem(REFERENCE_NUMBER_STORAGE_KEY);
         }
       } catch (error) {
         // Check if it's a quota exceeded error
@@ -115,56 +142,16 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               'Your work may be lost if you close this page.'
             );
           }
+        } else {
+          // Log other errors but continue
+          console.error('Failed to save to localStorage:', error);
         }
-        // Continue without crashing
       }
-    } else {
-      try {
-        localStorage.removeItem(TRIP_DRAFT_STORAGE_KEY);
-      } catch {
-        // Ignore errors on removal
-      }
-    }
-  }, [draft, quotaExceeded]);
+    }, STORAGE_DEBOUNCE_MS);
 
-  useEffect(() => {
-    try {
-      if (draftQuoteId) {
-        localStorage.setItem(DRAFT_QUOTE_ID_STORAGE_KEY, draftQuoteId);
-      } else {
-        localStorage.removeItem(DRAFT_QUOTE_ID_STORAGE_KEY);
-      }
-    } catch (error) {
-      // Graceful failure - app continues to work
-      console.error('Failed to save draftQuoteId to localStorage:', error);
-    }
-  }, [draftQuoteId]);
-
-  useEffect(() => {
-    try {
-      if (sourceQuoteId) {
-        localStorage.setItem(SOURCE_QUOTE_ID_STORAGE_KEY, sourceQuoteId);
-      } else {
-        localStorage.removeItem(SOURCE_QUOTE_ID_STORAGE_KEY);
-      }
-    } catch (error) {
-      // Graceful failure - app continues to work
-      console.error('Failed to save sourceQuoteId to localStorage:', error);
-    }
-  }, [sourceQuoteId]);
-
-  useEffect(() => {
-    try {
-      if (typeof referenceNumber === 'number') {
-        localStorage.setItem(REFERENCE_NUMBER_STORAGE_KEY, String(referenceNumber));
-      } else {
-        localStorage.removeItem(REFERENCE_NUMBER_STORAGE_KEY);
-      }
-    } catch (error) {
-      // Graceful failure - app continues to work
-      console.error('Failed to save referenceNumber to localStorage:', error);
-    }
-  }, [referenceNumber]);
+    // Clean up timer on unmount or when dependencies change
+    return () => clearTimeout(timer);
+  }, [draft, draftQuoteId, sourceQuoteId, referenceNumber, quotaExceeded]);
 
   // If we don't have a local draft but we have a Firestore draftQuoteId, hydrate draft from Firestore
   useEffect(() => {

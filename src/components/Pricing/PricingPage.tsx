@@ -11,6 +11,7 @@ import { validateCapacity } from '../../core/validators/CapacityValidator';
 import { useActiveTripContext } from '../../hooks/useActiveTripContext';
 import { useScenarioDuplication } from '../../hooks/useScenarioDuplication';
 import { ScenarioComparisonView } from './ScenarioComparisonView';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 
 /**
  * Convert PricingResult to CalculationResult format for TripSummaryPage
@@ -146,6 +147,11 @@ export const PricingPage: React.FC = () => {
     draft?.myProfitPercentage || 0
   );
 
+  // Debounce percentage values to prevent recalculation on every keystroke
+  const debouncedUnexpectedPercentage = useDebouncedValue(unexpectedPercentage, 300);
+  const debouncedLocalAgentCommissionPercentage = useDebouncedValue(localAgentCommissionPercentage, 300);
+  const debouncedMyProfitPercentage = useDebouncedValue(myProfitPercentage, 300);
+
   // Scenario comparison
   const { scenarios, duplicateScenario, createBaseScenario, updateScenario } = useScenarioDuplication();
   const [showScenarioComparison, setShowScenarioComparison] = useState(false);
@@ -186,7 +192,7 @@ export const PricingPage: React.FC = () => {
     return calculatePricingFromCatalog(activeDraft, pricingItems);
   }, [activeDraft, pricingItems]);
 
-  // Calculate adjustments
+  // Calculate adjustments (using debounced values)
   const adjustments = useMemo(() => {
     const baseTotal = basePricingResult.totals.grandTotal;
 
@@ -196,16 +202,16 @@ export const PricingPage: React.FC = () => {
       .reduce((sum, item) => sum + item.calculatedTotal, 0);
 
     // 1. Calculate Contingency (Unforeseen Costs) on Base Total
-    const unexpectedAmount = (baseTotal * (unexpectedPercentage || 0)) / 100;
+    const unexpectedAmount = (baseTotal * (debouncedUnexpectedPercentage || 0)) / 100;
     const subtotalAfterUnexpected = baseTotal + unexpectedAmount;
 
     // 2. Calculate Local Agent Commission on (Base Total + Contingency)
     // Note: Applying to the running total instead of just vehicle total as per request
-    const localAgentCommissionAmount = (subtotalAfterUnexpected * (localAgentCommissionPercentage || 0)) / 100;
+    const localAgentCommissionAmount = (subtotalAfterUnexpected * (debouncedLocalAgentCommissionPercentage || 0)) / 100;
     const subtotalAfterLocalAgent = subtotalAfterUnexpected + localAgentCommissionAmount;
 
     // 3. Calculate Profit Margin on (Base + Contingency + Local Agent)
-    const myProfitAmount = (subtotalAfterLocalAgent * (myProfitPercentage || 0)) / 100;
+    const myProfitAmount = (subtotalAfterLocalAgent * (debouncedMyProfitPercentage || 0)) / 100;
 
     return {
       baseTotal,
@@ -215,7 +221,7 @@ export const PricingPage: React.FC = () => {
       myProfitAmount,
       finalTotal: subtotalAfterLocalAgent + myProfitAmount,
     };
-  }, [basePricingResult, unexpectedPercentage, localAgentCommissionPercentage, myProfitPercentage]);
+  }, [basePricingResult, debouncedUnexpectedPercentage, debouncedLocalAgentCommissionPercentage, debouncedMyProfitPercentage]);
 
   const travelers = activeDraft?.travelers || 0;
 
