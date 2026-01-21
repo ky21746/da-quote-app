@@ -411,24 +411,6 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
                   )}
               </div>
 
-              {/* Internal Movements */}
-              <PricingCatalogMultiSelect
-                label="Internal Movements"
-                selectedIds={card.logistics?.internalMovements || []}
-                onChange={(pricingItemIds) => onUpdate({
-                  logistics: {
-                    arrival: card.logistics?.arrival,
-                    vehicle: card.logistics?.vehicle,
-                    internalMovements: pricingItemIds,
-                    notes: card.logistics?.notes,
-                  }
-                })}
-                category="Logistics"
-                parkId={card.parkId}
-                items={pricingItems}
-                isLoading={catalogLoading}
-              />
-
               {/* Logistics Notes */}
               <Input
                 label="Logistics Notes (optional)"

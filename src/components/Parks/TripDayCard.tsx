@@ -748,25 +748,6 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                 )}
             </div>
 
-            {/* Internal Movements */}
-            <PricingCatalogMultiSelect
-              label="Internal Movements"
-              selectedIds={logistics?.internalMovements || []}
-              onChange={(pricingItemIds) => onUpdate({
-                logistics: {
-                  ...logistics,
-                  internalMovements: pricingItemIds,
-                }
-              })}
-              category="Logistics"
-              parkId={parkId}
-              items={pricingItems.filter((item) => {
-                const name = (item.itemName || '').toLowerCase();
-                return !name.includes('aircraft landing fee');
-              })}
-              isLoading={catalogLoading}
-            />
-
             {/* Logistics Notes */}
             <Input
               label="Logistics Notes (optional)"

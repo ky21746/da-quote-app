@@ -182,26 +182,6 @@ export const LogisticsSection: React.FC = () => {
                   </div>
                 )}
 
-                {/* Internal Movements */}
-                {day.logistics?.internalMovements &&
-                  day.logistics.internalMovements.length > 0 && (
-                    <div className="flex items-start gap-3">
-                      <MapPin size={18} className="text-gray-500 mt-0.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <div className="text-xs font-medium text-gray-500 uppercase mb-1">
-                          Internal Movements
-                        </div>
-                        <ul className="space-y-1">
-                          {day.logistics.internalMovements.map((movementId) => (
-                            <li key={movementId} className="text-sm text-gray-800">
-                              • {getItemName(movementId)}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-
                 {/* Notes */}
                 {day.logistics?.notes && (
                   <div className="flex items-start gap-3">
