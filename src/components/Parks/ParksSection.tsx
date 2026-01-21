@@ -21,7 +21,18 @@ export const ParksSection: React.FC = () => {
     parkId?: string;
     arrival?: string;
     lodging?: string;
+    lodgingConfig?: {
+      roomType: string;
+      roomTypeName: string;
+      season: string;
+      seasonName: string;
+      occupancy: string;
+      price: number;
+      priceType: 'perRoom' | 'perPerson' | 'perVilla';
+    };
     activities: string[];
+    extras?: string[];
+    freeHandLines?: import('../../types/ui').FreeHandLine[];
     parkFees?: import('../../types/ui').TripDayParkFee[];
     logistics?: {
       vehicle?: string;
@@ -30,6 +41,7 @@ export const ParksSection: React.FC = () => {
     };
   } = draft?.tripDays?.[currentDayIndex] || {
     activities: [],
+    extras: [],
     parkFees: [],
     logistics: {
       internalMovements: [],
@@ -52,7 +64,18 @@ export const ParksSection: React.FC = () => {
     parkId?: string;
     arrival?: string;
     lodging?: string;
+    lodgingConfig?: {
+      roomType: string;
+      roomTypeName: string;
+      season: string;
+      seasonName: string;
+      occupancy: string;
+      price: number;
+      priceType: 'perRoom' | 'perPerson' | 'perVilla';
+    };
     activities?: string[];
+    extras?: string[];
+    freeHandLines?: import('../../types/ui').FreeHandLine[];
     parkFees?: import('../../types/ui').TripDayParkFee[];
     logistics?: {
       vehicle?: string;
@@ -63,6 +86,7 @@ export const ParksSection: React.FC = () => {
     // Ensure logistics.internalMovements is always an array
     const normalizedUpdates: Partial<import('../../types/ui').TripDay> = {
       ...updates,
+      extras: updates.extras || undefined,
       logistics: updates.logistics
         ? {
           ...updates.logistics,
@@ -137,7 +161,10 @@ export const ParksSection: React.FC = () => {
         parkId={currentDayData.parkId}
         arrival={currentDayData.arrival}
         lodging={currentDayData.lodging}
+        lodgingConfig={currentDayData.lodgingConfig}
         activities={currentDayData.activities || []}
+        extras={currentDayData.extras || []}
+        freeHandLines={currentDayData.freeHandLines || []}
         parkFees={currentDayData.parkFees || []}
         logistics={currentDayData.logistics}
         onUpdate={handleUpdateDay}

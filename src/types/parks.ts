@@ -11,4 +11,6 @@ export type ParkId =
   | 'SEMULIKI'
   | 'ZIWA'
   | 'BUSIKA'
-  | 'ENTEBBE';
+  | 'ENTEBBE'
+  | 'LAKE_BUNYONYI'
+  | 'JINJA';

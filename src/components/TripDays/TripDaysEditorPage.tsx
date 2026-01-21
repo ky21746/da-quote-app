@@ -4,11 +4,15 @@ import { useTrip } from '../../context/TripContext';
 import { Button, ProgressStepper } from '../common';
 import { ParksSection } from '../Parks';
 import { validateNights } from '../../utils/tripValidation';
+import { useActiveTripContext } from '../../hooks/useActiveTripContext';
 
 export const TripDaysEditorPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { draft } = useTrip();
+  const { draft, referenceNumber } = useTrip();
+  const { activeTripId } = useActiveTripContext();
+
+  const tripId = activeTripId ?? id ?? null;
   
   const tripDays = draft?.tripDays || [];
   const totalDays = draft?.days || 0;
@@ -24,24 +28,12 @@ export const TripDaysEditorPage: React.FC = () => {
     : { valid: false, totalNights: 0, message: '' };
   
   // Use tripDays validation if available, otherwise fall back to parks validation
-  // Critical correctness rule: Busika requires at least one activity selected per Busika day
-  const busikaMissingActivitiesDays = tripDays
-    .filter((day) => day?.parkId === 'BUSIKA')
-    .filter((day) => !day.activities || day.activities.length === 0)
-    .map((day) => day.dayNumber);
-
-  const busikaActivitiesValid = busikaMissingActivitiesDays.length === 0;
-
   const parksValid = missingParkDays.length === 0;
 
-  const blockedReason = !parksValid
-    ? `Park missing on Day ${missingParkDays[0]}`
-    : !busikaActivitiesValid
-      ? `Busika activities missing on Day ${busikaMissingActivitiesDays[0]}`
-      : null;
+  const blockedReason = !parksValid ? `Park missing on Day ${missingParkDays[0]}` : null;
 
   const canProceed = draft?.tripDays
-    ? (parksValid && busikaActivitiesValid)
+    ? parksValid
     : nightsValidation.valid;
 
   const progressSteps = [
@@ -50,6 +42,10 @@ export const TripDaysEditorPage: React.FC = () => {
     'Logistics',
     'Pricing',
   ];
+
+  const formatReferenceNumber = (n: number) => {
+    return `217-${String(n - 217000).padStart(3, '0')}`;
+  };
 
   if (!draft) {
     return (
@@ -73,6 +69,11 @@ export const TripDaysEditorPage: React.FC = () => {
         <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded-lg">
           <h2 className="font-semibold text-gray-700 mb-3">Trip Summary</h2>
           <div className="space-y-2 text-sm text-gray-600">
+            {typeof referenceNumber === 'number' && (
+              <div>
+                <span className="font-medium">Proposal Ref:</span> {formatReferenceNumber(referenceNumber)}
+              </div>
+            )}
             <div>
               <span className="font-medium">Trip Name:</span> {draft.name}
             </div>
@@ -102,7 +103,13 @@ export const TripDaysEditorPage: React.FC = () => {
               </div>
             )}
             <Button
-              onClick={() => navigate(`/trip/${id}/logistics`)}
+              onClick={() => {
+                if (!tripId) {
+                  navigate('/trip/new');
+                  return;
+                }
+                navigate(`/trip/${tripId}/logistics`);
+              }}
               variant="primary"
               disabled={!canProceed}
             >

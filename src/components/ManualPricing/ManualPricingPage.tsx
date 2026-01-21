@@ -5,13 +5,17 @@ import { useManualPricing } from '../../hooks/useManualPricing';
 import { ManualPricingEditor } from './ManualPricingEditor';
 import { Button } from '../common';
 import { LineItemDraft } from '../../types/ui';
+import { useActiveTripContext } from '../../hooks/useActiveTripContext';
 
 export const ManualPricingPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { draft, setDraft, setCalculationResult } = useTrip();
+  const { activeTripId } = useActiveTripContext();
   const { calculate, isCalculating, error } = useManualPricing();
   const [lineItems, setLineItems] = useState<LineItemDraft[]>([]);
+
+  const tripId = activeTripId ?? id ?? null;
 
   useEffect(() => {
     if (draft?.manualLineItems) {
@@ -41,7 +45,11 @@ export const ManualPricingPage: React.FC = () => {
 
     // Save result and navigate to summary
     setCalculationResult(result);
-    navigate(`/trip/${id}/summary`);
+    if (!tripId) {
+      navigate('/trip/new');
+      return;
+    }
+    navigate(`/trip/${tripId}/summary`);
   };
 
   if (!draft) {

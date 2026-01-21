@@ -8,6 +8,9 @@ import { calculatePricingFromCatalog, PricingResult } from '../../utils/catalogP
 import { CalculationResult, CategoryBreakdown, LineItemDisplay } from '../../types/ui';
 import { formatCurrency } from '../../utils/currencyFormatter';
 import { validateCapacity } from '../../core/validators/CapacityValidator';
+import { useActiveTripContext } from '../../hooks/useActiveTripContext';
+import { useScenarioDuplication } from '../../hooks/useScenarioDuplication';
+import { ScenarioComparisonView } from './ScenarioComparisonView';
 
 /**
  * Convert PricingResult to CalculationResult format for TripSummaryPage
@@ -25,7 +28,7 @@ function convertToCalculationResult(
     }
     categoryMap.get(item.category)!.push({
       description: `${item.itemName} (${item.park})`,
-      quantity: 1,
+      quantity: item.quantity ?? 1,
       unitPrice: formatCurrency(item.basePrice),
       total: formatCurrency(item.calculatedTotal),
     });
@@ -65,6 +68,12 @@ export const PricingPage: React.FC = () => {
   const navigate = useNavigate();
   const { draft, setDraft, setCalculationResult } = useTrip();
   const { items: pricingItems } = usePricingCatalog();
+  const { activeTripId } = useActiveTripContext();
+
+  const tripId = activeTripId ?? id ?? null;
+
+  const [showLineItems, setShowLineItems] = useState(false);
+  const [showPricingAdjustments, setShowPricingAdjustments] = useState(true);
 
   const selectedPricingItemIds = useMemo(() => {
     if (!draft) return [];
@@ -136,6 +145,10 @@ export const PricingPage: React.FC = () => {
   const [myProfitPercentage, setMyProfitPercentage] = useState<number>(
     draft?.myProfitPercentage || 0
   );
+
+  // Scenario comparison
+  const { scenarios, duplicateScenario, createBaseScenario } = useScenarioDuplication();
+  const [showScenarioComparison, setShowScenarioComparison] = useState(false);
 
   // Update local state when draft changes
   useEffect(() => {
@@ -216,123 +229,22 @@ export const PricingPage: React.FC = () => {
 
         <ProgressStepper currentStep={4} steps={progressSteps} />
 
-        {/* Pricing Table (Read-only from Catalog) */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Line Items</h2>
-          <PricingTable lines={basePricingResult.breakdown} />
-        </div>
-
-        {!capacityValidation.isValid && (
-          <div className="mb-6 p-4 md:p-6 bg-red-100 border border-red-400 text-red-800 rounded">
-            <div className="font-semibold mb-2">
-              The selected item capacity is insufficient for the number of travelers.
-            </div>
-            <div className="space-y-3">
-              {capacityValidation.issues.map((issue: any, idx: number) => (
-                <div key={`${issue.itemId}_${idx}`} className="bg-white/60 border border-red-200 rounded p-3">
-                  <div className="text-sm font-medium">Item: {issue.itemId}</div>
-                  <div className="text-xs mt-1">
-                    Travelers: {issue.travelers} | Capacity: {issue.capacity} | Quantity: {issue.quantity}
-                  </div>
-                  <div className="flex gap-2 flex-wrap mt-3">
-                    <Button
-                      variant="primary"
-                      onClick={() => {
-                        const action = (issue.actions || []).find((a: any) => a.type === 'increase_quantity');
-                        if (!action) return;
-                        setDraft({
-                          ...draft,
-                          itemQuantities: {
-                            ...(draft.itemQuantities || {}),
-                            [action.itemId]: action.requiredQuantity,
-                          },
-                        });
-                      }}
-                    >
-                      Increase quantity
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        const action = (issue.actions || []).find((a: any) => a.type === 'replace_item');
-                        const alternatives = action?.alternatives || [];
-                        if (alternatives.length === 0) {
-                          alert('No higher-capacity alternative found in catalog.');
-                          return;
-                        }
-                        alert(
-                          `Replace item with a higher-capacity alternative. Options:\n` +
-                            alternatives
-                              .map((alt: any) => `${alt.itemId} (capacity ${alt.capacity})`)
-                              .join('\n')
-                        );
-                      }}
-                    >
-                      Replace item
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Pricing Adjustments */}
-        <div className="mb-6 p-4 md:p-6 bg-blue-50 rounded-lg border border-blue-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Pricing Adjustments</h2>
-          <div className="space-y-4">
-            <Input
-              label="Contingency (Unforeseen Costs) (%)"
-              type="number"
-              value={unexpectedPercentage}
-              onChange={(value) => {
-                const numValue = typeof value === 'number' ? value : Number(value);
-                setUnexpectedPercentage(numValue);
-                if (draft) {
-                  setDraft({ ...draft, unexpectedPercentage: numValue });
-                }
-              }}
-              min={0}
-              max={100}
-              step={0.1}
-            />
-            <Input
-              label="Local Agent Commission (%)"
-              type="number"
-              value={localAgentCommissionPercentage}
-              onChange={(value) => {
-                const numValue = typeof value === 'number' ? value : Number(value);
-                setLocalAgentCommissionPercentage(numValue);
-                if (draft) {
-                  setDraft({ ...draft, localAgentCommissionPercentage: numValue });
-                }
-              }}
-              min={0}
-              max={100}
-              step={0.1}
-            />
-            <Input
-              label="Profit Margin (%)"
-              type="number"
-              value={myProfitPercentage}
-              onChange={(value) => {
-                const numValue = typeof value === 'number' ? value : Number(value);
-                setMyProfitPercentage(numValue);
-                if (draft) {
-                  setDraft({ ...draft, myProfitPercentage: numValue });
-                }
-              }}
-              min={0}
-              max={100}
-              step={0.1}
-            />
-          </div>
-        </div>
-
-        {/* Final Output Section */}
         <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded-lg border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">Final Output</h2>
-          <div className="space-y-2 text-sm">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-gray-800">Final Output</h2>
+              <div className="text-xs text-gray-500">Calculated from catalog + adjustments</div>
+            </div>
+            <button
+              type="button"
+              className="shrink-0 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white hover:bg-gray-100"
+              onClick={() => setShowPricingAdjustments((v) => !v)}
+            >
+              {showPricingAdjustments ? 'Hide adjustments' : 'Show adjustments'}
+            </button>
+          </div>
+
+          <div className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">Travelers:</span>
               <span className="font-semibold text-gray-800">{travelers}</span>
@@ -365,9 +277,7 @@ export const PricingPage: React.FC = () => {
             )}
             {myProfitPercentage > 0 && (
               <div className="flex justify-between">
-                <span className="text-gray-600">
-                  Profit Margin ({myProfitPercentage}%):
-                </span>
+                <span className="text-gray-600">Profit Margin ({myProfitPercentage}%):</span>
                 <span className="font-semibold text-gray-800">
                   {formatCurrency(adjustments.myProfitAmount)}
                 </span>
@@ -388,16 +298,170 @@ export const PricingPage: React.FC = () => {
           </div>
         </div>
 
+        <div className="mb-6">
+          <div className="flex items-center justify-between gap-4 mb-3">
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-gray-800">Line Items</h2>
+              <div className="text-xs text-gray-500">
+                {basePricingResult.breakdown.length} items
+              </div>
+            </div>
+            <button
+              type="button"
+              className="shrink-0 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white hover:bg-gray-100"
+              onClick={() => setShowLineItems((v) => !v)}
+            >
+              {showLineItems ? 'Hide table' : 'Show table'}
+            </button>
+          </div>
+          {showLineItems && <PricingTable lines={basePricingResult.breakdown} />}
+        </div>
+
+        {!capacityValidation.isValid && (
+          <div className="mb-6 p-4 md:p-6 bg-red-100 border border-red-400 text-red-800 rounded">
+            <div className="font-semibold mb-2">
+              The selected item capacity is insufficient for the number of travelers.
+            </div>
+            <div className="space-y-3">
+              {capacityValidation.issues.map((issue: any, idx: number) => (
+                <div key={`${issue.itemId}_${idx}`} className="bg-white/60 border border-red-200 rounded p-3">
+                  <div className="text-sm font-medium">Item: {issue.itemId}</div>
+                  <div className="text-xs mt-1">
+                    Travelers: {issue.travelers} | Capacity: {issue.capacity} | Quantity: {issue.quantity}
+                  </div>
+                  <div className="flex gap-2 flex-wrap mt-3">
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        const action = (issue.actions || []).find((a: any) => a.type === 'increase_quantity');
+                        if (!action) return;
+                        setDraft({
+                          ...draft,
+                          itemQuantities: {
+                            ...(draft.itemQuantities || {}),
+                            [action.itemId]: action.requiredQuantity,
+                          },
+                          itemQuantitySources: {
+                            ...(draft.itemQuantitySources || {}),
+                            [action.itemId]: 'auto',
+                          },
+                        });
+                      }}
+                    >
+                      Increase quantity
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        const action = (issue.actions || []).find((a: any) => a.type === 'replace_item');
+                        const alternatives = action?.alternatives || [];
+                        if (alternatives.length === 0) {
+                          alert('No higher-capacity alternative found in catalog.');
+                          return;
+                        }
+                        alert(
+                          `Replace item with a higher-capacity alternative. Options:\n` +
+                            alternatives
+                              .map((alt: any) => `${alt.itemId} (capacity ${alt.capacity})`)
+                              .join('\n')
+                        );
+                      }}
+                    >
+                      Replace item
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Scenario Comparison */}
+        {showScenarioComparison && scenarios.length > 0 && (
+          <ScenarioComparisonView scenarios={scenarios} pricingItems={pricingItems} />
+        )}
+
+        {showPricingAdjustments && (
+          <div className="mb-6 p-4 md:p-6 bg-blue-50 rounded-lg border border-blue-200">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Pricing Adjustments</h2>
+            <div className="space-y-4">
+              <Input
+                label="Contingency (Unforeseen Costs) (%)"
+                type="number"
+                value={unexpectedPercentage}
+                onChange={(value) => {
+                  const numValue = typeof value === 'number' ? value : Number(value);
+                  setUnexpectedPercentage(numValue);
+                  if (draft) {
+                    setDraft({ ...draft, unexpectedPercentage: numValue });
+                  }
+                }}
+                min={0}
+                max={100}
+                step={0.1}
+              />
+              <Input
+                label="Local Agent Commission (%)"
+                type="number"
+                value={localAgentCommissionPercentage}
+                onChange={(value) => {
+                  const numValue = typeof value === 'number' ? value : Number(value);
+                  setLocalAgentCommissionPercentage(numValue);
+                  if (draft) {
+                    setDraft({ ...draft, localAgentCommissionPercentage: numValue });
+                  }
+                }}
+                min={0}
+                max={100}
+                step={0.1}
+              />
+              <Input
+                label="Profit Margin (%)"
+                type="number"
+                value={myProfitPercentage}
+                onChange={(value) => {
+                  const numValue = typeof value === 'number' ? value : Number(value);
+                  setMyProfitPercentage(numValue);
+                  if (draft) {
+                    setDraft({ ...draft, myProfitPercentage: numValue });
+                  }
+                }}
+                min={0}
+                max={100}
+                step={0.1}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Navigation Controls */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button onClick={() => navigate(-1)} variant="secondary">
             Back
           </Button>
           <Button
             onClick={() => {
-              if (!capacityValidation.isValid) {
-                return;
+              if (!draft) return;
+              if (scenarios.length === 0) {
+                createBaseScenario(draft);
               }
+              duplicateScenario(draft);
+              setShowScenarioComparison(true);
+            }}
+            variant="secondary"
+          >
+            Duplicate Scenario
+          </Button>
+          {scenarios.length > 0 && (
+            <Button
+              onClick={() => setShowScenarioComparison((v) => !v)}
+              variant="secondary"
+            >
+              {showScenarioComparison ? 'Hide' : 'Show'} Comparison
+            </Button>
+          )}
+          <Button
+            onClick={() => {
               // Update draft with adjustments
               if (draft) {
                 setDraft({
@@ -417,15 +481,18 @@ export const PricingPage: React.FC = () => {
               };
               const calculationResult = convertToCalculationResult(
                 adjustedResult,
-                id || 'draft'
+                tripId || 'draft'
               );
               // Save to context so TripSummaryPage can display it
               setCalculationResult(calculationResult);
               // Navigate to summary
-              navigate(`/trip/${id}/summary`);
+              if (!tripId) {
+                navigate('/trip/new');
+                return;
+              }
+              navigate(`/trip/${tripId}/summary`);
             }}
             variant="primary"
-            disabled={!capacityValidation.isValid}
           >
             Proceed
           </Button>

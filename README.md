@@ -237,6 +237,34 @@ Examples:
 3. Push: `git push -u origin main`
 4. Create dev branch: `git checkout -b dev && git push -u origin dev`
 
+## CI Enforcement
+
+### 🔒 **Mandatory Unit Test Gate**
+
+This project enforces **mandatory unit tests** for all pricing-related changes:
+
+- **39 unit tests** protecting pricing logic
+- **CI pipeline** runs on every PR and push to main/develop
+- **Failing tests block merges** - no exceptions
+
+**Quick Start:**
+```bash
+# Run tests locally before pushing
+npm run test:unit
+```
+
+**Documentation:**
+- Full testing guide: [`TESTING.md`](./TESTING.md)
+- CI enforcement details: [`CI_ENFORCEMENT.md`](./CI_ENFORCEMENT.md)
+
+**Rules:**
+- ✅ All tests pass → Merge allowed
+- ❌ Any test fails → Merge blocked
+- 🚫 Do NOT disable tests to make CI pass
+- 🚫 Do NOT weaken golden tests
+
+---
+
 ## Notes
 
 - **Internal System**: This is an internal application, not for public distribution

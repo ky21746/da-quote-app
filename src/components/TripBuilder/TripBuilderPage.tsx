@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useTrip } from '../../context/TripContext';
 import { Input, Select, Button, ProgressStepper } from '../common';
 import { TripDraft, TripTier } from '../../types/ui';
+import { quoteService } from '../../services/quoteService';
 
 export const TripBuilderPage: React.FC = () => {
   const navigate = useNavigate();
-  const { setDraft } = useTrip();
+  const { setDraft, setDraftQuoteId, setSourceQuoteId, setReferenceNumber } = useTrip();
+  const [isCreating, setIsCreating] = useState(false);
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -20,7 +22,7 @@ export const TripBuilderPage: React.FC = () => {
     tier: 'base',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate required fields
@@ -41,11 +43,23 @@ export const TripBuilderPage: React.FC = () => {
       days: formData.days,
       tier: formData.tier,
     };
+
+    setDraftQuoteId(null);
+    setSourceQuoteId(null);
+    setReferenceNumber(null);
     setDraft(draft);
 
-    // Navigate to Phase 2: Parks
-    // Use 'draft' as ID for local draft (no backend required)
-    navigate('/trip/draft/edit');
+    setIsCreating(true);
+    try {
+      const id = await quoteService.saveDraft(draft);
+      setDraftQuoteId(id);
+      navigate(`/trip/${id}/edit`);
+    } catch (error: any) {
+      console.error('Failed to create trip draft:', error);
+      alert(`Failed to create trip draft: ${error?.message || 'Unknown error'}`);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const progressSteps = [
@@ -55,7 +69,7 @@ export const TripBuilderPage: React.FC = () => {
     'Pricing',
   ];
 
-  const canContinue = Boolean(formData.name.trim());
+  const canContinue = Boolean(formData.name.trim()) && !isCreating;
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">

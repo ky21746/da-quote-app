@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParkCard as ParkCardType } from '../../types/ui';
-import { Select, Input, PricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
+import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
 import { Trees } from 'lucide-react';
@@ -138,12 +138,17 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
                       ...(prev.itemQuantities || {}),
                     };
 
+                    const nextSources: Record<string, 'auto' | 'manual'> = {
+                      ...(prev.itemQuantitySources || {}),
+                    };
+
                     if (pricingItemId) {
                       const selected = pricingItems.find((i) => i.id === pricingItemId);
                       const capacity = selected?.capacity;
                       if (typeof capacity === 'number' && Number.isFinite(capacity)) {
                         if (nextItemQuantities[pricingItemId] === undefined) {
                           nextItemQuantities[pricingItemId] = getDefaultQuantity(capacity);
+                          nextSources[pricingItemId] = nextSources[pricingItemId] || 'auto';
                         }
                       }
                     }
@@ -151,6 +156,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
                     return {
                       ...prev,
                       itemQuantities: nextItemQuantities,
+                      itemQuantitySources: nextSources,
                     };
                   });
                 }}
@@ -182,6 +188,10 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
                               ...(prev.itemQuantities || {}),
                               [card.arrival!]: newQty,
                             },
+                            itemQuantitySources: {
+                              ...(prev.itemQuantitySources || {}),
+                              [card.arrival!]: 'manual',
+                            },
                           };
                         });
                       }}
@@ -198,7 +208,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             </div>
 
             {/* 4. Lodging - park-level (applies to all nights) */}
-            <PricingCatalogSelect
+            <SearchablePricingCatalogSelect
               label="Lodging (all nights)"
               value={card.lodging}
               onChange={(pricingItemId) => onUpdate({ lodging: pricingItemId })}
@@ -212,12 +222,81 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
             <PricingCatalogMultiSelect
               label="Activities"
               selectedIds={card.activities || []}
-              onChange={(pricingItemIds) => onUpdate({ activities: pricingItemIds })}
+              onChange={(pricingItemIds) => {
+                onUpdate({ activities: pricingItemIds });
+
+                setDraft((prev) => {
+                  if (!prev) return prev;
+                  const nextItemQuantities: Record<string, number> = {
+                    ...(prev.itemQuantities || {}),
+                  };
+
+                  const nextSources: Record<string, 'auto' | 'manual'> = {
+                    ...(prev.itemQuantitySources || {}),
+                  };
+
+                  for (const id of pricingItemIds || []) {
+                    if (nextItemQuantities[id] === undefined) {
+                      nextItemQuantities[id] = 1;
+                      nextSources[id] = nextSources[id] || 'auto';
+                    }
+                  }
+                  return {
+                    ...prev,
+                    itemQuantities: nextItemQuantities,
+                    itemQuantitySources: nextSources,
+                  };
+                });
+              }}
               category="Activities"
               parkId={card.parkId}
               items={pricingItems}
               isLoading={catalogLoading}
             />
+
+            {(card.activities || []).length > 0 && (
+              <div className="mt-2 border border-gray-200 rounded-md p-3">
+                <div className="text-sm font-semibold text-brand-dark mb-2">Activity Quantities</div>
+                <div className="space-y-2">
+                  {(card.activities || []).map((activityId) => {
+                    const item = pricingItems.find((i) => i.id === activityId);
+                    if (!item) return null;
+                    return (
+                      <div key={activityId} className="flex items-center justify-between gap-3">
+                        <div className="text-sm text-gray-700">{item.itemName}</div>
+                        <select
+                          className="px-2 py-1 border border-gray-300 rounded-md text-sm"
+                          value={draft?.itemQuantities?.[activityId] ?? 1}
+                          onChange={(e) => {
+                            const newQty = Number(e.target.value);
+                            setDraft((prev) => {
+                              if (!prev) return prev;
+                              return {
+                                ...prev,
+                                itemQuantities: {
+                                  ...(prev.itemQuantities || {}),
+                                  [activityId]: newQty,
+                                },
+                                itemQuantitySources: {
+                                  ...(prev.itemQuantitySources || {}),
+                                  [activityId]: 'manual',
+                                },
+                              };
+                            });
+                          }}
+                        >
+                          {getQuantityOptions(1).map((n) => (
+                            <option key={n} value={n}>
+                              {n}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* 6. Logistics - park-level */}
             <div className="border-t border-gray-200 pt-4">
@@ -263,12 +342,17 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
                         ...(prev.itemQuantities || {}),
                       };
 
+                      const nextSources: Record<string, 'auto' | 'manual'> = {
+                        ...(prev.itemQuantitySources || {}),
+                      };
+
                       if (pricingItemId) {
                         const selected = pricingItems.find((i) => i.id === pricingItemId);
                         const capacity = selected?.capacity;
                         if (typeof capacity === 'number' && Number.isFinite(capacity)) {
                           if (nextItemQuantities[pricingItemId] === undefined) {
                             nextItemQuantities[pricingItemId] = getDefaultQuantity(capacity);
+                            nextSources[pricingItemId] = 'auto';
                           }
                         }
                       }
@@ -276,6 +360,7 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
                       return {
                         ...prev,
                         itemQuantities: nextItemQuantities,
+                        itemQuantitySources: nextSources,
                       };
                     });
                   }}
@@ -307,6 +392,10 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
                                 ...(prev.itemQuantities || {}),
                                 [card.logistics!.vehicle!]: newQty,
                               },
+                              itemQuantitySources: {
+                                ...(prev.itemQuantitySources || {}),
+                                [card.logistics!.vehicle!]: 'manual',
+                              },
                             };
                           });
                         }}
@@ -321,24 +410,6 @@ export const ParkCard: React.FC<ParkCardProps> = ({ card, onUpdate, onRemove }) 
                     </div>
                   )}
               </div>
-
-              {/* Internal Movements */}
-              <PricingCatalogMultiSelect
-                label="Internal Movements"
-                selectedIds={card.logistics?.internalMovements || []}
-                onChange={(pricingItemIds) => onUpdate({
-                  logistics: {
-                    arrival: card.logistics?.arrival,
-                    vehicle: card.logistics?.vehicle,
-                    internalMovements: pricingItemIds,
-                    notes: card.logistics?.notes,
-                  }
-                })}
-                category="Logistics"
-                parkId={card.parkId}
-                items={pricingItems}
-                isLoading={catalogLoading}
-              />
 
               {/* Logistics Notes */}
               <Input

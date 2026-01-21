@@ -9,6 +9,7 @@ export interface PricingLineItem {
   itemName: string;
   basePrice: number;
   costType: ManualCostType;
+  quantity?: number;
   calculatedTotal: number;
   perPerson: number;
   calculationExplanation: string;
@@ -112,18 +113,49 @@ export function calculatePricingFromCatalog(
       if (day.lodging) {
         const item = getPricingItemById(pricingItems, day.lodging);
         if (item) {
-          const { total, explanation } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
-          breakdown.push({
-            id: `line_day${day.dayNumber}_lodging`,
-            park: parkName,
-            category: item.category,
-            itemName: item.itemName,
-            basePrice: item.basePrice,
-            costType: item.costType,
-            calculatedTotal: total,
-            perPerson: travelers > 0 ? total / travelers : 0,
-            calculationExplanation: explanation,
-          });
+          // Check if this is hierarchical lodging with config
+          if (item.costType === 'hierarchical_lodging' && day.lodgingConfig) {
+            const config = day.lodgingConfig;
+            const configuredPrice = config.price;
+            
+            // Calculate total based on price type
+            let total = 0;
+            let explanation = '';
+            
+            if (config.priceType === 'perRoom' || config.priceType === 'perVilla') {
+              total = configuredPrice;
+              explanation = `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${config.priceType === 'perVilla' ? 'per villa' : 'per room'}`;
+            } else if (config.priceType === 'perPerson') {
+              total = configuredPrice * travelers;
+              explanation = `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${travelers} travelers`;
+            }
+            
+            breakdown.push({
+              id: `line_day${day.dayNumber}_lodging`,
+              park: parkName,
+              category: item.category,
+              itemName: `${item.itemName} (${config.roomTypeName})`,
+              basePrice: configuredPrice,
+              costType: item.costType,
+              calculatedTotal: total,
+              perPerson: travelers > 0 ? total / travelers : 0,
+              calculationExplanation: explanation,
+            });
+          } else {
+            // Regular lodging calculation
+            const { total, explanation } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
+            breakdown.push({
+              id: `line_day${day.dayNumber}_lodging`,
+              park: parkName,
+              category: item.category,
+              itemName: item.itemName,
+              basePrice: item.basePrice,
+              costType: item.costType,
+              calculatedTotal: total,
+              perPerson: travelers > 0 ? total / travelers : 0,
+              calculationExplanation: explanation,
+            });
+          }
         }
       }
 
@@ -131,9 +163,48 @@ export function calculatePricingFromCatalog(
       if (day.activities && day.activities.length > 0) {
         const activityItems = getPricingItemsByIds(pricingItems, day.activities);
         activityItems.forEach((item, idx) => {
-          const { total, explanation } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
+          const { total, explanation, quantity } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
           breakdown.push({
             id: `line_day${day.dayNumber}_activity_${idx}`,
+            park: parkName,
+            category: item.category,
+            itemName: item.itemName,
+            basePrice: item.basePrice,
+            costType: item.costType,
+            quantity: item.category === 'Activities' ? quantity : undefined,
+            calculatedTotal: total,
+            perPerson: travelers > 0 ? total / travelers : 0,
+            calculationExplanation: explanation,
+          });
+        });
+      }
+
+      if (day.freeHandLines && Array.isArray(day.freeHandLines) && day.freeHandLines.length > 0) {
+        day.freeHandLines.forEach((line, idx) => {
+          const amount = typeof line.amount === 'number' && Number.isFinite(line.amount) ? line.amount : 0;
+          const description = (line.description || '').trim();
+          if (!description && amount === 0) return;
+          breakdown.push({
+            id: `line_day${day.dayNumber}_freehand_${idx}`,
+            park: parkName,
+            category: 'Extras',
+            itemName: description || 'One-off expense',
+            basePrice: amount,
+            costType: 'fixed_group',
+            calculatedTotal: amount,
+            perPerson: travelers > 0 ? amount / travelers : 0,
+            calculationExplanation: 'Free hand item',
+          });
+        });
+      }
+
+      // Extras
+      if (day.extras && Array.isArray(day.extras) && day.extras.length > 0) {
+        const extraItems = getPricingItemsByIds(pricingItems, day.extras);
+        extraItems.forEach((item, idx) => {
+          const { total, explanation } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
+          breakdown.push({
+            id: `line_day${day.dayNumber}_extra_${idx}`,
             park: parkName,
             category: item.category,
             itemName: item.itemName,
@@ -255,7 +326,7 @@ export function calculatePricingFromCatalog(
     // Activities
     const activityItems = getPricingItemsByIds(pricingItems, card.activities);
     activityItems.forEach((item, idx) => {
-      const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights, itemQuantities);
+      const { total, explanation, quantity } = calculateItemTotal(item, travelers, days, parkNights, itemQuantities);
       breakdown.push({
         id: `line_${card.id}_activity_${idx}`,
         park: parkName,
@@ -263,6 +334,7 @@ export function calculatePricingFromCatalog(
         itemName: item.itemName,
         basePrice: item.basePrice,
         costType: item.costType,
+        quantity: item.category === 'Activities' ? quantity : undefined,
         calculatedTotal: total,
         perPerson: travelers > 0 ? total / travelers : 0,
         calculationExplanation: explanation,
@@ -367,22 +439,28 @@ function calculateItemTotal(
   days: number,
   nights: number,
   itemQuantities: Record<string, number>
-): { total: number; explanation: string } {
+): { total: number; explanation: string; quantity: number } {
   let total = 0;
   let explanation = '';
 
   const rawQuantity = itemQuantities[item.id] ?? item.quantity ?? 1;
   const quantity = Number.isFinite(rawQuantity) && rawQuantity > 0 ? Math.floor(rawQuantity) : 1;
 
+  const isActivity = item.category === 'Activities';
+
   switch (item.costType) {
     case 'fixed_group':
-      total = item.basePrice * quantity;
-      explanation = `${item.basePrice} × ${quantity} (fixed group)`;
+      total = item.basePrice * (isActivity ? 1 : quantity);
+      explanation = isActivity
+        ? `${item.basePrice} (fixed group)`
+        : `${item.basePrice} × ${quantity} (fixed group)`;
       break;
 
     case 'fixed_per_day':
-      total = item.basePrice * days * quantity;
-      explanation = `${item.basePrice} × ${days} days × ${quantity}`;
+      total = item.basePrice * days * (isActivity ? 1 : quantity);
+      explanation = isActivity
+        ? `${item.basePrice} × ${days} days`
+        : `${item.basePrice} × ${days} days × ${quantity}`;
       break;
 
     case 'per_person':
@@ -410,11 +488,23 @@ function calculateItemTotal(
       explanation = `${item.basePrice} (per guide)`;
       break;
 
+    case 'hierarchical_lodging':
+      // Hierarchical lodging should be handled separately with lodgingConfig
+      // If we reach here, config is missing
+      total = 0;
+      explanation = 'Unknown cost type (hierarchical lodging - use Configure button)';
+      break;
+
     default:
       total = 0;
       explanation = 'Unknown cost type';
   }
 
-  return { total, explanation };
+  if (isActivity && quantity !== 1) {
+    total = total * quantity;
+    explanation = `${explanation} × ${quantity}`;
+  }
+
+  return { total, explanation, quantity };
 }
 

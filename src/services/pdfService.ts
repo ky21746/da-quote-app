@@ -1,30 +1,6 @@
 import jsPDF from 'jspdf';
 import { CalculationResult, TripDraft } from '../types/ui';
 
-// Helper function to get category icon symbol
-function getCategoryIconSymbol(category: string): string {
-  const categoryLower = category.toLowerCase();
-  if (categoryLower.includes('aviation') || categoryLower.includes('arrival')) {
-    return '✈';
-  }
-  if (categoryLower.includes('lodging') || categoryLower.includes('hotel')) {
-    return '🏨';
-  }
-  if (categoryLower.includes('transport') || categoryLower.includes('vehicle')) {
-    return '🚗';
-  }
-  if (categoryLower.includes('activit')) {
-    return '📍';
-  }
-  if (categoryLower.includes('extra')) {
-    return '+';
-  }
-  if (categoryLower.includes('logistic')) {
-    return '🚚';
-  }
-  return '•';
-}
-
 export const pdfService = {
   async generateQuotePDF(draft: TripDraft, calculation: CalculationResult, quoteId?: string): Promise<void> {
     const doc = new jsPDF();
@@ -132,10 +108,9 @@ export const pdfService = {
           doc.addPage();
           y = 20;
         }
-        const iconSymbol = getCategoryIconSymbol(category.category);
         doc.setTextColor(75, 54, 28); // brand-dark
         doc.setFont('helvetica', 'bold');
-        doc.text(iconSymbol + ' ' + category.category + ': ' + category.subtotal, 20, y);
+        doc.text(category.category + ': ' + category.subtotal, 20, y);
         y += 6;
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(85, 73, 32); // brand-olive

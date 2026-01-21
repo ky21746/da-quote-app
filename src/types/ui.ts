@@ -42,6 +42,7 @@ export interface TripDraft {
   parks?: ParkCard[]; // Park-based planning blocks (deprecated, use tripDays)
   tripDays?: TripDay[]; // Array of days (1 per trip day)
   itemQuantities?: Record<string, number>; // Per-quote quantity overrides by pricingItemId
+  itemQuantitySources?: Record<string, 'auto' | 'manual'>; // Tracks whether itemQuantities overrides are auto-set or manually set
   // Pricing adjustments
   unexpectedPercentage?: number; // העמסת בלתי צפוי באחוזים
   localAgentCommissionPercentage?: number; // העמסת אחוז רכב לסוכן מקומי
@@ -96,13 +97,30 @@ export interface TripDayParkFee {
   excluded: boolean;
 }
 
+export interface FreeHandLine {
+  id: string;
+  description: string;
+  amount: number;
+}
+
 // TripDay represents one day in the trip (1, 2, 3... global trip day)
 export interface TripDay {
   dayNumber: number; // 1, 2, 3... (global trip day)
   parkId?: string;
   arrival?: string; // pricingItemId
   lodging?: string; // pricingItemId
+  lodgingConfig?: {
+    roomType: string;
+    roomTypeName: string;
+    season: string;
+    seasonName: string;
+    occupancy: string;
+    price: number;
+    priceType: 'perRoom' | 'perPerson' | 'perVilla';
+  }; // For hierarchical lodging
   activities: string[]; // pricingItemIds
+  extras?: string[]; // pricingItemIds
+  freeHandLines?: FreeHandLine[];
   parkFees?: TripDayParkFee[];
   logistics?: {
     vehicle?: string; // pricingItemId
@@ -155,7 +173,8 @@ export type ManualCostType =
   | 'per_person_per_day'
   | 'per_night'
   | 'per_night_per_person'
-  | 'per_guide';
+  | 'per_guide'
+  | 'hierarchical_lodging';
 
 export type PricingCategory =
   | 'Aviation'
@@ -180,6 +199,7 @@ export interface PricingItem {
   active: boolean;
   notes?: string;
   sku?: string;
+  metadata?: any; // For hierarchical pricing structures (lodging with rooms/seasons/occupancy)
 }
 
 export interface ManualPricingLineItem {
