@@ -22,7 +22,19 @@ This will run tests in interactive watch mode (useful during development).
 
 ## Test Coverage
 
-The test suite includes **21 unit tests** covering the following scenarios:
+The test suite includes **39 unit tests** covering two main areas:
+
+### A. Catalog Pricing Engine (21 tests)
+Tests the core pricing calculation from the catalog.
+
+### B. Final Pricing Calculator (18 tests)
+Tests the final client price including markup, commissions, and profit.
+
+---
+
+## A. Catalog Pricing Engine Tests (21 tests)
+
+These tests cover the following scenarios:
 
 ### 1. Per-Person Pricing (3 tests)
 - `per_person`: basePrice × travelers
@@ -63,6 +75,10 @@ The test suite includes **21 unit tests** covering the following scenarios:
 
 ## Test Structure
 
+### Test Files
+1. **`catalogPricingEngine.test.ts`** - Tests catalog pricing calculation (21 tests)
+2. **`finalPricingCalculator.test.ts`** - Tests final pricing with adjustments (18 tests)
+
 ### Fixtures (`fixtures.ts`)
 Test fixtures provide builder functions for creating test data:
 - `createTripDraft()` - Create a trip with sensible defaults
@@ -70,8 +86,8 @@ Test fixtures provide builder functions for creating test data:
 - `createPricingItem()` - Create a catalog item
 - Specialized builders for each cost type
 
-### Test File (`catalogPricingEngine.test.ts`)
-Tests are organized by scenario using Jest's `describe` blocks and follow the **Given/When/Then** pattern:
+### Test Pattern
+All tests follow the **Given/When/Then** pattern:
 
 ```typescript
 test('GIVEN per_person item WHEN calculating THEN total equals basePrice × travelers', () => {
@@ -87,11 +103,67 @@ test('GIVEN per_person item WHEN calculating THEN total equals basePrice × trav
 });
 ```
 
+---
+
+## B. Final Pricing Calculator Tests (18 tests)
+
+### 1. Contingency (Unforeseen Costs) - 3 tests
+- 10% contingency adds correctly to base total
+- 0% contingency adds nothing
+- 15% contingency calculates correctly
+
+### 2. Local Agent Commission - 3 tests
+- 5% commission applies to subtotal after contingency
+- 0% commission adds nothing
+- 10% commission without contingency applies to base
+
+### 3. Profit Margin - 3 tests
+- 20% profit applies to subtotal after commission
+- 0% profit adds nothing
+- 25% profit without other adjustments applies to base
+
+### 4. Compounding Effect - 2 tests
+- All percentages compound correctly
+- Different percentages compound on previous layers
+
+### 5. Final Price Per Person - 3 tests
+- Divides final total by travelers correctly
+- Handles 0 travelers (returns 0)
+- Single traveler equals final total
+
+### 6. Edge Cases - 2 tests
+- All percentages at 0 returns base total
+- Base total of 0 returns 0 for everything
+
+### 7. Golden Regression Tests - 2 tests
+- **Standard 10-5-20 model**: $10,000 base → $13,860 final
+- **Conservative 5-10-15 model**: $15,000 base → $19,923.75 final
+
+---
+
+## Pricing Formula
+
+The final pricing follows this compounding formula:
+
+```
+1. Base Total (from catalog)
+2. + Contingency (unexpectedPercentage% of Base)
+3. = Subtotal After Contingency
+4. + Local Agent Commission (localAgentCommissionPercentage% of Subtotal)
+5. = Subtotal After Commission
+6. + Profit Margin (myProfitPercentage% of Subtotal)
+7. = Final Total
+8. ÷ Travelers = Final Price Per Person
+```
+
+**Important:** Each percentage compounds on the previous subtotal, not on the base total.
+
+---
+
 ## What is NOT Tested
 
 The following are intentionally excluded from this test suite:
-- **Markup calculations** (not part of core pricing engine)
-- **Manual line items** (handled separately)
+- **Manual line items** (to be added in future)
 - **UI components** (React components are not unit tested here)
 - **Firebase/Firestore** (no network calls in unit tests)
 
@@ -111,10 +183,20 @@ These tests should be run:
 
 ## Regression Protection
 
-The golden tests serve as regression guards. If you intentionally change pricing logic:
+### Catalog Pricing Golden Tests:
+- **5-day Bwindi safari**: $6,730
+- **Single-day hierarchical lodging**: $850
+
+### Final Pricing Golden Tests:
+- **Standard 10-5-20 model**: $10,000 → $13,860
+- **Conservative 5-10-15 model**: $15,000 → $19,923.75
+
+If you intentionally change pricing logic:
 1. Run tests - they should fail
 2. Update the expected values in the golden tests
 3. Document the change in git commit message
+
+**Critical:** Changing any percentage (contingency, commission, profit) MUST break at least one test.
 
 ## Adding New Tests
 
