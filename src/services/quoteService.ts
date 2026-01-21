@@ -173,13 +173,13 @@ export const quoteService = {
   },
 
   async getQuotes(): Promise<SavedQuote[]> {
-    const q = query(collection(db, 'quotes'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'quotes'), orderBy('updatedAt', 'desc'));
     const snapshot = await getDocs(q);
     return snapshot.docs.map(d => ({ id: d.id, ...d.data(), createdAt: d.data().createdAt?.toDate?.() || new Date(), updatedAt: d.data().updatedAt?.toDate?.() || new Date() })) as SavedQuote[];
   },
 
   async getFinalQuotes(): Promise<SavedQuote[]> {
-    const q = query(collection(db, 'quotes'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'quotes'), orderBy('updatedAt', 'desc'));
     const snapshot = await getDocs(q);
     const all = snapshot.docs.map(d => ({
       id: d.id,
