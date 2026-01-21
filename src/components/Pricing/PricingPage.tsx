@@ -147,17 +147,26 @@ export const PricingPage: React.FC = () => {
   );
 
   // Scenario comparison
-  const { scenarios, duplicateScenario, createBaseScenario } = useScenarioDuplication();
+  const { scenarios, duplicateScenario, createBaseScenario, updateScenario } = useScenarioDuplication();
   const [showScenarioComparison, setShowScenarioComparison] = useState(false);
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
 
-  // Update local state when draft changes
+  // Get the currently selected scenario or fall back to main draft
+  const selectedScenario = selectedScenarioId
+    ? scenarios.find((s) => s.scenarioId === selectedScenarioId)
+    : null;
+
+  // Use selected scenario's draft if available, otherwise use main draft
+  const activeDraft = selectedScenario ? selectedScenario.draft : draft;
+
+  // Update local state when active draft changes
   useEffect(() => {
-    if (draft) {
-      setUnexpectedPercentage(draft.unexpectedPercentage || 0);
-      setLocalAgentCommissionPercentage(draft.localAgentCommissionPercentage || 0);
-      setMyProfitPercentage(draft.myProfitPercentage || 0);
+    if (activeDraft) {
+      setUnexpectedPercentage(activeDraft.unexpectedPercentage || 0);
+      setLocalAgentCommissionPercentage(activeDraft.localAgentCommissionPercentage || 0);
+      setMyProfitPercentage(activeDraft.myProfitPercentage || 0);
     }
-  }, [draft, draft?.unexpectedPercentage, draft?.localAgentCommissionPercentage, draft?.myProfitPercentage]);
+  }, [activeDraft, activeDraft?.unexpectedPercentage, activeDraft?.localAgentCommissionPercentage, activeDraft?.myProfitPercentage]);
 
   const progressSteps = [
     'Setup',
@@ -168,14 +177,14 @@ export const PricingPage: React.FC = () => {
 
   // Calculate pricing from catalog
   const basePricingResult = useMemo(() => {
-    if (!draft) {
+    if (!activeDraft) {
       return {
         breakdown: [],
         totals: { grandTotal: 0, perPerson: 0 },
       };
     }
-    return calculatePricingFromCatalog(draft, pricingItems);
-  }, [draft, pricingItems]);
+    return calculatePricingFromCatalog(activeDraft, pricingItems);
+  }, [activeDraft, pricingItems]);
 
   // Calculate adjustments
   const adjustments = useMemo(() => {
@@ -208,7 +217,7 @@ export const PricingPage: React.FC = () => {
     };
   }, [basePricingResult, unexpectedPercentage, localAgentCommissionPercentage, myProfitPercentage]);
 
-  const travelers = draft?.travelers || 0;
+  const travelers = activeDraft?.travelers || 0;
 
   if (!draft) {
     return (
@@ -376,6 +385,41 @@ export const PricingPage: React.FC = () => {
           </div>
         )}
 
+        {/* Scenario Selector */}
+        {scenarios.length > 0 && (
+          <div className="mb-6 p-4 md:p-6 bg-purple-50 rounded-lg border border-purple-200">
+            <h2 className="text-lg font-semibold text-gray-800 mb-3">Active Scenario</h2>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                type="button"
+                className={`px-4 py-2 rounded border ${
+                  selectedScenarioId === null
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                }`}
+                onClick={() => setSelectedScenarioId(null)}
+              >
+                Main Draft
+              </button>
+              {scenarios.map((scenario) => (
+                <button
+                  key={scenario.scenarioId}
+                  type="button"
+                  className={`px-4 py-2 rounded border ${
+                    selectedScenarioId === scenario.scenarioId
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  }`}
+                  onClick={() => setSelectedScenarioId(scenario.scenarioId)}
+                >
+                  {scenario.scenarioName}
+                  {scenario.isBase && <span className="ml-1 text-xs">(Base)</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Scenario Comparison */}
         {showScenarioComparison && scenarios.length > 0 && (
           <ScenarioComparisonView scenarios={scenarios} pricingItems={pricingItems} />
@@ -392,7 +436,12 @@ export const PricingPage: React.FC = () => {
                 onChange={(value) => {
                   const numValue = typeof value === 'number' ? value : Number(value);
                   setUnexpectedPercentage(numValue);
-                  if (draft) {
+                  if (selectedScenario) {
+                    // Update the selected scenario's draft
+                    const updatedDraft = { ...selectedScenario.draft, unexpectedPercentage: numValue };
+                    updateScenario(selectedScenario.scenarioId, updatedDraft);
+                  } else if (draft) {
+                    // Update main draft
                     setDraft({ ...draft, unexpectedPercentage: numValue });
                   }
                 }}
@@ -407,7 +456,12 @@ export const PricingPage: React.FC = () => {
                 onChange={(value) => {
                   const numValue = typeof value === 'number' ? value : Number(value);
                   setLocalAgentCommissionPercentage(numValue);
-                  if (draft) {
+                  if (selectedScenario) {
+                    // Update the selected scenario's draft
+                    const updatedDraft = { ...selectedScenario.draft, localAgentCommissionPercentage: numValue };
+                    updateScenario(selectedScenario.scenarioId, updatedDraft);
+                  } else if (draft) {
+                    // Update main draft
                     setDraft({ ...draft, localAgentCommissionPercentage: numValue });
                   }
                 }}
@@ -422,7 +476,12 @@ export const PricingPage: React.FC = () => {
                 onChange={(value) => {
                   const numValue = typeof value === 'number' ? value : Number(value);
                   setMyProfitPercentage(numValue);
-                  if (draft) {
+                  if (selectedScenario) {
+                    // Update the selected scenario's draft
+                    const updatedDraft = { ...selectedScenario.draft, myProfitPercentage: numValue };
+                    updateScenario(selectedScenario.scenarioId, updatedDraft);
+                  } else if (draft) {
+                    // Update main draft
                     setDraft({ ...draft, myProfitPercentage: numValue });
                   }
                 }}
