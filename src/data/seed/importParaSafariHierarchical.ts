@@ -24,6 +24,7 @@ const paraSafariHierarchical = {
         id: 'signature-cottage',
         name: 'Signature Cottage',
         description: '4 pax',
+        maxOccupancy: 4,
         pricing: {
           high: {
             fourPax: { perRoom: 3266 }
@@ -37,6 +38,7 @@ const paraSafariHierarchical = {
         id: 'classic-room',
         name: 'Classic Room',
         description: '4 pax',
+        maxOccupancy: 4,
         pricing: {
           high: {
             fourPax: { perRoom: 809 }
@@ -50,6 +52,7 @@ const paraSafariHierarchical = {
         id: 'deluxe-family-room',
         name: 'Deluxe Family Room',
         description: '4 pax',
+        maxOccupancy: 4,
         pricing: {
           high: {
             fourPax: { perRoom: 901 }

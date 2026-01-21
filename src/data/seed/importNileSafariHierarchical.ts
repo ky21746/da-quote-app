@@ -23,18 +23,19 @@ const nileSafariHierarchical = {
       {
         id: 'deluxe-banda',
         name: 'Deluxe Banda',
+        maxOccupancy: 3,
         pricing: {
           high: {
-            double: { perRoom: 2582, perPerson: 1291 },
-            single: { perRoom: 1684, perPerson: 1684 },
-            triple: { perRoom: 3477, perPerson: 1159 },
+            double: { perRoom: 2582 },
+            single: { perRoom: 1684 },
+            triple: { perRoom: 3477 },
             child_5_15: 246,
             child_0_4: 0
           },
           low: {
-            double: { perRoom: 1557, perPerson: 779 },
-            single: { perRoom: 998, perPerson: 998 },
-            triple: { perRoom: 1937, perPerson: 646 },
+            double: { perRoom: 1557 },
+            single: { perRoom: 998 },
+            triple: { perRoom: 1937 },
             child_5_15: 160,
             child_0_4: 0
           }
@@ -43,18 +44,19 @@ const nileSafariHierarchical = {
       {
         id: 'exclusive-banda',
         name: 'Exclusive Banda',
+        maxOccupancy: 3,
         pricing: {
           high: {
-            double: { perRoom: 3221, perPerson: 1611 },
-            single: { perRoom: 2097, perPerson: 2097 },
-            triple: { perRoom: 3952, perPerson: 1317 },
+            double: { perRoom: 3221 },
+            single: { perRoom: 2097 },
+            triple: { perRoom: 3952 },
             child_5_15: 246,
             child_0_4: 0
           },
           low: {
-            double: { perRoom: 1944, perPerson: 972 },
-            single: { perRoom: 1265, perPerson: 1265 },
-            triple: { perRoom: 2196, perPerson: 732 },
+            double: { perRoom: 1944 },
+            single: { perRoom: 1265 },
+            triple: { perRoom: 2196 },
             child_5_15: 160,
             child_0_4: 0
           }
@@ -64,6 +66,7 @@ const nileSafariHierarchical = {
         id: 'family-villa',
         name: 'Family Villa',
         description: '1-8 Guests (4 Adults + 4 Children 0-15)',
+        maxOccupancy: 8,
         pricing: {
           high: {
             villa: { perVilla: 4406 }
