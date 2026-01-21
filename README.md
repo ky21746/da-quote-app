@@ -241,6 +241,7 @@ Examples:
 
 ### 🔒 **Mandatory Unit Test Gate**
 
+
 This project enforces **mandatory unit tests** for all pricing-related changes:
 
 - **39 unit tests** protecting pricing logic
