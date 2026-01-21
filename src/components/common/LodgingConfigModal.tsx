@@ -38,6 +38,7 @@ interface LodgingConfigModalProps {
   onClose: () => void;
   hotelName: string;
   metadata: LodgingMetadata;
+  travelers: number;
   onConfirm: (config: LodgingConfig) => void;
 }
 
@@ -46,6 +47,7 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
   onClose,
   hotelName,
   metadata,
+  travelers,
   onConfirm,
 }) => {
   const [step, setStep] = useState(1);
@@ -236,6 +238,26 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
                     }
                   }
 
+                  // Calculate suite total based on occupancy
+                  const occupancyCountMap: Record<string, number> = {
+                    'single': 1,
+                    'sharing': 2,
+                    'double': 2,
+                    'triple': 3,
+                    'twoSingles': 2,
+                    'threePax': 3,
+                    'fourPax': 4,
+                    'villa': 8,
+                    'suite': 2
+                  };
+                  const guestsInRoom = occupancyCountMap[occupancy] || 1;
+                  const suiteTotal = priceType === 'perPerson' ? price * guestsInRoom : price;
+                  
+                  // Calculate rooms needed based on travelers
+                  const roomsNeeded = travelers > 0 ? Math.ceil(travelers / guestsInRoom) : 1;
+                  const needsMultipleRooms = roomsNeeded > 1;
+                  const totalCostForAllRooms = suiteTotal * roomsNeeded;
+
                   return (
                     <button
                       key={occupancy}
@@ -246,13 +268,47 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
                           : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
                       }`}
                     >
-                      <div className="flex justify-between items-center">
-                        <div className="font-semibold text-gray-900">
-                          {formatOccupancyLabel(occupancy)}
+                      <div>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="font-semibold text-gray-900">
+                              {formatOccupancyLabel(occupancy)}
+                            </div>
+                            {priceType === 'perPerson' && (
+                              <div className="text-sm text-gray-600 mt-1">
+                                ${price.toLocaleString()} per person × {guestsInRoom} guests
+                              </div>
+                            )}
+                          </div>
+                          <div className="ml-4 text-right">
+                            <div className="text-2xl font-bold text-blue-600">
+                              ${suiteTotal.toLocaleString()}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {priceType === 'perRoom' ? 'per room' : priceType === 'perVilla' ? 'per villa' : 'suite total'}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-lg font-bold text-blue-600">
-                          {formatPrice(price, priceType)}
-                        </div>
+                        
+                        {/* Room recommendation warning */}
+                        {needsMultipleRooms && travelers > 0 && (
+                          <div className="mt-3 p-3 bg-amber-50 border border-amber-300 rounded-lg">
+                            <div className="flex items-start gap-2">
+                              <span className="text-lg">⚠️</span>
+                              <div className="flex-1">
+                                <div className="text-sm font-semibold text-amber-900">
+                                  You need {roomsNeeded} rooms for {travelers} travelers
+                                </div>
+                                <div className="text-xs text-amber-800 mt-1">
+                                  Each room accommodates {guestsInRoom} guest{guestsInRoom > 1 ? 's' : ''}. You'll need to add this room {roomsNeeded} times.
+                                </div>
+                                <div className="text-sm font-bold text-amber-900 mt-2 pt-2 border-t border-amber-200">
+                                  Total for {roomsNeeded} rooms: ${totalCostForAllRooms.toLocaleString()}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </button>
                   );

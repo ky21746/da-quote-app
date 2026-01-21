@@ -541,6 +541,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                   onClose={() => setIsLodgingModalOpen(false)}
                   hotelName={selectedLodgingItem.itemName}
                   metadata={metadata}
+                  travelers={travelers}
                   onConfirm={(config) => {
                     console.log('Lodging config selected:', config);
                     onUpdate({ lodgingConfig: config });

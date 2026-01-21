@@ -5,6 +5,8 @@ import { Button, Select } from '../common';
 import { PricingItem } from '../../types/ui';
 import { AddPricingItemModal } from './AddPricingItemModal';
 import { EditHierarchicalPricingModal } from './EditHierarchicalPricingModal';
+import { DeleteCloudsMountainGorillaItems } from './DeleteCloudsMountainGorillaItems';
+import { ImportCloudsMountainGorillaHierarchical } from './ImportCloudsMountainGorillaHierarchical';
 import { getParks } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
 
@@ -148,6 +150,12 @@ export const PricingCatalogPage: React.FC = () => {
               + Add Pricing Item
             </Button>
           </div>
+        </div>
+
+        {/* Clouds Mountain Gorilla Lodge - Import */}
+        <div className="mb-6 space-y-4">
+          <DeleteCloudsMountainGorillaItems />
+          <ImportCloudsMountainGorillaHierarchical />
         </div>
 
         {/* Filter Bar */}
