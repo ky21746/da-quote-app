@@ -24,6 +24,7 @@ const lemalaWildwatersHierarchical = {
         id: 'standard-suite',
         name: 'Standard Suite',
         description: 'Full board inclusive',
+        maxOccupancy: 3,
         pricing: {
           high: {
             single: { perPerson: 714.29 },
@@ -46,6 +47,7 @@ const lemalaWildwatersHierarchical = {
         id: 'private-pool-suite',
         name: 'Private Pool Suite',
         description: 'Maximum occupancy 2 adults',
+        maxOccupancy: 2,
         pricing: {
           high: {
             suite: { perRoom: 1300.00 }
