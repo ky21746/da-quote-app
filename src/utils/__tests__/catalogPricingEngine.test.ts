@@ -273,6 +273,38 @@ describe('catalogPricingEngine', () => {
       expect(result.breakdown[0].calculatedTotal).toBe(0);
       expect(result.breakdown[0].calculationExplanation).toContain('Unknown cost type');
     });
+
+    test('REGRESSION: hierarchical lodging with itemQuantities > 1 MUST multiply price by quantity', () => {
+      const lodging = createHierarchicalLodgingItem('Lemala Wildwaters Lodge');
+      const trip = createTripDraft({
+        travelers: 6,
+        itemQuantities: {
+          [lodging.id]: 3, // Need 3 villas for 6 travelers (capacity 2 each)
+        },
+        tripDays: [
+          createTripDay({
+            dayNumber: 1,
+            lodging: lodging.id,
+            lodgingConfig: {
+              roomType: 'private_pool',
+              roomTypeName: 'Private Pool Suite',
+              season: 'low',
+              seasonName: 'Low Season',
+              occupancy: 'suite',
+              price: 1000,
+              priceType: 'perVilla',
+            },
+          }),
+        ],
+      });
+
+      const result = calculatePricingFromCatalog(trip, [lodging]);
+
+      // CRITICAL: Must charge for 3 villas, not 1
+      expect(result.breakdown[0].calculatedTotal).toBe(3000); // 1000 × 3 villas
+      expect(result.breakdown[0].calculationExplanation).toContain('× 3');
+      expect(result.totals.grandTotal).toBe(3000);
+    });
   });
 
   describe('Quantity Calculations', () => {

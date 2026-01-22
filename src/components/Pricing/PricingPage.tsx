@@ -338,12 +338,20 @@ export const PricingPage: React.FC = () => {
               The selected item capacity is insufficient for the number of travelers.
             </div>
             <div className="space-y-3">
-              {capacityValidation.issues.map((issue: any, idx: number) => (
-                <div key={`${issue.itemId}_${idx}`} className="bg-white/60 border border-red-200 rounded p-3">
-                  <div className="text-sm font-medium">Item: {issue.itemId}</div>
-                  <div className="text-xs mt-1">
-                    Travelers: {issue.travelers} | Capacity: {issue.capacity} | Quantity: {issue.quantity}
-                  </div>
+              {capacityValidation.issues.map((issue: any, idx: number) => {
+                const item = pricingItems.find((i) => i.id === issue.itemId);
+                const itemName = item?.itemName || issue.itemId;
+                const totalCapacity = issue.capacity * issue.quantity;
+                return (
+                  <div key={`${issue.itemId}_${idx}`} className="bg-white/60 border border-red-200 rounded p-3">
+                    <div className="text-sm font-medium text-red-900">{itemName}</div>
+                    <div className="text-xs mt-1 text-red-800">
+                      <strong>Problem:</strong> You have {issue.travelers} travelers, but this item can only accommodate {totalCapacity} {totalCapacity === 1 ? 'person' : 'people'}
+                      {issue.quantity > 1 ? ` (${issue.quantity} × ${issue.capacity} capacity)` : ` (capacity: ${issue.capacity})`}.
+                    </div>
+                    <div className="text-xs mt-1 text-red-700">
+                      <strong>Solution:</strong> Increase quantity to {Math.ceil(issue.travelers / issue.capacity)} or replace with a higher-capacity item.
+                    </div>
                   <div className="flex gap-2 flex-wrap mt-3">
                     <Button
                       variant="primary"
@@ -374,11 +382,14 @@ export const PricingPage: React.FC = () => {
                           alert('No higher-capacity alternative found in catalog.');
                           return;
                         }
+                        const altNames = alternatives
+                          .map((alt: any) => {
+                            const altItem = pricingItems.find((i) => i.id === alt.itemId);
+                            return `${altItem?.itemName || alt.itemId} (capacity ${alt.capacity})`;
+                          })
+                          .join('\n');
                         alert(
-                          `Replace item with a higher-capacity alternative. Options:\n` +
-                            alternatives
-                              .map((alt: any) => `${alt.itemId} (capacity ${alt.capacity})`)
-                              .join('\n')
+                          `Replace item with a higher-capacity alternative. Options:\n${altNames}`
                         );
                       }}
                     >
@@ -386,7 +397,8 @@ export const PricingPage: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

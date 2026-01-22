@@ -118,16 +118,24 @@ export function calculatePricingFromCatalog(
             const config = day.lodgingConfig;
             const configuredPrice = config.price;
             
+            // Get quantity from itemQuantities or default to 1
+            const rawQuantity = itemQuantities[item.id] ?? 1;
+            const quantity = Number.isFinite(rawQuantity) && rawQuantity > 0 ? Math.floor(rawQuantity) : 1;
+            
             // Calculate total based on price type
             let total = 0;
             let explanation = '';
             
             if (config.priceType === 'perRoom' || config.priceType === 'perVilla') {
-              total = configuredPrice;
-              explanation = `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${config.priceType === 'perVilla' ? 'per villa' : 'per room'}`;
+              total = configuredPrice * quantity;
+              explanation = quantity > 1
+                ? `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${config.priceType === 'perVilla' ? 'per villa' : 'per room'} × ${quantity}`
+                : `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${config.priceType === 'perVilla' ? 'per villa' : 'per room'}`;
             } else if (config.priceType === 'perPerson') {
-              total = configuredPrice * travelers;
-              explanation = `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${travelers} travelers`;
+              total = configuredPrice * travelers * quantity;
+              explanation = quantity > 1
+                ? `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${travelers} travelers × ${quantity}`
+                : `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${travelers} travelers`;
             }
             
             breakdown.push({
