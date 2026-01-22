@@ -546,12 +546,19 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                   travelers={travelers}
                   onConfirm={(config) => {
                     console.log('Lodging config selected:', config);
-                    onUpdate({ lodgingConfig: config });
                     
-                    // Also update itemQuantities if requiredQuantity is provided
+                    // Update both lodgingConfig AND itemQuantities in a single state update
                     if (config.requiredQuantity && lodging && draft) {
+                      const updatedTripDays = (draft.tripDays || []).map((day) => {
+                        if (day.dayNumber === dayNumber) {
+                          return { ...day, lodgingConfig: config };
+                        }
+                        return day;
+                      });
+                      
                       setDraft({
                         ...draft,
+                        tripDays: updatedTripDays,
                         itemQuantities: {
                           ...(draft.itemQuantities || {}),
                           [lodging]: config.requiredQuantity,
@@ -561,6 +568,9 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                           [lodging]: 'auto',
                         },
                       });
+                    } else {
+                      // Fallback if no requiredQuantity
+                      onUpdate({ lodgingConfig: config });
                     }
                     
                     setIsLodgingModalOpen(false);
