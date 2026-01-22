@@ -117,6 +117,7 @@ export interface TripDay {
     occupancy: string;
     price: number;
     priceType: 'perRoom' | 'perPerson' | 'perVilla';
+    requiredQuantity?: number;
   }; // For hierarchical lodging
   activities: string[]; // pricingItemIds
   extras?: string[]; // pricingItemIds

@@ -19,6 +19,7 @@ interface TripDayCardProps {
     occupancy: string;
     price: number;
     priceType: 'perRoom' | 'perPerson' | 'perVilla';
+    requiredQuantity?: number;
   };
   activities: string[]; // pricingItemIds
   extras?: string[]; // pricingItemIds
@@ -41,6 +42,7 @@ interface TripDayCardProps {
       occupancy: string;
       price: number;
       priceType: 'perRoom' | 'perPerson' | 'perVilla';
+      requiredQuantity?: number;
     };
     activities?: string[];
     extras?: string[];
@@ -545,6 +547,22 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                   onConfirm={(config) => {
                     console.log('Lodging config selected:', config);
                     onUpdate({ lodgingConfig: config });
+                    
+                    // Also update itemQuantities if requiredQuantity is provided
+                    if (config.requiredQuantity && lodging && draft) {
+                      setDraft({
+                        ...draft,
+                        itemQuantities: {
+                          ...(draft.itemQuantities || {}),
+                          [lodging]: config.requiredQuantity,
+                        },
+                        itemQuantitySources: {
+                          ...(draft.itemQuantitySources || {}),
+                          [lodging]: 'auto',
+                        },
+                      });
+                    }
+                    
                     setIsLodgingModalOpen(false);
                   }}
                 />

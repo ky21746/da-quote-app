@@ -31,6 +31,7 @@ interface LodgingConfig {
   occupancy: string;
   price: number;
   priceType: 'perRoom' | 'perPerson' | 'perVilla';
+  requiredQuantity?: number;
 }
 
 interface LodgingConfigModalProps {
@@ -92,6 +93,21 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
 
     const seasonInfo = metadata.seasons[selectedSeason];
     
+    // Calculate required quantity based on travelers and room capacity
+    const occupancyCountMap: Record<string, number> = {
+      'single': 1,
+      'sharing': 2,
+      'double': 2,
+      'triple': 3,
+      'twoSingles': 2,
+      'threePax': 3,
+      'fourPax': 4,
+      'villa': 8,
+      'suite': 2
+    };
+    const guestsInRoom = occupancyCountMap[selectedOccupancy] || 1;
+    const requiredQuantity = travelers > 0 ? Math.ceil(travelers / guestsInRoom) : 1;
+    
     onConfirm({
       hotelName,
       roomType: selectedRoom,
@@ -101,6 +117,7 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
       occupancy: selectedOccupancy,
       price: priceInfo.price,
       priceType: priceInfo.priceType,
+      requiredQuantity,
     });
 
     handleClose();
