@@ -547,8 +547,8 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                   onConfirm={(config) => {
                     console.log('Lodging config selected:', config);
                     
-                    // Update both lodgingConfig AND itemQuantities in a single state update
-                    if (config.requiredQuantity && lodging && draft) {
+                    // ALWAYS update lodgingConfig, and also update itemQuantities if requiredQuantity exists
+                    if (lodging && draft) {
                       const updatedTripDays = (draft.tripDays || []).map((day) => {
                         if (day.dayNumber === dayNumber) {
                           return { ...day, lodgingConfig: config };
@@ -556,20 +556,26 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                         return day;
                       });
                       
-                      setDraft({
+                      const newDraft: any = {
                         ...draft,
                         tripDays: updatedTripDays,
-                        itemQuantities: {
+                      };
+                      
+                      // Also update itemQuantities if requiredQuantity is provided
+                      if (config.requiredQuantity) {
+                        newDraft.itemQuantities = {
                           ...(draft.itemQuantities || {}),
                           [lodging]: config.requiredQuantity,
-                        },
-                        itemQuantitySources: {
+                        };
+                        newDraft.itemQuantitySources = {
                           ...(draft.itemQuantitySources || {}),
                           [lodging]: 'auto',
-                        },
-                      });
+                        };
+                      }
+                      
+                      setDraft(newDraft);
                     } else {
-                      // Fallback if no requiredQuantity
+                      // Fallback if no draft
                       onUpdate({ lodgingConfig: config });
                     }
                     
