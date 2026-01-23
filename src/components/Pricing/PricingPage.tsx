@@ -12,6 +12,7 @@ import { useActiveTripContext } from '../../hooks/useActiveTripContext';
 import { useScenarioDuplication } from '../../hooks/useScenarioDuplication';
 import { ScenarioComparisonView } from './ScenarioComparisonView';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
+import { DollarSign, Users, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 /**
  * Convert PricingResult to CalculationResult format for TripSummaryPage
@@ -240,28 +241,47 @@ export const PricingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Pricing</h1>
+        <div className="flex items-center gap-3 mb-6">
+          <DollarSign className="w-8 h-8 text-primary-500" />
+          <h1 className="text-2xl font-bold text-gray-800">Pricing</h1>
+        </div>
 
         <ProgressStepper currentStep={4} steps={progressSteps} />
 
         <div className="mb-6 p-4 md:p-6 bg-gray-50 rounded-lg border border-gray-200">
           <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <h2 className="text-lg font-semibold text-gray-800">Final Output</h2>
-              <div className="text-xs text-gray-500">Calculated from catalog + adjustments</div>
+            <div className="min-w-0 flex items-center gap-3">
+              <DollarSign className="w-5 h-5 text-primary-600 shrink-0" />
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800">Final Output</h2>
+                <div className="text-xs text-gray-500">Calculated from catalog + adjustments</div>
+              </div>
             </div>
             <button
               type="button"
-              className="shrink-0 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white hover:bg-gray-100"
+              className="shrink-0 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white hover:bg-gray-100 inline-flex items-center gap-2 transition-colors"
               onClick={() => setShowPricingAdjustments((v) => !v)}
             >
-              {showPricingAdjustments ? 'Hide adjustments' : 'Show adjustments'}
+              {showPricingAdjustments ? (
+                <>
+                  <ChevronUp className="w-4 h-4" />
+                  Hide adjustments
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-4 h-4" />
+                  Show adjustments
+                </>
+              )}
             </button>
           </div>
 
           <div className="mt-4 space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Travelers:</span>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600 flex items-center gap-2">
+                <Users className="w-4 h-4 text-gray-500" />
+                Travelers:
+              </span>
               <span className="font-semibold text-gray-800">{travelers}</span>
             </div>
             <div className="flex justify-between pt-2 border-t border-gray-200">
@@ -333,8 +353,9 @@ export const PricingPage: React.FC = () => {
         </div>
 
         {!capacityValidation.isValid && (
-          <div className="mb-6 p-4 md:p-6 bg-red-100 border border-red-400 text-red-800 rounded">
-            <div className="font-semibold mb-2">
+          <div className="mb-6 p-4 md:p-6 bg-red-50 border-2 border-red-400 text-red-800 rounded-lg">
+            <div className="font-semibold mb-2 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600" />
               The selected item capacity is insufficient for the number of travelers.
             </div>
             <div className="space-y-3">
@@ -343,8 +364,11 @@ export const PricingPage: React.FC = () => {
                 const itemName = item?.itemName || issue.itemId;
                 const totalCapacity = issue.capacity * issue.quantity;
                 return (
-                  <div key={`${issue.itemId}_${idx}`} className="bg-white/60 border border-red-200 rounded p-3">
-                    <div className="text-sm font-medium text-red-900">{itemName}</div>
+                  <div key={`${issue.itemId}_${idx}`} className="bg-white border border-red-200 rounded-lg p-4 shadow-sm">
+                    <div className="text-sm font-medium text-red-900 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 text-red-600" />
+                      {itemName}
+                    </div>
                     <div className="text-xs mt-1 text-red-800">
                       <strong>Problem:</strong> You have {issue.travelers} travelers, but this item can only accommodate {totalCapacity} {totalCapacity === 1 ? 'person' : 'people'}
                       {issue.quantity > 1 ? ` (${issue.quantity} × ${issue.capacity} capacity)` : ` (capacity: ${issue.capacity})`}.
