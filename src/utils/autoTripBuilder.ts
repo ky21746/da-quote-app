@@ -1,10 +1,10 @@
-import { TripDraft, TripDay, TripTier, AgeRange } from '../types/ui';
+import { TripDraft, TripDay, TripTier } from '../types/ui';
 import { PricingItem } from '../types/ui';
 
 /**
  * Auto-Trip-Builder
  * 
- * Takes simple inputs (travelers, ageRanges, days, tier) and automatically generates
+ * Takes simple inputs (travelers, ages, days, tier) and automatically generates
  * a complete trip with parks, lodging, and activities selected based on tier level.
  * 
  * This is designed for AI agent integration - the agent can call this with minimal input
@@ -13,10 +13,32 @@ import { PricingItem } from '../types/ui';
 
 export interface AutoTripBuilderInput {
   travelers: number;
-  ageRanges?: AgeRange[];
+  ages?: number[];
   days: number;
   tier: TripTier;
   tripName?: string;
+}
+
+/**
+ * Helper functions to categorize ages
+ */
+export function getAgeCategory(age: number): 'infant' | 'child' | 'adult' | 'senior' {
+  if (age < 3) return 'infant';
+  if (age < 15) return 'child'; // Changed from 13 to 15 for gorilla trekking
+  if (age < 65) return 'adult';
+  return 'senior';
+}
+
+export function canDoGorillaTrekking(age: number): boolean {
+  return age >= 15;
+}
+
+export function getChildCount(ages: number[]): number {
+  return ages.filter(age => age < 15).length;
+}
+
+export function getAdultCount(ages: number[]): number {
+  return ages.filter(age => age >= 15).length;
 }
 
 export interface AutoTripBuilderOutput {
@@ -153,7 +175,7 @@ export async function buildAutoTrip(
   input: AutoTripBuilderInput,
   pricingItems: PricingItem[]
 ): Promise<AutoTripBuilderOutput> {
-  const { travelers, ageRanges, days, tier, tripName } = input;
+  const { travelers, ages, days, tier, tripName } = input;
   
   // Get recommended parks
   const recommendedParks = getRecommendedParks(days);
@@ -188,7 +210,7 @@ export async function buildAutoTrip(
   const draft: TripDraft = {
     name: tripName || `${days}-Day Safari (${tier})`,
     travelers,
-    ageRanges: ageRanges || Array(travelers).fill('adult'),
+    ages: ages || Array(travelers).fill(30),
     days,
     tier,
     tripDays,
@@ -205,7 +227,7 @@ export async function buildAutoTrip(
  * Just returns the structure, pricing will be calculated when saved
  */
 export function buildAutoTripSimple(input: AutoTripBuilderInput): AutoTripBuilderOutput {
-  const { travelers, ageRanges, days, tier, tripName } = input;
+  const { travelers, ages, days, tier, tripName } = input;
   
   // Get recommended parks
   const recommendedParks = getRecommendedParks(days);
@@ -234,7 +256,7 @@ export function buildAutoTripSimple(input: AutoTripBuilderInput): AutoTripBuilde
   const draft: TripDraft = {
     name: tripName || `${days}-Day Safari (${tier})`,
     travelers,
-    ageRanges: ageRanges || Array(travelers).fill('adult'),
+    ages: ages || Array(travelers).fill(30),
     days,
     tier,
     tripDays,

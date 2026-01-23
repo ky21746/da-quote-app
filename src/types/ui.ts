@@ -31,12 +31,10 @@ export interface DayDraft {
   };
 }
 
-export type AgeRange = 'infant' | 'child' | 'adult' | 'senior';
-
 export interface TripDraft {
   name: string;
   travelers: number;
-  ageRanges?: AgeRange[]; // Age range for each traveler (length should match travelers)
+  ages?: number[]; // Actual age for each traveler (length should match travelers)
   days: number;
   tier: TripTier; // Luxury/quality level for auto-trip-builder and metadata
   markup?: Markup; // Optional, only in final step (post-calculation)
