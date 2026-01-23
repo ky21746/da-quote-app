@@ -12,6 +12,7 @@ import { PricingPage } from '../pages/PricingPage';
 import { PricingCatalogPage } from '../pages/PricingCatalogPage';
 import { SavedProposalsPage } from '../pages/SavedProposalsPage';
 import { ProposalViewPage } from '../pages/ProposalViewPage';
+import { AutoTripTestPage } from '../pages/AutoTripTestPage';
 import FirestoreProbe from '../debug/FirestoreProbe';
 
 export const AppRoutes: React.FC = () => {
@@ -31,6 +32,7 @@ export const AppRoutes: React.FC = () => {
       
       <Route path="/admin/pricing-catalog" element={<ProtectedRoute requireAdmin><PricingCatalogPage /></ProtectedRoute>} />
       <Route path="/debug/firestore" element={<ProtectedRoute requireAdmin><FirestoreProbe /></ProtectedRoute>} />
+      <Route path="/debug/auto-trip" element={<ProtectedRoute><AutoTripTestPage /></ProtectedRoute>} />
       
       <Route path="/trip" element={<Navigate to="/trip/new" replace />} />
       <Route path="/" element={<Navigate to="/trip/new" replace />} />
