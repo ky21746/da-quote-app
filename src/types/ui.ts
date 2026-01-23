@@ -31,10 +31,16 @@ export interface DayDraft {
   };
 }
 
+export type AgeRange = 'infant' | 'child' | 'adult' | 'senior';
+
+export type LuxuryLevel = 'budget' | 'standard' | 'luxury' | 'ultra-luxury';
+
 export interface TripDraft {
   name: string;
   travelers: number;
+  ageRanges?: AgeRange[]; // Age range for each traveler (length should match travelers)
   days: number;
+  luxuryLevel?: LuxuryLevel; // Luxury level for auto-trip-builder
   tier: TripTier; // Metadata only, not used in pricing
   markup?: Markup; // Optional, only in final step (post-calculation)
   daysBreakdown?: DayDraft[];

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTrip } from '../../context/TripContext';
 import { Input, Select, Button, ProgressStepper } from '../common';
-import { TripDraft, TripTier } from '../../types/ui';
+import { TripDraft, TripTier, AgeRange, LuxuryLevel } from '../../types/ui';
 import { quoteService } from '../../services/quoteService';
 
 export const TripBuilderPage: React.FC = () => {
@@ -15,11 +15,15 @@ export const TripBuilderPage: React.FC = () => {
     travelers: number;
     days: number;
     tier: TripTier;
+    ageRanges: AgeRange[];
+    luxuryLevel: LuxuryLevel;
   }>({
     name: '',
     travelers: 2,
     days: 7,
     tier: 'base',
+    ageRanges: ['adult', 'adult'],
+    luxuryLevel: 'standard',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +44,9 @@ export const TripBuilderPage: React.FC = () => {
     const draft: TripDraft = {
       name: formData.name,
       travelers: formData.travelers,
+      ageRanges: formData.ageRanges,
       days: formData.days,
+      luxuryLevel: formData.luxuryLevel,
       tier: formData.tier,
     };
 
@@ -91,7 +97,23 @@ export const TripBuilderPage: React.FC = () => {
             label="Number of Travelers"
             type="number"
             value={formData.travelers}
-            onChange={(value) => setFormData({ ...formData, travelers: value as number })}
+            onChange={(value) => {
+              const newTravelers = value as number;
+              const currentAgeRanges = formData.ageRanges;
+              let newAgeRanges = [...currentAgeRanges];
+              
+              // Adjust ageRanges array to match travelers count
+              if (newTravelers > currentAgeRanges.length) {
+                // Add more travelers (default to adult)
+                const diff = newTravelers - currentAgeRanges.length;
+                newAgeRanges = [...currentAgeRanges, ...Array(diff).fill('adult')];
+              } else if (newTravelers < currentAgeRanges.length) {
+                // Remove excess travelers
+                newAgeRanges = currentAgeRanges.slice(0, newTravelers);
+              }
+              
+              setFormData({ ...formData, travelers: newTravelers, ageRanges: newAgeRanges });
+            }}
             min={1}
             required
           />
@@ -102,6 +124,46 @@ export const TripBuilderPage: React.FC = () => {
             value={formData.days}
             onChange={(value) => setFormData({ ...formData, days: value as number })}
             min={1}
+            required
+          />
+
+          {/* Age Ranges */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Age Ranges (per traveler)
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+              {formData.ageRanges.map((ageRange, index) => (
+                <Select
+                  key={index}
+                  label={`Traveler ${index + 1}`}
+                  value={ageRange}
+                  onChange={(value) => {
+                    const newAgeRanges = [...formData.ageRanges];
+                    newAgeRanges[index] = value as AgeRange;
+                    setFormData({ ...formData, ageRanges: newAgeRanges });
+                  }}
+                  options={[
+                    { value: 'infant', label: 'Infant (0-2)' },
+                    { value: 'child', label: 'Child (3-12)' },
+                    { value: 'adult', label: 'Adult (13-64)' },
+                    { value: 'senior', label: 'Senior (65+)' },
+                  ]}
+                />
+              ))}
+            </div>
+          </div>
+
+          <Select
+            label="Luxury Level"
+            value={formData.luxuryLevel}
+            onChange={(value) => setFormData({ ...formData, luxuryLevel: value as LuxuryLevel })}
+            options={[
+              { value: 'budget', label: 'Budget' },
+              { value: 'standard', label: 'Standard' },
+              { value: 'luxury', label: 'Luxury' },
+              { value: 'ultra-luxury', label: 'Ultra Luxury' },
+            ]}
             required
           />
 
