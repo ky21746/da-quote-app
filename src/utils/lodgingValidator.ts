@@ -39,7 +39,7 @@ export function calculateOptimalRooms(
   const rooms: Array<{ type: string; adults: number; children: number; infants: number }> = [];
   
   // Check minimum age requirement
-  if (regulations.minimumAge && group.ages.some(age => age < regulations.minimumAge)) {
+  if (regulations.minimumAge && group.ages.some(age => age < regulations.minimumAge!)) {
     warnings.push(`This lodge requires minimum age of ${regulations.minimumAge} years`);
   }
   
@@ -180,7 +180,7 @@ export function validateLodgingForGroup(
   
   // Check minimum age
   if (lodge.regulations.minimumAge) {
-    const underageCount = group.ages.filter(age => age < lodge.regulations.minimumAge).length;
+    const underageCount = group.ages.filter(age => age < lodge.regulations.minimumAge!).length;
     if (underageCount > 0) {
       warnings.push(`${underageCount} traveler(s) below minimum age of ${lodge.regulations.minimumAge}`);
       return {
