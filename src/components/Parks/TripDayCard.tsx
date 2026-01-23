@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect, LodgingConfigModal } from '../common';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
-import { Calendar, ChevronRight, Settings } from 'lucide-react';
+import { Calendar, ChevronRight, Settings, MapPin, Bed, Car, Activity, Plane, CheckCircle, AlertCircle, Circle } from 'lucide-react';
 import { useTrip } from '../../context/TripContext';
 import type { TripDayParkFee, FreeHandLine } from '../../types/ui';
 
@@ -192,18 +192,65 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
     );
   };
 
+  // Calculate completion status
+  const isConfigured = Boolean(parkId && lodging && activities && activities.length > 0);
+  const hasIssues = Boolean(parkId && (!lodging || !activities || activities.length === 0));
+  
+  const StatusBadge = () => {
+    if (isConfigured) {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+          <CheckCircle className="w-3.5 h-3.5" />
+          Configured
+        </span>
+      );
+    }
+    if (hasIssues) {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
+          <AlertCircle className="w-3.5 h-3.5" />
+          Incomplete
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+        <Circle className="w-3.5 h-3.5" />
+        Not Started
+      </span>
+    );
+  };
+
   return (
-    <div className="border border-gray-300 rounded-lg p-4 md:p-6 lg:p-8 bg-white">
-      <div className="flex items-center gap-2 mb-4">
-        <Calendar size={20} className="text-brand-dark" />
-        <h3 className="font-semibold text-brand-dark">Day {dayNumber}</h3>
+    <div className="border-2 border-gray-200 rounded-lg p-4 md:p-6 lg:p-8 bg-white shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
+            <Calendar className="w-5 h-5 text-primary-600" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-900 text-lg">Day {dayNumber}</h3>
+            {parkId && (
+              <div className="text-sm text-gray-600 flex items-center gap-1.5 mt-0.5">
+                <MapPin className="w-3.5 h-3.5" />
+                {getParks().find(p => p.id === parkId)?.label || parkId}
+              </div>
+            )}
+          </div>
+        </div>
+        <StatusBadge />
       </div>
 
       <div className="space-y-4">
         {/* 1. Park Selection */}
-        <Select
-          label="Park"
-          value={parkId || ''}
+        <div>
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+            <MapPin className="w-4 h-4 text-gray-500" />
+            Park
+          </label>
+          <Select
+            label=""
+            value={parkId || ''}
           onChange={(value) => {
             const selectedParkId = value || undefined;
             if (selectedParkId) {
@@ -242,6 +289,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
           }}
           options={parkOptions}
         />
+        </div>
 
         <Section
           id="fees"
@@ -288,8 +336,12 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
         {/* 2. Arrival to Park (Flight or Vehicle) */}
         {parkId && (
           <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <Plane className="w-4 h-4 text-gray-500" />
+              Arrival to Park (Flight or Vehicle)
+            </label>
             <PricingCatalogSelect
-              label="Arrival to Park (Flight or Vehicle)"
+              label=""
               value={arrival}
               onChange={(pricingItemId) => {
                 const nextArrivalItem = pricingItemId
@@ -486,10 +538,14 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
 
           return (
             <div className="space-y-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                <Bed className="w-4 h-4 text-gray-500" />
+                Lodging
+              </label>
               <div className="flex gap-2 items-end">
-                <div className="flex-1 mb-[-1rem]">
+                <div className="flex-1">
                   <SearchablePricingCatalogSelect
-                    label="Lodging"
+                    label=""
                     value={lodging}
                     onChange={(pricingItemId) => onUpdate({ lodging: pricingItemId })}
                     category="Lodging"
@@ -590,8 +646,12 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
         {/* 4. Activities */}
         {parkId && (
           <>
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <Activity className="w-4 h-4 text-gray-500" />
+              Activities
+            </label>
             <PricingCatalogMultiSelect
-              label="Activities"
+              label=""
               selectedIds={activities || []}
               onChange={(pricingItemIds) => {
                 onUpdate({ activities: pricingItemIds });
@@ -692,8 +752,12 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
 
             {/* Vehicle & Driver */}
             <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                <Car className="w-4 h-4 text-gray-500" />
+                Vehicle & Driver
+              </label>
               <PricingCatalogSelect
-                label="Vehicle & Driver"
+                label=""
                 value={logistics?.vehicle}
                 onChange={(pricingItemId) => {
                   onUpdate({
