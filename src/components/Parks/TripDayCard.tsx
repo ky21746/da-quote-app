@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect, LodgingConfigModal } from '../common';
+import { TripValidationWarnings } from './TripValidationWarnings';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
 import { Calendar, ChevronRight, Settings, MapPin, Bed, Car, Activity, Plane, CheckCircle, AlertCircle, Circle } from 'lucide-react';
@@ -240,6 +241,9 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
         </div>
         <StatusBadge />
       </div>
+
+      {/* Validation Warnings */}
+      <TripValidationWarnings ages={draft?.ages} parkId={parkId} />
 
       <div className="space-y-4">
         {/* 1. Park Selection */}
@@ -600,6 +604,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                   hotelName={selectedLodgingItem.itemName}
                   metadata={metadata}
                   travelers={travelers}
+                  travelMonth={draft?.travelMonth}
                   onConfirm={(config) => {
                     console.log('Lodging config selected:', config);
                     

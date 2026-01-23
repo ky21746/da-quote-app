@@ -40,6 +40,7 @@ interface LodgingConfigModalProps {
   hotelName: string;
   metadata: LodgingMetadata;
   travelers: number;
+  travelMonth?: number; // 1-12 for Jan-Dec
   onConfirm: (config: LodgingConfig) => void;
 }
 
@@ -49,11 +50,30 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
   hotelName,
   metadata,
   travelers,
+  travelMonth,
   onConfirm,
 }) => {
+  // Helper function to auto-detect season from travel month
+  const getSeasonFromMonth = (month?: number): string | null => {
+    if (!month) return null;
+    
+    // Peak: June-September, December-February
+    if ([6, 7, 8, 9, 12, 1, 2].includes(month)) {
+      return 'peak';
+    }
+    // High: March-May
+    if ([3, 4, 5].includes(month)) {
+      return 'high';
+    }
+    // Low: October-November
+    return 'low';
+  };
+
+  const autoDetectedSeason = getSeasonFromMonth(travelMonth);
+  
   const [step, setStep] = useState(1);
   const [selectedRoom, setSelectedRoom] = useState<string>('');
-  const [selectedSeason, setSelectedSeason] = useState<string>('');
+  const [selectedSeason, setSelectedSeason] = useState<string>(autoDetectedSeason || '');
   const [selectedOccupancy, setSelectedOccupancy] = useState<string>('');
 
   if (!isOpen) return null;
@@ -211,6 +231,13 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
           {step === 2 && (
             <div>
               <h3 className="text-lg font-semibold mb-4">Select Season</h3>
+              {autoDetectedSeason && (
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    ℹ️ Season auto-detected from travel month: <strong>{metadata.seasons[autoDetectedSeason]?.name || autoDetectedSeason}</strong>
+                  </p>
+                </div>
+              )}
               <div className="space-y-3">
                 {Object.entries(metadata.seasons).map(([key, season]) => (
                   <button
