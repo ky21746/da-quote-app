@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { buildAutoTripSimple, getSeason, getSeasonName } from '../utils/autoTripBuilder';
+import { validateTrip, calculateRoomAllocation } from '../utils/tripValidations';
 import { TripTier } from '../types/ui';
 import { Input, Select, Button } from '../components/common';
 
@@ -31,7 +32,21 @@ export const AutoTripTestPage: React.FC = () => {
         tier: formData.tier,
         tripName: formData.tripName || undefined,
       });
-      setResult(output);
+      
+      // Add validations
+      const warnings = validateTrip({
+        ages: formData.ages,
+        parks: output.recommendedParks,
+        travelMonth: formData.travelMonth,
+      });
+      
+      const roomAllocation = calculateRoomAllocation(formData.ages);
+      
+      setResult({
+        ...output,
+        warnings,
+        roomAllocation,
+      });
     } catch (err: any) {
       setError(err.message || 'Unknown error');
       setResult(null);
@@ -203,6 +218,70 @@ export const AutoTripTestPage: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Warnings & Validations */}
+            {result.warnings && result.warnings.length > 0 && (
+              <div className="mb-6 space-y-2">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  ⚠️ Validations & Warnings
+                </h3>
+                {result.warnings.map((warning: any, index: number) => (
+                  <div
+                    key={index}
+                    className={`p-4 rounded-lg border ${
+                      warning.severity === 'error'
+                        ? 'bg-red-50 border-red-200'
+                        : warning.severity === 'warning'
+                        ? 'bg-yellow-50 border-yellow-200'
+                        : 'bg-blue-50 border-blue-200'
+                    }`}
+                  >
+                    <p className={`font-semibold mb-1 ${
+                      warning.severity === 'error'
+                        ? 'text-red-800'
+                        : warning.severity === 'warning'
+                        ? 'text-yellow-800'
+                        : 'text-blue-800'
+                    }`}>
+                      {warning.message}
+                    </p>
+                    {warning.suggestion && (
+                      <p className={`text-sm ${
+                        warning.severity === 'error'
+                          ? 'text-red-700'
+                          : warning.severity === 'warning'
+                          ? 'text-yellow-700'
+                          : 'text-blue-700'
+                      }`}>
+                        💡 {warning.suggestion}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Room Allocation */}
+            {result.roomAllocation && (
+              <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                <h3 className="text-lg font-semibold text-purple-800 mb-2">
+                  🏨 Smart Room Allocation
+                </h3>
+                <p className="text-purple-900 font-medium mb-2">
+                  {result.roomAllocation.explanation}
+                </p>
+                <div className="text-sm text-purple-700">
+                  <p><strong>Total Rooms:</strong> {result.roomAllocation.totalRooms}</p>
+                  {result.roomAllocation.breakdown.map((room: any, index: number) => (
+                    <p key={index}>
+                      Room {index + 1}: {room.adults} adult{room.adults !== 1 ? 's' : ''}
+                      {room.children > 0 && `, ${room.children} child${room.children !== 1 ? 'ren' : ''}`}
+                      {' '}({room.roomType})
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Recommended Parks */}
             <div className="mb-6">
