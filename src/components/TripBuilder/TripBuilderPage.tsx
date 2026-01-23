@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTrip } from '../../context/TripContext';
 import { Input, Select, Button, ProgressStepper } from '../common';
-import { TripDraft, TripTier, AgeRange, LuxuryLevel } from '../../types/ui';
+import { TripDraft, TripTier, AgeRange } from '../../types/ui';
 import { quoteService } from '../../services/quoteService';
 
 export const TripBuilderPage: React.FC = () => {
@@ -16,14 +16,12 @@ export const TripBuilderPage: React.FC = () => {
     days: number;
     tier: TripTier;
     ageRanges: AgeRange[];
-    luxuryLevel: LuxuryLevel;
   }>({
     name: '',
     travelers: 2,
     days: 7,
-    tier: 'base',
+    tier: 'standard',
     ageRanges: ['adult', 'adult'],
-    luxuryLevel: 'standard',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,7 +44,6 @@ export const TripBuilderPage: React.FC = () => {
       travelers: formData.travelers,
       ageRanges: formData.ageRanges,
       days: formData.days,
-      luxuryLevel: formData.luxuryLevel,
       tier: formData.tier,
     };
 
@@ -155,26 +152,14 @@ export const TripBuilderPage: React.FC = () => {
           </div>
 
           <Select
-            label="Luxury Level"
-            value={formData.luxuryLevel}
-            onChange={(value) => setFormData({ ...formData, luxuryLevel: value as LuxuryLevel })}
+            label="Trip Level"
+            value={formData.tier}
+            onChange={(value) => setFormData({ ...formData, tier: value as TripTier })}
             options={[
               { value: 'budget', label: 'Budget' },
               { value: 'standard', label: 'Standard' },
               { value: 'luxury', label: 'Luxury' },
               { value: 'ultra-luxury', label: 'Ultra Luxury' },
-            ]}
-            required
-          />
-
-          <Select
-            label="Tier"
-            value={formData.tier}
-            onChange={(value) => setFormData({ ...formData, tier: value as TripTier })}
-            options={[
-              { value: 'base', label: 'Base' },
-              { value: 'quality', label: 'Quality' },
-              { value: 'premium', label: 'Premium' },
             ]}
             required
           />
