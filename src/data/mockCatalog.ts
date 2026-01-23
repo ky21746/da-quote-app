@@ -24,17 +24,17 @@ export const MOCK_ARRIVAL: CatalogOption[] = [
 // Mock Lodging options (filtered by parkId)
 // SKUs built as: ACC-[REGION]-[FIRST_LETTERS_OF_HOTEL]
 export const MOCK_LODGING: CatalogOption[] = [
-  { id: 'lodg_1', sku: 'ACC-BWI-BWL', name: 'Bwindi Lodge', tier: 'base', price: 'USD 200/night', basePrice: 200, pricingModel: 'per_night_per_person', parkId: 'park_1' },
-  { id: 'lodg_2', sku: 'ACC-BWI-GFC', name: 'Gorilla Forest Camp', tier: 'quality', price: 'USD 350/night', basePrice: 350, pricingModel: 'per_night_per_person', parkId: 'park_1' },
-  { id: 'lodg_3', sku: 'ACC-BWI-CML', name: 'Clouds Mountain Lodge', tier: 'premium', price: 'USD 600/night', basePrice: 600, pricingModel: 'per_night_per_person', parkId: 'park_1' },
-  { id: 'lodg_4', sku: 'ACC-QEN-MSL', name: 'Mweya Safari Lodge', tier: 'base', price: 'USD 180/night', basePrice: 180, pricingModel: 'per_night_per_person', parkId: 'park_2' },
-  { id: 'lodg_5', sku: 'ACC-QEN-KGL', name: 'Kyambura Gorge Lodge', tier: 'quality', price: 'USD 320/night', basePrice: 320, pricingModel: 'per_night_per_person', parkId: 'park_2' },
-  { id: 'lodg_6', sku: 'ACC-QEN-IWC', name: 'Ishasha Wilderness Camp', tier: 'premium', price: 'USD 550/night', basePrice: 550, pricingModel: 'per_night_per_person', parkId: 'park_2' },
-  { id: 'lodg_7', sku: 'ACC-MUR-PSL', name: 'Paraa Safari Lodge', tier: 'base', price: 'USD 190/night', basePrice: 190, pricingModel: 'per_night_per_person', parkId: 'park_3' },
-  { id: 'lodg_8', sku: 'ACC-MUR-CSL', name: 'Chobe Safari Lodge', tier: 'quality', price: 'USD 340/night', basePrice: 340, pricingModel: 'per_night_per_person', parkId: 'park_3' },
-  { id: 'lodg_9', sku: 'ACC-MUR-BKL', name: 'Baker\'s Lodge', tier: 'premium', price: 'USD 580/night', basePrice: 580, pricingModel: 'per_night_per_person', parkId: 'park_3' },
-  { id: 'lodg_10', sku: 'ACC-KID-KSL', name: 'Kidepo Savannah Lodge', tier: 'base', price: 'USD 170/night', basePrice: 170, pricingModel: 'per_night_per_person', parkId: 'park_4' },
-  { id: 'lodg_11', sku: 'ACC-KID-APL', name: 'Apoka Safari Lodge', tier: 'quality', price: 'USD 360/night', basePrice: 360, pricingModel: 'per_night_per_person', parkId: 'park_4' },
+  { id: 'lodg_1', sku: 'ACC-BWI-BWL', name: 'Bwindi Lodge', tier: 'budget', price: 'USD 200/night', basePrice: 200, pricingModel: 'per_night_per_person', parkId: 'park_1' },
+  { id: 'lodg_2', sku: 'ACC-BWI-GFC', name: 'Gorilla Forest Camp', tier: 'standard', price: 'USD 350/night', basePrice: 350, pricingModel: 'per_night_per_person', parkId: 'park_1' },
+  { id: 'lodg_3', sku: 'ACC-BWI-CML', name: 'Clouds Mountain Lodge', tier: 'luxury', price: 'USD 600/night', basePrice: 600, pricingModel: 'per_night_per_person', parkId: 'park_1' },
+  { id: 'lodg_4', sku: 'ACC-QEN-MSL', name: 'Mweya Safari Lodge', tier: 'budget', price: 'USD 180/night', basePrice: 180, pricingModel: 'per_night_per_person', parkId: 'park_2' },
+  { id: 'lodg_5', sku: 'ACC-QEN-KGL', name: 'Kyambura Gorge Lodge', tier: 'standard', price: 'USD 320/night', basePrice: 320, pricingModel: 'per_night_per_person', parkId: 'park_2' },
+  { id: 'lodg_6', sku: 'ACC-QEN-IWC', name: 'Ishasha Wilderness Camp', tier: 'luxury', price: 'USD 550/night', basePrice: 550, pricingModel: 'per_night_per_person', parkId: 'park_2' },
+  { id: 'lodg_7', sku: 'ACC-MUR-PSL', name: 'Paraa Safari Lodge', tier: 'budget', price: 'USD 190/night', basePrice: 190, pricingModel: 'per_night_per_person', parkId: 'park_3' },
+  { id: 'lodg_8', sku: 'ACC-MUR-CSL', name: 'Chobe Safari Lodge', tier: 'standard', price: 'USD 340/night', basePrice: 340, pricingModel: 'per_night_per_person', parkId: 'park_3' },
+  { id: 'lodg_9', sku: 'ACC-MUR-BKL', name: 'Baker\'s Lodge', tier: 'luxury', price: 'USD 580/night', basePrice: 580, pricingModel: 'per_night_per_person', parkId: 'park_3' },
+  { id: 'lodg_10', sku: 'ACC-KID-KSL', name: 'Kidepo Savannah Lodge', tier: 'budget', price: 'USD 170/night', basePrice: 170, pricingModel: 'per_night_per_person', parkId: 'park_4' },
+  { id: 'lodg_11', sku: 'ACC-KID-APL', name: 'Apoka Safari Lodge', tier: 'standard', price: 'USD 360/night', basePrice: 360, pricingModel: 'per_night_per_person', parkId: 'park_4' },
 ];
 
 // Mock Local Transportation options (filtered by parkId)
