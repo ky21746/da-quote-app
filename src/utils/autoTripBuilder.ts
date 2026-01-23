@@ -15,8 +15,33 @@ export interface AutoTripBuilderInput {
   travelers: number;
   ages?: number[];
   days: number;
+  travelMonth?: number; // 1-12 for Jan-Dec
   tier: TripTier;
   tripName?: string;
+}
+
+/**
+ * Seasonality helper functions
+ */
+export function getSeason(month: number): 'low' | 'high' | 'peak' {
+  // Uganda/East Africa seasonality:
+  // Peak: June-September, December-February (dry seasons, best wildlife viewing)
+  // High: March-May (long rains, gorilla trekking still good)
+  // Low: October-November (short rains)
+  
+  if ([6, 7, 8, 9, 12, 1, 2].includes(month)) {
+    return 'peak';
+  } else if ([3, 4, 5].includes(month)) {
+    return 'high';
+  } else {
+    return 'low';
+  }
+}
+
+export function getSeasonName(month: number): string {
+  const season = getSeason(month);
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${monthNames[month - 1]} (${season} season)`;
 }
 
 /**
@@ -175,7 +200,7 @@ export async function buildAutoTrip(
   input: AutoTripBuilderInput,
   pricingItems: PricingItem[]
 ): Promise<AutoTripBuilderOutput> {
-  const { travelers, ages, days, tier, tripName } = input;
+  const { travelers, ages, days, travelMonth, tier, tripName } = input;
   
   // Get recommended parks
   const recommendedParks = getRecommendedParks(days);
@@ -212,6 +237,7 @@ export async function buildAutoTrip(
     travelers,
     ages: ages || Array(travelers).fill(30),
     days,
+    travelMonth,
     tier,
     tripDays,
   };
@@ -227,7 +253,7 @@ export async function buildAutoTrip(
  * Just returns the structure, pricing will be calculated when saved
  */
 export function buildAutoTripSimple(input: AutoTripBuilderInput): AutoTripBuilderOutput {
-  const { travelers, ages, days, tier, tripName } = input;
+  const { travelers, ages, days, travelMonth, tier, tripName } = input;
   
   // Get recommended parks
   const recommendedParks = getRecommendedParks(days);
@@ -258,6 +284,7 @@ export function buildAutoTripSimple(input: AutoTripBuilderInput): AutoTripBuilde
     travelers,
     ages: ages || Array(travelers).fill(30),
     days,
+    travelMonth,
     tier,
     tripDays,
   };

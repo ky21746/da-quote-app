@@ -14,12 +14,14 @@ export const TripBuilderPage: React.FC = () => {
     name: string;
     travelers: number;
     days: number;
+    travelMonth: number;
     tier: TripTier;
     ages: number[];
   }>({
     name: '',
     travelers: 2,
     days: 7,
+    travelMonth: new Date().getMonth() + 1, // Current month (1-12)
     tier: 'standard',
     ages: [30, 30], // Default adult ages
   });
@@ -44,6 +46,7 @@ export const TripBuilderPage: React.FC = () => {
       travelers: formData.travelers,
       ages: formData.ages,
       days: formData.days,
+      travelMonth: formData.travelMonth,
       tier: formData.tier,
     };
 
@@ -121,6 +124,27 @@ export const TripBuilderPage: React.FC = () => {
             value={formData.days}
             onChange={(value) => setFormData({ ...formData, days: value as number })}
             min={1}
+            required
+          />
+
+          <Select
+            label="Travel Month (for seasonality)"
+            value={String(formData.travelMonth)}
+            onChange={(value) => setFormData({ ...formData, travelMonth: Number(value) })}
+            options={[
+              { value: '1', label: 'January' },
+              { value: '2', label: 'February' },
+              { value: '3', label: 'March' },
+              { value: '4', label: 'April' },
+              { value: '5', label: 'May' },
+              { value: '6', label: 'June' },
+              { value: '7', label: 'July' },
+              { value: '8', label: 'August' },
+              { value: '9', label: 'September' },
+              { value: '10', label: 'October' },
+              { value: '11', label: 'November' },
+              { value: '12', label: 'December' },
+            ]}
             required
           />
 

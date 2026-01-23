@@ -36,6 +36,7 @@ export interface TripDraft {
   travelers: number;
   ages?: number[]; // Actual age for each traveler (length should match travelers)
   days: number;
+  travelMonth?: number; // 1-12 for Jan-Dec, used for seasonality (Low/High season pricing)
   tier: TripTier; // Luxury/quality level for auto-trip-builder and metadata
   markup?: Markup; // Optional, only in final step (post-calculation)
   daysBreakdown?: DayDraft[];
