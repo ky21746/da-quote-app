@@ -542,7 +542,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                 <Bed className="w-4 h-4 text-gray-500" />
                 Lodging
               </label>
-              <div className="flex gap-2 items-end">
+              <div className="flex gap-2 items-center">
                 <div className="flex-1">
                   <SearchablePricingCatalogSelect
                     label=""
@@ -557,10 +557,10 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                 {isHierarchical && metadata && (
                   <button
                     onClick={() => setIsLodgingModalOpen(true)}
-                    className="px-4 py-2 bg-brand-gold text-white rounded-lg hover:bg-brand-gold/90 transition-colors flex items-center gap-2 h-[42px]"
+                    className="px-4 py-2.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2 font-medium shadow-sm"
                     title="Configure room, season, and occupancy"
                   >
-                    <Settings size={18} />
+                    <Settings className="w-4 h-4" />
                     Configure
                   </button>
                 )}
@@ -645,7 +645,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
 
         {/* 4. Activities */}
         {parkId && (
-          <>
+          <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
               <Activity className="w-4 h-4 text-gray-500" />
               Activities
@@ -729,7 +729,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
 
         {/* 4b. Extras */}
@@ -912,13 +912,13 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
       </div>
 
       {!isLastDay && onNextDay && (
-        <div className="mt-8 flex justify-end pt-4 border-t border-gray-100">
+        <div className="mt-8 flex justify-end pt-6 border-t border-gray-200">
           <button
             onClick={onNextDay}
-            className="flex items-center gap-2 px-4 py-2 bg-brand-olive text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
+            className="flex items-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all duration-200 font-semibold shadow-sm hover:shadow-md"
           >
             Next Day
-            <ChevronRight size={18} />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       )}
