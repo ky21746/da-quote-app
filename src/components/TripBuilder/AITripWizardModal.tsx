@@ -20,7 +20,7 @@ export const AITripWizardModal: React.FC<AITripWizardModalProps> = ({
     children: [] as number[],
     durationDays: 5,
     budgetTier: 'Mid-Range' as 'Luxury' | 'Mid-Range' | 'Budget',
-    focus: 'Gorillas' as 'Gorillas' | 'Chimps' | 'General',
+    focus: 'Gorillas' as 'Gorillas' | 'Chimps' | 'Safari',
   });
   const [generatedTrip, setGeneratedTrip] = useState<TripDraft | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
@@ -179,7 +179,7 @@ export const AITripWizardModal: React.FC<AITripWizardModalProps> = ({
                   4. What's your main focus?
                 </label>
                 <div className="grid grid-cols-3 gap-3">
-                  {(['Gorillas', 'Chimps', 'General'] as const).map((focus) => (
+                  {(['Gorillas', 'Chimps', 'Safari'] as const).map((focus) => (
                     <button
                       key={focus}
                       onClick={() => setFormData({ ...formData, focus })}

@@ -18,7 +18,7 @@ export interface AutoTripRequest {
   };
   durationDays: number;
   budgetTier: 'Luxury' | 'Mid-Range' | 'Budget';
-  focus: 'Gorillas' | 'Chimps' | 'General';
+  focus: 'Gorillas' | 'Chimps' | 'Safari';
 }
 
 // ============================================================================
@@ -152,7 +152,7 @@ const ITINERARY_RULES = {
         parkId: 'park_2',
       } as ActivityRule,
     ],
-    General: [
+    Safari: [
       {
         itemId: 'activity_game_drive_001',
         itemName: 'Game Drive',
@@ -346,9 +346,9 @@ export function generateAutoTrip(request: AutoTripRequest): TripDraft {
         day.parkId = ITINERARY_RULES.parks.queenElizabeth.id;
         day.lodging = ITINERARY_RULES.lodging[request.budgetTier].queenElizabeth.itemId;
         
-        // Add general activities (no age restrictions)
-        day.activities.push(ITINERARY_RULES.activities.General[0].itemId);
-        day.activities.push(ITINERARY_RULES.activities.General[1].itemId);
+        // Add safari activities (no age restrictions)
+        day.activities.push(ITINERARY_RULES.activities.Safari[0].itemId);
+        day.activities.push(ITINERARY_RULES.activities.Safari[1].itemId);
       }
     }
 
