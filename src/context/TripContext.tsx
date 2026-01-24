@@ -97,10 +97,6 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Write draft
         if (draft) {
           localStorage.setItem(TRIP_DRAFT_STORAGE_KEY, JSON.stringify(draft));
-          // Clear quota exceeded flag on successful write
-          if (quotaExceeded) {
-            setQuotaExceeded(false);
-          }
         } else {
           localStorage.removeItem(TRIP_DRAFT_STORAGE_KEY);
         }
