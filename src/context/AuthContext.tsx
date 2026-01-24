@@ -45,35 +45,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkIfEmailAllowed = async (email: string): Promise<boolean> => {
-    try {
-      const allowedEmailsRef = doc(db, 'settings', 'allowedEmails');
-      const allowedEmailsDoc = await getDoc(allowedEmailsRef);
-      
-      if (!allowedEmailsDoc.exists()) {
-        return false;
-      }
-      
-      const allowedEmails = allowedEmailsDoc.data()?.emails || [];
-      return allowedEmails.includes(email);
-    } catch (error) {
-      console.error('Error checking allowed emails:', error);
-      return false;
-    }
-  };
-
   const fetchUserProfile = async (user: User): Promise<UserProfile | null> => {
     try {
       const userEmail = user.email || '';
-      
-      // Check if email is in whitelist
-      const isAllowed = await checkIfEmailAllowed(userEmail);
-      if (!isAllowed) {
-        console.log('User email not in whitelist:', userEmail);
-        await firebaseSignOut(auth);
-        throw new Error('ACCESS_DENIED');
-      }
-
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
 
@@ -127,7 +101,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(user);
       
       if (user) {
-        await fetchUserProfile(user);
+        const profile = await fetchUserProfile(user);
+        setUserProfile(profile);
       } else {
         setUserProfile(null);
       }
