@@ -7,11 +7,20 @@ interface ProtectedRouteProps {
   requireAdmin?: boolean;
 }
 
+// DEVELOPMENT MODE: Set to true to bypass authentication
+const DEV_MODE = true;
+
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
   requireAdmin = false 
 }) => {
   const { user, userProfile, loading } = useAuth();
+
+  // DEVELOPMENT MODE: Bypass authentication
+  if (DEV_MODE) {
+    console.warn('🚨 DEVELOPMENT MODE: Authentication bypassed');
+    return <>{children}</>;
+  }
 
   if (loading) {
     return (
