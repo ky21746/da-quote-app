@@ -86,10 +86,10 @@ export default function AppHeader() {
 
   return (
     <header className="w-full h-16 md:h-20 flex items-center justify-between px-4 md:px-6 lg:px-8 border-b border-brand-olive/20 bg-white">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-shrink-0">
         <button
           onClick={() => navigate('/trip/new')}
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0"
           aria-label="Back to Home"
         >
           {/* לוגו - שים את הקובץ ב-public/logo.png או public/assets/logo.svg */}
@@ -102,7 +102,7 @@ export default function AppHeader() {
               e.currentTarget.style.display = 'none';
             }}
           />
-          <div className="font-bold text-lg text-brand-dark">
+          <div className="font-bold text-lg text-brand-dark whitespace-nowrap">
             Discover Africa
           </div>
         </button>
@@ -140,7 +140,7 @@ export default function AppHeader() {
         </div>
       </nav>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-shrink-0">
         {draft && (
           <div className="flex items-center gap-2 mr-2">
             <div className="flex flex-col">
@@ -160,7 +160,7 @@ export default function AppHeader() {
 
         <button
           onClick={() => navigate('/proposals')}
-          className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors"
+          className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors flex-shrink-0"
           aria-label="Saved Proposals"
           title="Saved Proposals"
         >
@@ -170,7 +170,7 @@ export default function AppHeader() {
         {isAdmin && (
           <button
             onClick={() => navigate('/admin/pricing-catalog')}
-            className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors"
+            className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors flex-shrink-0"
             aria-label="Settings"
             title="Pricing Catalog"
           >
