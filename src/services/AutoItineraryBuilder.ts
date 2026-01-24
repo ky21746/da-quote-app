@@ -386,6 +386,7 @@ export function generateAutoTrip(request: AutoTripRequest): TripDraft {
 
 /**
  * Validate the generated trip and return warnings
+ * Checks ALL activities in the trip against age restrictions from ITINERARY_RULES
  */
 export function validateAutoTrip(trip: TripDraft): string[] {
   const warnings: string[] = [];
@@ -395,34 +396,98 @@ export function validateAutoTrip(trip: TripDraft): string[] {
     return warnings;
   }
 
-  // Check for gorilla trekking age restrictions
-  const hasGorillaTrekking = trip.tripDays?.some(day => 
-    day.activities.includes('activity_gorilla_trek_001')
-  );
+  // Build a map of all activities with their age restrictions
+  const activityAgeMap: Record<string, { name: string; minAge: number }> = {};
+  
+  // Add gorilla activities
+  ITINERARY_RULES.activities.Gorillas.forEach(activity => {
+    if (activity.minAge) {
+      activityAgeMap[activity.itemId] = {
+        name: activity.itemName,
+        minAge: activity.minAge,
+      };
+    }
+  });
+  
+  // Add chimp activities
+  ITINERARY_RULES.activities.Chimps.forEach(activity => {
+    if (activity.minAge) {
+      activityAgeMap[activity.itemId] = {
+        name: activity.itemName,
+        minAge: activity.minAge,
+      };
+    }
+  });
 
-  if (hasGorillaTrekking) {
-    const underageCount = trip.ages.filter(age => age < 15).length;
+  // Check if trip name/focus suggests gorilla or chimp activities
+  const tripNameLower = trip.name.toLowerCase();
+  const isGorillaTrip = tripNameLower.includes('gorilla');
+  const isChimpTrip = tripNameLower.includes('chimp');
+
+  // Check for gorilla trekking age restrictions
+  if (isGorillaTrip) {
+    const gorillaMinAge = 15;
+    const underageCount = trip.ages.filter(age => age < gorillaMinAge).length;
+    const underageAges = trip.ages.filter(age => age < gorillaMinAge);
+    
     if (underageCount > 0) {
       warnings.push(
-        `${underageCount} traveler(s) under age 15 cannot participate in gorilla trekking. ` +
-        `Consider alternative activities or different focus.`
+        `⚠️ AGE RESTRICTION: ${underageCount} traveler(s) (ages: ${underageAges.join(', ')}) ` +
+        `are under the minimum age of ${gorillaMinAge} for Gorilla Trekking. ` +
+        `These travelers will NOT be able to participate in gorilla trekking activities. ` +
+        `Consider alternative activities or a different trip focus.`
       );
     }
   }
 
   // Check for chimp tracking age restrictions
-  const hasChimpTracking = trip.tripDays?.some(day => 
-    day.activities.includes('activity_chimp_trek_001')
-  );
-
-  if (hasChimpTracking) {
-    const underageCount = trip.ages.filter(age => age < 12).length;
+  if (isChimpTrip) {
+    const chimpMinAge = 12;
+    const underageCount = trip.ages.filter(age => age < chimpMinAge).length;
+    const underageAges = trip.ages.filter(age => age < chimpMinAge);
+    
     if (underageCount > 0) {
       warnings.push(
-        `${underageCount} traveler(s) under age 12 cannot participate in chimpanzee tracking.`
+        `⚠️ AGE RESTRICTION: ${underageCount} traveler(s) (ages: ${underageAges.join(', ')}) ` +
+        `are under the minimum age of ${chimpMinAge} for Chimpanzee Tracking. ` +
+        `These travelers will NOT be able to participate in chimp tracking activities.`
       );
     }
   }
+
+  // Iterate through all trip days and check each activity
+  trip.tripDays?.forEach((day, dayIndex) => {
+    day.activities.forEach(activityId => {
+      const activityInfo = activityAgeMap[activityId];
+      
+      if (activityInfo) {
+        // Check if any traveler is under the minimum age
+        const underageCount = trip.ages!.filter(age => age < activityInfo.minAge).length;
+        const underageAges = trip.ages!.filter(age => age < activityInfo.minAge);
+        
+        if (underageCount > 0) {
+          warnings.push(
+            `⚠️ Day ${day.dayNumber}: Activity "${activityInfo.name}" requires minimum age ${activityInfo.minAge}. ` +
+            `${underageCount} traveler(s) (ages: ${underageAges.join(', ')}) cannot participate.`
+          );
+        }
+      }
+      
+      // Additional check for any activity with "trek" or "tracking" in the ID
+      if (activityId.toLowerCase().includes('trek') || activityId.toLowerCase().includes('track')) {
+        // Assume minimum age of 12 for any trekking activity not explicitly defined
+        const minAge = 12;
+        const underageCount = trip.ages!.filter(age => age < minAge).length;
+        
+        if (underageCount > 0 && !activityInfo) {
+          warnings.push(
+            `⚠️ Day ${day.dayNumber}: Trekking activity (${activityId}) may have age restrictions. ` +
+            `${underageCount} traveler(s) under age ${minAge} detected.`
+          );
+        }
+      }
+    });
+  });
 
   return warnings;
 }
