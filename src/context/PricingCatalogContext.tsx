@@ -19,23 +19,14 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
 
   // Subscribe to Firestore collection on mount - SNAPSHOT ONLY
   useEffect(() => {
-    console.log('🔌 Starting Firestore subscription to pricingCatalog collection');
-    console.log('🔌 Firestore db instance:', db);
-    console.log('🔌 Collection path: pricingCatalog');
-
     const q = collection(db, 'pricingCatalog');
-
-    console.log('🔌 Collection reference created:', q);
 
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        console.log('📥 Firestore snapshot received:', snapshot.docs.length, 'documents');
-
         const data: PricingItem[] = snapshot.docs
           .map((d) => {
             const docData = d.data();
-            console.log('📄 Document:', d.id, docData);
 
             // STRICT VALIDATION - ensure all required fields exist
             const item: PricingItem = {
@@ -64,8 +55,6 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
           })
           .filter((item): item is PricingItem => item !== null);
 
-        console.log('✅ Setting items:', data.length, 'valid items');
-        console.log('📋 Items data:', data);
         setItems(data);
         setIsLoading(false);
       },
@@ -77,13 +66,11 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
     );
 
     return () => {
-      console.log('🔌 Unsubscribing from Firestore');
       unsubscribe();
     };
   }, []);
 
   const addItem = async (itemData: Omit<PricingItem, 'id'>) => {
-    console.log('✍️ addItem called with:', itemData);
 
     // Validation: Check for missing parkId in park-specific items
     if (itemData.appliesTo === 'Park' && !itemData.parkId) {
@@ -108,10 +95,8 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
       payload.capacity = itemData.capacity;
     }
 
-    console.log('📤 Writing to Firestore:', payload);
     try {
       const docRef = await addDoc(collection(db, 'pricingCatalog'), payload);
-      console.log('✅ FIRESTORE WRITE OK - Document ID:', docRef.id);
       return docRef;
     } catch (error) {
       console.error('❌ FIRESTORE WRITE FAILED:', error);
@@ -160,13 +145,11 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
     }
 
     await updateDoc(docRef, payload);
-    console.log('FIRESTORE WRITE OK');
   };
 
   const deleteItem = async (id: string) => {
     const docRef = doc(db, 'pricingCatalog', id);
     await deleteDoc(docRef);
-    console.log('FIRESTORE WRITE OK');
   };
 
   return (
