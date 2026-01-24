@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 import { useTrip } from '../../context/TripContext';
 import { Input, Select, Button, ProgressStepper } from '../common';
 import { TripDraft, TripTier } from '../../types/ui';
 import { quoteService } from '../../services/quoteService';
+import { AITripWizardModal } from './AITripWizardModal';
 
 export const TripBuilderPage: React.FC = () => {
   const navigate = useNavigate();
   const { setDraft, setDraftQuoteId, setSourceQuoteId, setReferenceNumber } = useTrip();
   const [isCreating, setIsCreating] = useState(false);
+  const [showAIWizard, setShowAIWizard] = useState(false);
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -25,6 +28,26 @@ export const TripBuilderPage: React.FC = () => {
     tier: 'standard',
     ages: [30, 30], // Default adult ages
   });
+
+  const handleAITripGenerated = async (trip: TripDraft) => {
+    // Save the AI-generated trip to context and navigate
+    setDraftQuoteId(null);
+    setSourceQuoteId(null);
+    setReferenceNumber(null);
+    setDraft(trip);
+
+    setIsCreating(true);
+    try {
+      const id = await quoteService.saveDraft(trip);
+      setDraftQuoteId(id);
+      navigate(`/trip/${id}/edit`);
+    } catch (error: any) {
+      console.error('Failed to save AI-generated trip:', error);
+      alert(`Failed to save trip: ${error?.message || 'Unknown error'}`);
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +103,16 @@ export const TripBuilderPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-md md:max-w-2xl lg:max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Trip Builder</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Trip Builder</h1>
+          <button
+            onClick={() => setShowAIWizard(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-md hover:shadow-lg font-medium"
+          >
+            <Sparkles className="w-5 h-5" />
+            AI Trip Wizard
+          </button>
+        </div>
 
         <ProgressStepper currentStep={1} steps={progressSteps} />
 
@@ -197,6 +229,12 @@ export const TripBuilderPage: React.FC = () => {
           </Button>
         </form>
       </div>
+
+      <AITripWizardModal
+        isOpen={showAIWizard}
+        onClose={() => setShowAIWizard(false)}
+        onTripGenerated={handleAITripGenerated}
+      />
     </div>
   );
 };
