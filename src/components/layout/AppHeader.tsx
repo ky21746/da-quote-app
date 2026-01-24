@@ -12,10 +12,6 @@ export default function AppHeader() {
   const { referenceNumber, draft, draftQuoteId, calculationResult, setTravelers } = useTrip();
   const { activeTripId, activeStep, proposalIdFromUrl } = useActiveTripContext();
 
-  // Debug logging
-  console.log('AppHeader - user:', user);
-  console.log('AppHeader - isAdmin:', isAdmin);
-
   // Don't show header on login page
   if (location.pathname === '/login') {
     return null;
