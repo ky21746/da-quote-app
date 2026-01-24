@@ -7,8 +7,8 @@ interface ProtectedRouteProps {
   requireAdmin?: boolean;
 }
 
-// DEVELOPMENT MODE: Set to true to bypass authentication
-const DEV_MODE = true;
+// DEVELOPMENT MODE: Only bypass authentication in development environment
+const DEV_MODE = process.env.NODE_ENV === 'development';
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
@@ -16,9 +16,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { user, userProfile, loading } = useAuth();
 
-  // DEVELOPMENT MODE: Bypass authentication
+  // DEVELOPMENT MODE: Bypass authentication ONLY in development
   if (DEV_MODE) {
-    console.warn('🚨 DEVELOPMENT MODE: Authentication bypassed');
+    console.warn('🚨 DEVELOPMENT MODE: Authentication bypassed (localhost only)');
     return <>{children}</>;
   }
 
