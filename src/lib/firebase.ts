@@ -3,6 +3,17 @@ import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
+// Debug: Log all REACT_APP environment variables
+console.log('🔍 Environment Variables Debug:', {
+  NODE_ENV: process.env.NODE_ENV,
+  REACT_APP_FIREBASE_API_KEY: process.env.REACT_APP_FIREBASE_API_KEY ? 'present' : 'MISSING',
+  REACT_APP_FIREBASE_AUTH_DOMAIN: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN ? 'present' : 'MISSING',
+  REACT_APP_FIREBASE_PROJECT_ID: process.env.REACT_APP_FIREBASE_PROJECT_ID ? 'present' : 'MISSING',
+  REACT_APP_FIREBASE_STORAGE_BUCKET: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET ? 'present' : 'MISSING',
+  REACT_APP_FIREBASE_MESSAGING_SENDER_ID: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID ? 'present' : 'MISSING',
+  REACT_APP_FIREBASE_APP_ID: process.env.REACT_APP_FIREBASE_APP_ID ? 'present' : 'MISSING',
+});
+
 // Firebase configuration from environment variables
 // Create React App automatically injects REACT_APP_* variables at build time
 const firebaseConfig = {
