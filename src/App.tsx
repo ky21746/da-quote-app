@@ -7,7 +7,6 @@ import { ScenarioComparisonProvider } from './context/ScenarioComparisonContext'
 import AppHeader from './components/layout/AppHeader';
 import { AppRoutes } from './routes/AppRoutes';
 import VersionBadge from './components/layout/VersionBadge';
-import './exposeAutoAgent'; // Expose AUTO_AGENT to window (runs once on module load)
 import './App.css';
 
 export const App: React.FC = () => {
