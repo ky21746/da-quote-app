@@ -22,14 +22,12 @@ export const App: React.FC = () => {
       generate: generateAutoTrip,
       validate: validateAutoTrip,
       estimateCost: estimateTripCost,
-      // Helper: Example request for quick testing
       exampleRequest: {
         travelers: { adults: 2, children: [8, 12] },
         durationDays: 5,
         budgetTier: 'Luxury',
         focus: 'Gorillas'
       } as AutoTripRequest,
-      // Helper: Quick test function
       test: () => {
         const request: AutoTripRequest = {
           travelers: { adults: 2, children: [8, 12] },
@@ -43,23 +41,15 @@ export const App: React.FC = () => {
         
         console.log('=== AUTO ITINERARY BUILDER TEST ===');
         console.log('Request:', request);
-        console.log('\nGenerated Trip:', trip);
-        console.log('\nValidation Warnings:', warnings);
-        console.log('\nCost Estimate:', cost);
-        console.log('\n=== Full JSON ===');
+        console.log('Generated Trip:', trip);
+        console.log('Validation Warnings:', warnings);
+        console.log('Cost Estimate:', cost);
+        console.log('=== Full JSON ===');
         console.log(JSON.stringify(trip, null, 2));
         
         return { trip, warnings, cost };
       }
     };
-    
-    console.log('🤖 AUTO_AGENT exposed to window!');
-    console.log('Usage:');
-    console.log('  window.AUTO_AGENT.test() - Run quick test');
-    console.log('  window.AUTO_AGENT.generate(request) - Generate trip');
-    console.log('  window.AUTO_AGENT.validate(trip) - Validate trip');
-    console.log('  window.AUTO_AGENT.estimateCost(trip) - Estimate cost');
-    console.log('  window.AUTO_AGENT.exampleRequest - See example request format');
   }, []);
 
   return (
