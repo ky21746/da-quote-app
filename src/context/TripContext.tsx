@@ -147,7 +147,7 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Clean up timer on unmount or when dependencies change
     return () => clearTimeout(timer);
-  }, [draft, draftQuoteId, sourceQuoteId, referenceNumber, quotaExceeded]);
+  }, [draft, draftQuoteId, sourceQuoteId, referenceNumber]);
 
   // If we don't have a local draft but we have a Firestore draftQuoteId, hydrate draft from Firestore
   useEffect(() => {
