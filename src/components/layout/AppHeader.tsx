@@ -140,7 +140,7 @@ export default function AppHeader() {
         </div>
       </nav>
 
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
         {draft && (
           <div className="flex items-center gap-2 mr-2">
             <div className="flex flex-col">
@@ -167,18 +167,25 @@ export default function AppHeader() {
           <FileText size={20} strokeWidth={1.5} className="text-brand-dark" />
         </button>
 
-        {isAdmin && (
+        <button
+          onClick={() => navigate('/admin/pricing-catalog')}
+          className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors flex-shrink-0"
+          aria-label="Settings"
+          title="Pricing Catalog"
+        >
+          <Settings size={20} strokeWidth={1.5} className="text-brand-dark" />
+        </button>
+
+        {user ? (
+          <UserMenu />
+        ) : (
           <button
-            onClick={() => navigate('/admin/pricing-catalog')}
-            className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors flex-shrink-0"
-            aria-label="Settings"
-            title="Pricing Catalog"
+            onClick={() => navigate('/login')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex-shrink-0"
           >
-            <Settings size={20} strokeWidth={1.5} className="text-brand-dark" />
+            Login
           </button>
         )}
-
-        {user && <UserMenu />}
       </div>
     </header>
   );
