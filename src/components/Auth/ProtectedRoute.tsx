@@ -7,8 +7,9 @@ interface ProtectedRouteProps {
   requireAdmin?: boolean;
 }
 
-// DEVELOPMENT MODE: Only bypass authentication in development environment
-const DEV_MODE = process.env.NODE_ENV === 'development';
+// TEMPORARY: Authentication bypassed for all environments
+// TODO: Re-enable authentication once Google Sign-In issues are resolved
+const BYPASS_AUTH = true;
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
@@ -16,9 +17,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { user, userProfile, loading } = useAuth();
 
-  // DEVELOPMENT MODE: Bypass authentication ONLY in development
-  if (DEV_MODE) {
-    console.warn('🚨 DEVELOPMENT MODE: Authentication bypassed (localhost only)');
+  // TEMPORARY: Bypass authentication completely
+  if (BYPASS_AUTH) {
+    console.warn('⚠️ AUTHENTICATION BYPASSED: Direct access enabled for all users');
     return <>{children}</>;
   }
 
