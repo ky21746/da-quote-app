@@ -9,6 +9,7 @@ export * from './SearchablePricingCatalogSelect';
 export * from './PricingCatalogMultiSelect';
 export * from './LodgingSelector';
 export * from './LodgingConfigModal';
+export * from './LodgingConfigModalNew';
 export * from './VehicleSelector';
 export * from './DomesticFlightSelector';
 export * from './ParksSelector';

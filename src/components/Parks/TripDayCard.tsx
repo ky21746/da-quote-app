@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect, LodgingConfigModal } from '../common';
+import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect, LodgingConfigModalNew } from '../common';
 import { TripValidationWarnings } from './TripValidationWarnings';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
@@ -22,6 +22,17 @@ interface TripDayCardProps {
     priceType: 'perRoom' | 'perPerson' | 'perVilla';
     requiredQuantity?: number;
   };
+  lodgingAllocations?: Array<{
+    roomType: string;
+    roomTypeName: string;
+    season: string;
+    seasonName: string;
+    occupancy: string;
+    price: number;
+    priceType: 'perRoom' | 'perPerson' | 'perVilla';
+    quantity: number;
+    guests: number;
+  }>;
   activities: string[]; // pricingItemIds
   extras?: string[]; // pricingItemIds
   freeHandLines?: FreeHandLine[];
@@ -45,6 +56,17 @@ interface TripDayCardProps {
       priceType: 'perRoom' | 'perPerson' | 'perVilla';
       requiredQuantity?: number;
     };
+    lodgingAllocations?: Array<{
+      roomType: string;
+      roomTypeName: string;
+      season: string;
+      seasonName: string;
+      occupancy: string;
+      price: number;
+      priceType: 'perRoom' | 'perPerson' | 'perVilla';
+      quantity: number;
+      guests: number;
+    }>;
     activities?: string[];
     extras?: string[];
     freeHandLines?: FreeHandLine[];
@@ -65,6 +87,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   arrival,
   lodging,
   lodgingConfig,
+  lodgingAllocations,
   activities,
   extras,
   freeHandLines,
@@ -570,8 +593,49 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                 )}
               </div>
 
-              {/* Display selected config */}
-              {isHierarchical && lodgingConfig && (
+              {/* Display multiple allocations */}
+              {isHierarchical && lodgingAllocations && lodgingAllocations.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-semibold text-gray-700">Room Allocations:</div>
+                    <button
+                      onClick={() => setIsLodgingModalOpen(true)}
+                      className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      + Add Room
+                    </button>
+                  </div>
+                  {lodgingAllocations.map((allocation, idx) => (
+                    <div key={idx} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 text-sm text-gray-700">
+                          <div className="font-semibold text-blue-900">{allocation.roomTypeName}</div>
+                          <div className="text-xs mt-1">
+                            {allocation.seasonName} • {allocation.occupancy.replace(/_/g, ' ')} • 
+                            ${allocation.price.toLocaleString()}/{allocation.priceType === 'perRoom' ? 'room' : allocation.priceType === 'perVilla' ? 'villa' : 'person'}
+                          </div>
+                          <div className="text-xs mt-1 font-medium">
+                            {allocation.quantity} room{allocation.quantity > 1 ? 's' : ''} × {allocation.guests} guest{allocation.guests > 1 ? 's' : ''}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            const newAllocations = lodgingAllocations.filter((_, i) => i !== idx);
+                            onUpdate({ lodgingAllocations: newAllocations.length > 0 ? newAllocations : undefined });
+                          }}
+                          className="ml-2 text-red-600 hover:text-red-800"
+                          title="Remove this allocation"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Display selected config (backward compatibility) */}
+              {isHierarchical && lodgingConfig && !lodgingAllocations && (
                 <div className="mt-3 p-4 bg-green-50 border border-green-200 rounded-lg">
                   <div className="text-sm font-semibold text-green-800 mb-2">Selected Configuration:</div>
                   <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
@@ -598,47 +662,36 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
               )}
 
               {isHierarchical && metadata && selectedLodgingItem && (
-                <LodgingConfigModal
+                <LodgingConfigModalNew
                   isOpen={isLodgingModalOpen}
                   onClose={() => setIsLodgingModalOpen(false)}
                   hotelName={selectedLodgingItem.itemName}
                   metadata={metadata}
                   travelers={travelers}
                   travelMonth={draft?.travelMonth}
+                  existingAllocations={lodgingAllocations || []}
                   onConfirm={(config) => {
                     console.log('Lodging config selected:', config);
                     
-                    // ALWAYS update lodgingConfig, and also update itemQuantities if requiredQuantity exists
-                    if (lodging && draft) {
-                      const updatedTripDays = (draft.tripDays || []).map((day) => {
-                        if (day.dayNumber === dayNumber) {
-                          return { ...day, lodgingConfig: config };
-                        }
-                        return day;
-                      });
-                      
-                      const newDraft: any = {
-                        ...draft,
-                        tripDays: updatedTripDays,
-                      };
-                      
-                      // Also update itemQuantities if requiredQuantity is provided
-                      if (config.requiredQuantity) {
-                        newDraft.itemQuantities = {
-                          ...(draft.itemQuantities || {}),
-                          [lodging]: config.requiredQuantity,
-                        };
-                        newDraft.itemQuantitySources = {
-                          ...(draft.itemQuantitySources || {}),
-                          [lodging]: 'auto',
-                        };
-                      }
-                      
-                      setDraft(newDraft);
-                    } else {
-                      // Fallback if no draft
-                      onUpdate({ lodgingConfig: config });
-                    }
+                    const newAllocation = {
+                      roomType: config.roomType,
+                      roomTypeName: config.roomTypeName,
+                      season: config.season,
+                      seasonName: config.seasonName,
+                      occupancy: config.occupancy,
+                      price: config.price,
+                      priceType: config.priceType,
+                      quantity: config.quantity || 1,
+                      guests: config.guests || 1,
+                    };
+
+                    const updatedAllocations = [...(lodgingAllocations || []), newAllocation];
+                    
+                    // Clear old lodgingConfig when using allocations
+                    onUpdate({ 
+                      lodgingAllocations: updatedAllocations,
+                      lodgingConfig: undefined,
+                    });
                     
                     setIsLodgingModalOpen(false);
                   }}

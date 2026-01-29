@@ -305,6 +305,112 @@ describe('catalogPricingEngine', () => {
       expect(result.breakdown[0].calculationExplanation).toContain('× 3');
       expect(result.totals.grandTotal).toBe(3000);
     });
+
+    test('GIVEN hierarchical lodging with multiple allocations (split rooms) WHEN calculating THEN sums all allocations correctly', () => {
+      const lodging = createHierarchicalLodgingItem('Family Safari Lodge');
+      const trip = createTripDraft({
+        travelers: 6, // 2 parents + 4 kids
+        tripDays: [
+          createTripDay({
+            dayNumber: 1,
+            lodging: lodging.id,
+            lodgingAllocations: [
+              {
+                roomType: 'suite',
+                roomTypeName: 'Parents Suite',
+                season: 'high',
+                seasonName: 'High Season',
+                occupancy: 'double',
+                price: 500,
+                priceType: 'perRoom',
+                quantity: 1,
+                guests: 2,
+              },
+              {
+                roomType: 'standard',
+                roomTypeName: 'Kids Room',
+                season: 'high',
+                seasonName: 'High Season',
+                occupancy: 'double',
+                price: 300,
+                priceType: 'perRoom',
+                quantity: 2,
+                guests: 4,
+              },
+            ],
+          }),
+        ],
+      });
+
+      const result = calculatePricingFromCatalog(trip, [lodging]);
+
+      // Should have 2 line items: 1 for suite, 1 for kids rooms
+      expect(result.breakdown.length).toBe(2);
+      
+      // Parents Suite: 500 × 1 = 500
+      expect(result.breakdown[0].calculatedTotal).toBe(500);
+      expect(result.breakdown[0].itemName).toContain('Parents Suite');
+      expect(result.breakdown[0].calculationExplanation).toContain('2 guests');
+      
+      // Kids Rooms: 300 × 2 = 600
+      expect(result.breakdown[1].calculatedTotal).toBe(600);
+      expect(result.breakdown[1].itemName).toContain('Kids Room');
+      expect(result.breakdown[1].calculationExplanation).toContain('× 2');
+      expect(result.breakdown[1].calculationExplanation).toContain('4 guests');
+      
+      // Total: 500 + 600 = 1100
+      expect(result.totals.grandTotal).toBe(1100);
+    });
+
+    test('GIVEN hierarchical lodging with perPerson allocations WHEN calculating THEN multiplies by guests correctly', () => {
+      const lodging = createHierarchicalLodgingItem('Per-Person Lodge');
+      const trip = createTripDraft({
+        travelers: 5,
+        tripDays: [
+          createTripDay({
+            dayNumber: 1,
+            lodging: lodging.id,
+            lodgingAllocations: [
+              {
+                roomType: 'standard',
+                roomTypeName: 'Adult Room',
+                season: 'low',
+                seasonName: 'Low Season',
+                occupancy: 'double',
+                price: 200,
+                priceType: 'perPerson',
+                quantity: 1,
+                guests: 3,
+              },
+              {
+                roomType: 'standard',
+                roomTypeName: 'Kids Room',
+                season: 'low',
+                seasonName: 'Low Season',
+                occupancy: 'double',
+                price: 150,
+                priceType: 'perPerson',
+                quantity: 1,
+                guests: 2,
+              },
+            ],
+          }),
+        ],
+      });
+
+      const result = calculatePricingFromCatalog(trip, [lodging]);
+
+      // Adult Room: 200 × 3 guests = 600
+      expect(result.breakdown[0].calculatedTotal).toBe(600);
+      expect(result.breakdown[0].calculationExplanation).toContain('× 3 guests');
+      
+      // Kids Room: 150 × 2 guests = 300
+      expect(result.breakdown[1].calculatedTotal).toBe(300);
+      expect(result.breakdown[1].calculationExplanation).toContain('× 2 guests');
+      
+      // Total: 600 + 300 = 900
+      expect(result.totals.grandTotal).toBe(900);
+    });
   });
 
   describe('Quantity Calculations', () => {

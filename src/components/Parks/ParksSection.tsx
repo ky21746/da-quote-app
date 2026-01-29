@@ -30,6 +30,17 @@ export const ParksSection: React.FC = () => {
       price: number;
       priceType: 'perRoom' | 'perPerson' | 'perVilla';
     };
+    lodgingAllocations?: Array<{
+      roomType: string;
+      roomTypeName: string;
+      season: string;
+      seasonName: string;
+      occupancy: string;
+      price: number;
+      priceType: 'perRoom' | 'perPerson' | 'perVilla';
+      quantity: number;
+      guests: number;
+    }>;
     activities: string[];
     extras?: string[];
     freeHandLines?: import('../../types/ui').FreeHandLine[];
@@ -73,6 +84,17 @@ export const ParksSection: React.FC = () => {
       price: number;
       priceType: 'perRoom' | 'perPerson' | 'perVilla';
     };
+    lodgingAllocations?: Array<{
+      roomType: string;
+      roomTypeName: string;
+      season: string;
+      seasonName: string;
+      occupancy: string;
+      price: number;
+      priceType: 'perRoom' | 'perPerson' | 'perVilla';
+      quantity: number;
+      guests: number;
+    }>;
     activities?: string[];
     extras?: string[];
     freeHandLines?: import('../../types/ui').FreeHandLine[];
@@ -162,6 +184,7 @@ export const ParksSection: React.FC = () => {
         arrival={currentDayData.arrival}
         lodging={currentDayData.lodging}
         lodgingConfig={currentDayData.lodgingConfig}
+        lodgingAllocations={currentDayData.lodgingAllocations}
         activities={currentDayData.activities || []}
         extras={currentDayData.extras || []}
         freeHandLines={currentDayData.freeHandLines || []}

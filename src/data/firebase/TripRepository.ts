@@ -57,7 +57,7 @@ export class FirebaseTripRepository implements ITripRepository {
 
     const firestoreData = TripMapper.toFirestore(updatedTrip);
     const docRef = doc(db, this.collectionName, tripId);
-    await updateDoc(docRef, firestoreData);
+    await updateDoc(docRef, firestoreData as any);
 
     return updatedTrip;
   }

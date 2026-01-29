@@ -89,7 +89,7 @@ export async function migrateCapacityQuantity(): Promise<{
         continue;
       }
 
-      await updateDoc(doc(db, 'pricingCatalog', d.id), updates);
+      await updateDoc(doc(db, 'pricingCatalog', d.id), updates as any);
 
       if ('quantity' in updates) results.updatedQuantity++;
       if ('capacity' in updates) results.updatedCapacity++;

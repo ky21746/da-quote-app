@@ -120,7 +120,18 @@ export interface TripDay {
     price: number;
     priceType: 'perRoom' | 'perPerson' | 'perVilla';
     requiredQuantity?: number;
-  }; // For hierarchical lodging
+  }; // For hierarchical lodging (backward compatibility)
+  lodgingAllocations?: Array<{
+    roomType: string;
+    roomTypeName: string;
+    season: string;
+    seasonName: string;
+    occupancy: string;
+    price: number;
+    priceType: 'perRoom' | 'perPerson' | 'perVilla';
+    quantity: number; // Number of rooms/villas of this type
+    guests: number; // Number of guests allocated to this room type
+  }>; // For split-room lodging (e.g., parents in suite + kids in separate rooms)
   activities: string[]; // pricingItemIds
   extras?: string[]; // pricingItemIds
   freeHandLines?: FreeHandLine[];

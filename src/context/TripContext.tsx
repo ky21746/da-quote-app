@@ -432,6 +432,9 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         parkFees: Array.isArray(day.parkFees)
           ? day.parkFees.map((f) => ({ ...f }))
           : [],
+        lodgingAllocations: Array.isArray(day.lodgingAllocations)
+          ? day.lodgingAllocations.map((alloc) => ({ ...alloc }))
+          : undefined,
         logistics: day.logistics
           ? {
               ...day.logistics,
@@ -469,6 +472,12 @@ export const TripProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         normalizedUpdates.parkFees = Array.isArray(updates.parkFees)
           ? updates.parkFees.map((f) => ({ ...f }))
           : updates.parkFees;
+      }
+
+      if ('lodgingAllocations' in updates) {
+        normalizedUpdates.lodgingAllocations = Array.isArray(updates.lodgingAllocations)
+          ? updates.lodgingAllocations.map((alloc) => ({ ...alloc }))
+          : updates.lodgingAllocations;
       }
 
       if ('logistics' in updates) {

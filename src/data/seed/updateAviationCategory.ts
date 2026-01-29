@@ -61,7 +61,7 @@ export async function updateAviationCategory(): Promise<{
           // Update category to Aviation
           await updateDoc(doc(db, 'pricingCatalog', docSnapshot.id), {
             category: 'Aviation',
-          });
+          } as any);
           console.log(`✅ Updated: ${itemName} → Aviation`);
           results.updated++;
         } catch (error) {

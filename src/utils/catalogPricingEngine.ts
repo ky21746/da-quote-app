@@ -113,8 +113,44 @@ export function calculatePricingFromCatalog(
       if (day.lodging) {
         const item = getPricingItemById(pricingItems, day.lodging);
         if (item) {
-          // Check if this is hierarchical lodging with config
-          if (item.costType === 'hierarchical_lodging' && day.lodgingConfig) {
+          // Check if this is hierarchical lodging with multiple allocations
+          if (item.costType === 'hierarchical_lodging' && day.lodgingAllocations && day.lodgingAllocations.length > 0) {
+            // NEW: Multiple room allocations (e.g., parents in suite + kids in separate rooms)
+            day.lodgingAllocations.forEach((allocation, idx) => {
+              const configuredPrice = allocation.price;
+              const quantity = allocation.quantity || 1;
+              const guests = allocation.guests || 0;
+              
+              // Calculate total based on price type
+              let total = 0;
+              let explanation = '';
+              
+              if (allocation.priceType === 'perRoom' || allocation.priceType === 'perVilla') {
+                total = configuredPrice * quantity;
+                explanation = quantity > 1
+                  ? `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${allocation.priceType === 'perVilla' ? 'per villa' : 'per room'} × ${quantity} (${guests} guests)`
+                  : `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${allocation.priceType === 'perVilla' ? 'per villa' : 'per room'} (${guests} guests)`;
+              } else if (allocation.priceType === 'perPerson') {
+                total = configuredPrice * guests * quantity;
+                explanation = quantity > 1
+                  ? `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${guests} guests × ${quantity}`
+                  : `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${guests} guests`;
+              }
+              
+              breakdown.push({
+                id: `line_day${day.dayNumber}_lodging_alloc${idx}`,
+                park: parkName,
+                category: item.category,
+                itemName: `${item.itemName} (${allocation.roomTypeName})`,
+                basePrice: configuredPrice,
+                costType: item.costType,
+                calculatedTotal: total,
+                perPerson: travelers > 0 ? total / travelers : 0,
+                calculationExplanation: explanation,
+              });
+            });
+          } else if (item.costType === 'hierarchical_lodging' && day.lodgingConfig) {
+            // BACKWARD COMPATIBILITY: Single lodgingConfig
             const config = day.lodgingConfig;
             const configuredPrice = config.price;
             

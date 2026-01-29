@@ -190,7 +190,7 @@ export const quoteService = {
       days: cleanDraft?.days || 1,
       tier: cleanDraft?.tier || 'base',
       draft: cleanDraft || {},
-    });
+    } as any);
   },
 
   async getQuotes(): Promise<SavedQuote[]> {
@@ -218,7 +218,7 @@ export const quoteService = {
   },
 
   async updateStatus(id: string, status: SavedQuote['status']): Promise<void> {
-    await updateDoc(doc(db, 'quotes', id), { status, updatedAt: serverTimestamp() });
+    await updateDoc(doc(db, 'quotes', id), { status, updatedAt: serverTimestamp() } as any);
   },
 
   async deleteQuote(id: string): Promise<void> {

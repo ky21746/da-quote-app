@@ -367,7 +367,7 @@ export async function importBusikaActivities(): Promise<{
         try {
           const docId = existingDocs.docs[0].id;
           const docRef = doc(db, 'pricingCatalog', docId);
-          await updateDoc(docRef, docData);
+          await updateDoc(docRef, docData as any);
           console.log(`✅ Successfully updated: ${item.itemName} (ID: ${docId})`);
           results.updated++;
           continue;

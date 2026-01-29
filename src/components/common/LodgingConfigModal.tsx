@@ -32,6 +32,8 @@ interface LodgingConfig {
   price: number;
   priceType: 'perRoom' | 'perPerson' | 'perVilla';
   requiredQuantity?: number;
+  quantity?: number;
+  guests?: number;
 }
 
 interface LodgingConfigModalProps {
@@ -42,6 +44,7 @@ interface LodgingConfigModalProps {
   travelers: number;
   travelMonth?: number; // 1-12 for Jan-Dec
   onConfirm: (config: LodgingConfig) => void;
+  allowCustomQuantity?: boolean; // For multi-room allocation
 }
 
 export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
@@ -52,6 +55,7 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
   travelers,
   travelMonth,
   onConfirm,
+  allowCustomQuantity = false,
 }) => {
   // Helper function to auto-detect season from travel month
   const getSeasonFromMonth = (month?: number): string | null => {
@@ -75,6 +79,8 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
   const [selectedRoom, setSelectedRoom] = useState<string>('');
   const [selectedSeason, setSelectedSeason] = useState<string>(autoDetectedSeason || '');
   const [selectedOccupancy, setSelectedOccupancy] = useState<string>('');
+  const [customQuantity, setCustomQuantity] = useState<number>(1);
+  const [customGuests, setCustomGuests] = useState<number>(0);
 
   if (!isOpen) return null;
 
@@ -138,6 +144,8 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
       price: priceInfo.price,
       priceType: priceInfo.priceType,
       requiredQuantity,
+      quantity: allowCustomQuantity ? customQuantity : undefined,
+      guests: allowCustomQuantity ? customGuests : undefined,
     });
 
     handleClose();
@@ -148,6 +156,8 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
     setSelectedRoom('');
     setSelectedSeason('');
     setSelectedOccupancy('');
+    setCustomQuantity(1);
+    setCustomGuests(0);
     onClose();
   };
 
@@ -261,6 +271,41 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
           {step === 3 && (
             <div>
               <h3 className="text-lg font-semibold mb-4">Select Occupancy</h3>
+              
+              {/* Custom Quantity and Guests (for multi-room allocation) - SHOW FIRST */}
+              {allowCustomQuantity && (
+                <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                  <div className="text-sm font-semibold text-purple-800 mb-3">🏠 Specify Allocation:</div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Number of Rooms</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={customQuantity}
+                        onChange={(e) => setCustomQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Number of Guests</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        value={customGuests}
+                        onChange={(e) => setCustomGuests(Math.max(1, parseInt(e.target.value) || 1))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-3 text-xs text-purple-700">
+                    This will add <strong>{customQuantity}</strong> room{customQuantity > 1 ? 's' : ''} for <strong>{customGuests}</strong> guest{customGuests > 1 ? 's' : ''}
+                  </div>
+                </div>
+              )}
+              
               <div className="space-y-3">
                 {availableOccupancies.map((occupancy) => {
                   const priceData = currentRoom?.pricing[selectedSeason]?.[occupancy];
@@ -334,8 +379,8 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
                           </div>
                         </div>
                         
-                        {/* Room recommendation warning */}
-                        {needsMultipleRooms && travelers > 0 && (
+                        {/* Room recommendation warning - ONLY show when NOT using custom allocation */}
+                        {!allowCustomQuantity && needsMultipleRooms && travelers > 0 && (
                           <div className="mt-3 p-3 bg-amber-50 border border-amber-300 rounded-lg">
                             <div className="flex items-start gap-2">
                               <span className="text-lg">⚠️</span>
@@ -360,7 +405,7 @@ export const LodgingConfigModal: React.FC<LodgingConfigModalProps> = ({
               </div>
 
               {/* Summary */}
-              {priceInfo && (
+              {priceInfo && !allowCustomQuantity && (
                 <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                   <div className="text-sm font-semibold text-green-800 mb-2">Selection Summary:</div>
                   <div className="text-sm text-gray-700 space-y-1">

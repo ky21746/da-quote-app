@@ -144,7 +144,7 @@ export const PricingCatalogProvider: React.FC<{ children: ReactNode }> = ({ chil
       }
     }
 
-    await updateDoc(docRef, payload);
+    await updateDoc(docRef, payload as any);
   };
 
   const deleteItem = async (id: string) => {
