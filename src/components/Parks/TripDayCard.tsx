@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect, LodgingConfigModalNew } from '../common';
+import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect, LodgingConfigModalNew, AircraftSelector } from '../common';
 import { TripValidationWarnings } from './TripValidationWarnings';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
@@ -367,9 +367,10 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
               <Plane className="w-4 h-4 text-gray-500" />
               Arrival to Park (Flight or Vehicle)
             </label>
-            <PricingCatalogSelect
-              label=""
+            <AircraftSelector
               value={arrival}
+              parkId={parkId}
+              direction="arrival"
               onChange={(pricingItemId) => {
                 const nextArrivalItem = pricingItemId
                   ? pricingItems.find((i) => i.id === pricingItemId) || null
@@ -443,9 +444,7 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                   };
                 });
               }}
-              category="Aviation"
-              parkId={parkId}
-              items={pricingItems}
+              items={pricingItems.filter(item => item.category === 'Aviation' && (item.appliesTo === 'Global' || item.parkId === parkId))}
               isLoading={catalogLoading}
             />
 
