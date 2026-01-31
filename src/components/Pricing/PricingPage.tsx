@@ -13,6 +13,10 @@ import { useScenarioDuplication } from '../../hooks/useScenarioDuplication';
 import { ScenarioComparisonView } from './ScenarioComparisonView';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { DollarSign, Users, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { ItineraryButton } from '../Itinerary/ItineraryButton';
+import { ItineraryPreviewModal } from '../Itinerary/ItineraryPreviewModal';
+import { getItineraryApiClient } from '../../services/itineraryApi';
+import { CreateItineraryRequest } from '../../types/itinerary';
 
 /**
  * Convert PricingResult to CalculationResult format for TripSummaryPage
@@ -76,6 +80,122 @@ export const PricingPage: React.FC = () => {
 
   const [showLineItems, setShowLineItems] = useState(false);
   const [showPricingAdjustments, setShowPricingAdjustments] = useState(true);
+  
+  // Itinerary state
+  const [isGeneratingItinerary, setIsGeneratingItinerary] = useState(false);
+  const [showItineraryModal, setShowItineraryModal] = useState(false);
+  const itineraryStatus = draft?.itineraryStatus || 'none';
+  const itineraryId = draft?.itineraryId;
+
+  // Handle itinerary generation
+  const handleGenerateItinerary = async () => {
+    if (!draft || !tripId) {
+      alert('Please save the trip first before generating itinerary');
+      return;
+    }
+
+    setIsGeneratingItinerary(true);
+
+    try {
+      const apiClient = getItineraryApiClient();
+      
+      const request: CreateItineraryRequest = {
+        tripId,
+        tripData: draft,
+        pricing: basePricingResult,
+        metadata: {
+          preferences: {
+            language: 'en',
+            includeImages: true,
+            includePricing: true,
+            format: 'detailed',
+          },
+        },
+      };
+
+      const response = await apiClient.createItinerary(request);
+
+      // Update draft with itinerary info
+      setDraft({
+        ...draft,
+        itineraryId: response.itineraryId,
+        itineraryStatus: response.status,
+        itineraryLastGenerated: new Date().toISOString(),
+      });
+
+      // If completed immediately, show modal
+      if (response.status === 'completed') {
+        setShowItineraryModal(true);
+      } else if (response.status === 'processing') {
+        alert(`Itinerary is being generated. Estimated time: ${response.estimatedTime || 30} seconds`);
+        // Poll for completion
+        pollItineraryStatus(response.itineraryId);
+      }
+    } catch (error: any) {
+      console.error('Failed to generate itinerary:', error);
+      alert(`Failed to generate itinerary: ${error.message || 'Unknown error'}`);
+      
+      if (draft) {
+        setDraft({
+          ...draft,
+          itineraryStatus: 'failed',
+        });
+      }
+    } finally {
+      setIsGeneratingItinerary(false);
+    }
+  };
+
+  // Poll itinerary status
+  const pollItineraryStatus = async (itinId: string) => {
+    const apiClient = getItineraryApiClient();
+    let attempts = 0;
+    const maxAttempts = 20; // 20 attempts * 3 seconds = 60 seconds max
+
+    const poll = async () => {
+      try {
+        const response = await apiClient.getItinerary(itinId);
+        
+        if (response.status === 'completed') {
+          if (draft) {
+            setDraft({
+              ...draft,
+              itineraryStatus: 'completed',
+            });
+          }
+          alert('Itinerary is ready!');
+          return;
+        } else if (response.status === 'failed') {
+          if (draft) {
+            setDraft({
+              ...draft,
+              itineraryStatus: 'failed',
+            });
+          }
+          alert('Itinerary generation failed');
+          return;
+        }
+
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, 3000); // Poll every 3 seconds
+        }
+      } catch (error) {
+        console.error('Failed to poll itinerary status:', error);
+      }
+    };
+
+    poll();
+  };
+
+  // Handle itinerary button click
+  const handleItineraryButtonClick = () => {
+    if (itineraryStatus === 'completed' && itineraryId) {
+      setShowItineraryModal(true);
+    } else if (itineraryStatus === 'none' || itineraryStatus === 'failed' || itineraryStatus === 'outdated') {
+      handleGenerateItinerary();
+    }
+  };
 
   const selectedPricingItemIds = useMemo(() => {
     if (!draft) return [];
@@ -333,6 +453,24 @@ export const PricingPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Itinerary Generation */}
+        <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-1">Trip Itinerary</h2>
+              <p className="text-sm text-gray-600">
+                Generate a detailed day-by-day itinerary with images and descriptions
+              </p>
+            </div>
+            <ItineraryButton
+              status={itineraryStatus}
+              isLoading={isGeneratingItinerary}
+              onClick={handleItineraryButtonClick}
+              disabled={!tripId}
+            />
+          </div>
+        </div>
+
         <div className="mb-6">
           <div className="flex items-center justify-between gap-4 mb-3">
             <div className="min-w-0">
@@ -351,6 +489,15 @@ export const PricingPage: React.FC = () => {
           </div>
           {showLineItems && <PricingTable lines={basePricingResult.breakdown} />}
         </div>
+
+        {/* Itinerary Preview Modal */}
+        {itineraryId && (
+          <ItineraryPreviewModal
+            itineraryId={itineraryId}
+            isOpen={showItineraryModal}
+            onClose={() => setShowItineraryModal(false)}
+          />
+        )}
 
         {!capacityValidation.isValid && (
           <div className="mb-6 p-4 md:p-6 bg-red-50 border-2 border-red-400 text-red-800 rounded-lg">

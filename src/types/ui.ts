@@ -49,6 +49,10 @@ export interface TripDraft {
   unexpectedPercentage?: number; // העמסת בלתי צפוי באחוזים
   localAgentCommissionPercentage?: number; // העמסת אחוז רכב לסוכן מקומי
   myProfitPercentage?: number; // העמאת רווח שלי באחוזים
+  // Itinerary integration
+  itineraryId?: string; // ID of generated itinerary
+  itineraryStatus?: 'none' | 'processing' | 'completed' | 'failed' | 'outdated';
+  itineraryLastGenerated?: string; // ISO timestamp
 }
 
 export interface CalculationResult {
