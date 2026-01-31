@@ -110,6 +110,7 @@ export interface TripDay {
   dayNumber: number; // 1, 2, 3... (global trip day)
   parkId?: string;
   arrival?: string; // pricingItemId
+  arrivalNA?: boolean; // Mark arrival as N/A (not applicable)
   lodging?: string; // pricingItemId
   lodgingConfig?: {
     roomType: string;
@@ -133,7 +134,9 @@ export interface TripDay {
     guests: number; // Number of guests allocated to this room type
   }>; // For split-room lodging (e.g., parents in suite + kids in separate rooms)
   activities: string[]; // pricingItemIds
+  activitiesNA?: boolean; // Mark activities as N/A (not applicable)
   extras?: string[]; // pricingItemIds
+  extrasNA?: boolean; // Mark extras as N/A (not applicable)
   freeHandLines?: FreeHandLine[];
   parkFees?: TripDayParkFee[];
   logistics?: {

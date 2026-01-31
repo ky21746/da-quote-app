@@ -5,6 +5,10 @@ import { validateGorillaTrekking } from '../../utils/tripValidations';
 interface TripValidationWarningsProps {
   ages?: number[];
   parkId?: string;
+  arrival?: string;
+  arrivalNA?: boolean;
+  activities?: string[];
+  activitiesNA?: boolean;
 }
 
 /**
@@ -14,22 +18,44 @@ interface TripValidationWarningsProps {
 export const TripValidationWarnings: React.FC<TripValidationWarningsProps> = ({
   ages,
   parkId,
+  arrival,
+  arrivalNA,
+  activities,
+  activitiesNA,
 }) => {
-  if (!ages || ages.length === 0) return null;
-
   const warnings: Array<{ type: 'warning' | 'info'; message: string; suggestion?: string }> = [];
 
+  // Validate arrival - must either select OR mark as N/A
+  if (parkId && !arrival && !arrivalNA) {
+    warnings.push({
+      type: 'warning',
+      message: 'Arrival transport required',
+      suggestion: 'Please select arrival transport or mark as N/A if not needed',
+    });
+  }
+
+  // Validate activities - must either select OR mark as N/A
+  if (parkId && (!activities || activities.length === 0) && !activitiesNA) {
+    warnings.push({
+      type: 'warning',
+      message: 'Activities selection required',
+      suggestion: 'Please select at least one activity or mark as N/A if no activities planned',
+    });
+  }
+
   // Check for Bwindi (gorilla trekking)
-  const isBwindi = parkId?.toLowerCase().includes('bwindi') || parkId === 'park_1';
-  
-  if (isBwindi) {
-    const gorillaWarning = validateGorillaTrekking(ages);
-    if (gorillaWarning) {
-      warnings.push({
-        type: 'warning',
-        message: gorillaWarning.message,
-        suggestion: gorillaWarning.suggestion,
-      });
+  if (ages && ages.length > 0) {
+    const isBwindi = parkId?.toLowerCase().includes('bwindi') || parkId === 'park_1';
+    
+    if (isBwindi) {
+      const gorillaWarning = validateGorillaTrekking(ages);
+      if (gorillaWarning) {
+        warnings.push({
+          type: 'warning',
+          message: gorillaWarning.message,
+          suggestion: gorillaWarning.suggestion,
+        });
+      }
     }
   }
 

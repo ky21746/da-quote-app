@@ -163,17 +163,18 @@ export const AircraftSelector: React.FC<AircraftSelectorProps> = ({
       <div className="space-y-3">
         <h3 className="text-sm font-medium text-gray-700 mb-3">Select Aircraft Type</h3>
         
-        {(['helicopter', 'fixed-wing', 'vehicle'] as AircraftType[]).map(type => {
-          const summary = getTypeSummary(type);
-          if (!summary || summary.count === 0) return null;
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {(['helicopter', 'fixed-wing', 'vehicle'] as AircraftType[]).map(type => {
+            const summary = getTypeSummary(type);
+            if (!summary || summary.count === 0) return null;
 
-          return (
-            <button
-              key={type}
-              onClick={() => setSelectedType(type)}
-              disabled={disabled}
-              className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            return (
+              <button
+                key={type}
+                onClick={() => setSelectedType(type)}
+                disabled={disabled}
+                className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+              >
               <div className="flex items-start gap-4">
                 <div className="text-blue-600 group-hover:text-blue-700">
                   {summary.icon}
@@ -192,6 +193,7 @@ export const AircraftSelector: React.FC<AircraftSelectorProps> = ({
             </button>
           );
         })}
+        </div>
 
         {selectedItem && (
           <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">

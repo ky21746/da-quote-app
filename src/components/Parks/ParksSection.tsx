@@ -20,6 +20,7 @@ export const ParksSection: React.FC = () => {
   const currentDayData: {
     parkId?: string;
     arrival?: string;
+    arrivalNA?: boolean;
     lodging?: string;
     lodgingConfig?: {
       roomType: string;
@@ -42,7 +43,9 @@ export const ParksSection: React.FC = () => {
       guests: number;
     }>;
     activities: string[];
+    activitiesNA?: boolean;
     extras?: string[];
+    extrasNA?: boolean;
     freeHandLines?: import('../../types/ui').FreeHandLine[];
     parkFees?: import('../../types/ui').TripDayParkFee[];
     logistics?: {
@@ -74,6 +77,7 @@ export const ParksSection: React.FC = () => {
   const handleUpdateDay = (updates: {
     parkId?: string;
     arrival?: string;
+    arrivalNA?: boolean;
     lodging?: string;
     lodgingConfig?: {
       roomType: string;
@@ -96,7 +100,9 @@ export const ParksSection: React.FC = () => {
       guests: number;
     }>;
     activities?: string[];
+    activitiesNA?: boolean;
     extras?: string[];
+    extrasNA?: boolean;
     freeHandLines?: import('../../types/ui').FreeHandLine[];
     parkFees?: import('../../types/ui').TripDayParkFee[];
     logistics?: {
@@ -182,11 +188,14 @@ export const ParksSection: React.FC = () => {
         dayNumber={currentDayNumber}
         parkId={currentDayData.parkId}
         arrival={currentDayData.arrival}
+        arrivalNA={currentDayData.arrivalNA}
         lodging={currentDayData.lodging}
         lodgingConfig={currentDayData.lodgingConfig}
         lodgingAllocations={currentDayData.lodgingAllocations}
         activities={currentDayData.activities || []}
+        activitiesNA={currentDayData.activitiesNA}
         extras={currentDayData.extras || []}
+        extrasNA={currentDayData.extrasNA}
         freeHandLines={currentDayData.freeHandLines || []}
         parkFees={currentDayData.parkFees || []}
         logistics={currentDayData.logistics}
