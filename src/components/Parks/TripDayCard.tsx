@@ -134,69 +134,6 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
   
   const [isLodgingModalOpen, setIsLodgingModalOpen] = useState(false);
 
-  // Track if we've already auto-populated for this park to avoid loops
-  const hasAutoPopulatedRef = useRef<string | null>(null);
-
-  // Auto-populate from favorites when park is selected
-  useEffect(() => {
-    if (!parkId || hasAutoPopulatedRef.current === parkId) {
-      return;
-    }
-
-    const parkFavorites = getParkFavorites(parkId);
-    if (!parkFavorites) {
-      return;
-    }
-
-    const updates: any = {};
-    let hasUpdates = false;
-
-    // Auto-populate arrival if empty and favorite exists
-    if (!arrival && parkFavorites.arrival) {
-      updates.arrival = parkFavorites.arrival;
-      hasUpdates = true;
-    }
-
-    // Auto-populate lodging if empty and favorite exists
-    if (!lodging && parkFavorites.lodging) {
-      updates.lodging = parkFavorites.lodging;
-      hasUpdates = true;
-    }
-
-    // Auto-populate activities if empty and favorites exist
-    if ((!activities || activities.length === 0) && parkFavorites.activities && parkFavorites.activities.length > 0) {
-      updates.activities = parkFavorites.activities;
-      hasUpdates = true;
-
-      // Also set default quantities for activities
-      setDraft((prev) => {
-        if (!prev) return prev;
-        const nextItemQuantities: Record<string, number> = {
-          ...(prev.itemQuantities || {}),
-        };
-        const nextSources: Record<string, 'auto' | 'manual'> = {
-          ...(prev.itemQuantitySources || {}),
-        };
-        for (const activityId of parkFavorites.activities || []) {
-          if (nextItemQuantities[activityId] === undefined) {
-            nextItemQuantities[activityId] = 1;
-            nextSources[activityId] = 'auto';
-          }
-        }
-        return {
-          ...prev,
-          itemQuantities: nextItemQuantities,
-          itemQuantitySources: nextSources,
-        };
-      });
-    }
-
-    if (hasUpdates) {
-      onUpdate(updates);
-      hasAutoPopulatedRef.current = parkId;
-    }
-  }, [parkId, arrival, lodging, activities, getParkFavorites, onUpdate, setDraft]);
-
   const travelers = draft?.travelers || 0;
 
   const getDefaultQuantity = (capacity: number): number => {
@@ -367,16 +304,18 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
       />
 
       <div className="space-y-4">
-        {/* 1. Park Selection */}
-        <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-            <MapPin className="w-4 h-4 text-gray-500" />
-            Park
-          </label>
-          <Select
-            label=""
-            value={parkId || ''}
-          onChange={(value) => {
+        {/* 1. Park Selection & Park Fees Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Park Selection */}
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <MapPin className="w-4 h-4 text-gray-500" />
+              Park
+            </label>
+            <Select
+              label=""
+              value={parkId || ''}
+            onChange={(value) => {
             const selectedParkId = value || undefined;
             if (selectedParkId) {
               assertValidParkId(selectedParkId);
@@ -412,23 +351,32 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
               return 'arrival';
             });
           }}
-          options={parkOptions}
-        />
-        </div>
+            options={parkOptions}
+          />
+          </div>
 
-        <Section
-          id="fees"
-          title="Park Fees"
-          summary={
-            parkFees && parkFees.length > 0
-              ? `${(parkFees || []).filter((f) => f.excluded !== true).length} selected`
-              : 'None'
-          }
-          disabled={!parkId}
-        >
+          {/* Park Fees */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                Park Fees
+              </label>
+              {parkFees && parkFees.length > 0 && (
+                <span className="text-xs text-gray-500">
+                  {(parkFees || []).filter((f) => {
+                    const item = pricingItems.find((i) => i.id === f.itemId);
+                    return f.excluded !== true && item && !item.itemName.toLowerCase().includes('landing fee');
+                  }).length} selected
+                </span>
+              )}
+            </div>
+            <div className={!parkId ? 'opacity-50 pointer-events-none' : ''}>
           {parkFees && parkFees.length > 0 ? (
             <div className="space-y-2">
-              {parkFees.map((fee) => {
+              {parkFees.filter((fee) => {
+                const item = pricingItems.find((i) => i.id === fee.itemId);
+                return item && !item.itemName.toLowerCase().includes('landing fee');
+              }).map((fee) => {
                 const item = pricingItems.find((i) => i.id === fee.itemId);
                 if (!item) return null;
                 const checked = fee.excluded !== true;
@@ -453,10 +401,14 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                 );
               })}
             </div>
-          ) : (
-            <div className="text-sm text-gray-500">No park fees for this day.</div>
-          )}
-        </Section>
+            ) : (
+              <div className="text-sm text-gray-500 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                {parkId ? 'No park fees for this park' : 'Select a park first'}
+              </div>
+            )}
+            </div>
+          </div>
+        </div>
 
         {/* 2. Arrival to Park (Flight or Vehicle) */}
         {parkId && (
@@ -564,6 +516,8 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
               }}
               items={pricingItems.filter(item => item.category === 'Aviation' && (item.appliesTo === 'Global' || item.parkId === parkId))}
               isLoading={catalogLoading}
+              isArrivalFavorite={isArrivalFavorite}
+              onToggleFavorite={toggleArrivalFavorite}
             />
 
             {arrival &&
@@ -656,19 +610,6 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
               </div>
             )}
                 </div>
-                {arrival && parkId && !arrivalNA && (
-                  <button
-                    onClick={() => toggleArrivalFavorite(parkId, arrival)}
-                    className={`p-2.5 rounded-lg transition-all ${
-                      isArrivalFavorite(parkId, arrival)
-                        ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
-                        : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600'
-                    }`}
-                    title={isArrivalFavorite(parkId, arrival) ? 'Remove from favorites' : 'Add to favorites'}
-                  >
-                    <Star className={`w-5 h-5 ${isArrivalFavorite(parkId, arrival) ? 'fill-current' : ''}`} />
-                  </button>
-                )}
               </div>
             )}
             {arrivalNA && (

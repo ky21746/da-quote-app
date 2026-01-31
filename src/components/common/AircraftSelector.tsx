@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { PricingItem } from '../../types/ui';
 import { formatCurrency } from '../../utils/currencyFormatter';
 import { isRouteRelevantForPark } from '../../utils/parkAirportMapping';
-import { Helicopter, Plane, Car, ChevronRight } from 'lucide-react';
+import { Helicopter, Plane, Car, ChevronRight, Star } from 'lucide-react';
 
 interface AircraftSelectorProps {
   value: string | undefined;
@@ -12,6 +12,9 @@ interface AircraftSelectorProps {
   direction?: 'arrival' | 'departure';
   isLoading?: boolean;
   disabled?: boolean;
+  // Favorites support
+  isArrivalFavorite?: (parkId: string, arrivalId: string) => boolean;
+  onToggleFavorite?: (parkId: string, arrivalId: string) => void;
 }
 
 type AircraftType = 'helicopter' | 'fixed-wing' | 'vehicle';
@@ -37,6 +40,8 @@ export const AircraftSelector: React.FC<AircraftSelectorProps> = ({
   direction,
   isLoading = false,
   disabled = false,
+  isArrivalFavorite,
+  onToggleFavorite,
 }) => {
   const [selectedType, setSelectedType] = useState<AircraftType | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
@@ -197,14 +202,36 @@ export const AircraftSelector: React.FC<AircraftSelectorProps> = ({
 
         {selectedItem && (
           <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-            <div className="text-xs font-medium text-green-800 mb-1">Currently Selected:</div>
-            <div className="text-sm text-green-900">{selectedItem.model} • {selectedItem.route}</div>
-            <button
-              onClick={() => onChange(undefined)}
-              className="text-xs text-green-700 underline mt-2 hover:text-green-900"
-            >
-              Clear selection
-            </button>
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="text-xs font-medium text-green-800 mb-1">Currently Selected:</div>
+                <div className="text-sm text-green-900">{selectedItem.model} • {selectedItem.route}</div>
+                <button
+                  onClick={() => onChange(undefined)}
+                  className="text-xs text-green-700 underline mt-2 hover:text-green-900"
+                >
+                  Clear selection
+                </button>
+              </div>
+              {parkId && isArrivalFavorite && onToggleFavorite && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleFavorite(parkId, selectedItem.id);
+                  }}
+                  className={`p-2 rounded-lg transition-all ${
+                    isArrivalFavorite(parkId, selectedItem.id)
+                      ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
+                      : 'bg-white text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                  }`}
+                  title={isArrivalFavorite(parkId, selectedItem.id) ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  <Star className={`w-5 h-5 ${
+                    isArrivalFavorite(parkId, selectedItem.id) ? 'fill-current' : ''
+                  }`} />
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
