@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect, LodgingConfigModalNew, AircraftSelector } from '../common';
+import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect, LodgingConfigModalNew, AircraftSelector, ActivitiesCardSelector } from '../common';
 import { TripValidationWarnings } from './TripValidationWarnings';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { getParks, assertValidParkId } from '../../utils/parks';
-import { Calendar, ChevronRight, Settings, MapPin, Bed, Car, Activity, Plane, CheckCircle, AlertCircle, Circle } from 'lucide-react';
+import { Calendar, ChevronRight, Settings, MapPin, Bed, Car, Activity, Plane, CheckCircle, AlertCircle, Circle, Star } from 'lucide-react';
 import { useTrip } from '../../context/TripContext';
 import type { TripDayParkFee, FreeHandLine } from '../../types/ui';
+import { getBestLodgingForTier, getPreferredTransportForTier, getRecommendedActivitiesForTier, getTripLevelInfo } from '../../utils/tripLevelTemplates';
+import { useFavorites } from '../../hooks/useFavorites';
 
 interface TripDayCardProps {
   dayNumber: number; // 1, 2, 3... (global trip day)
@@ -99,6 +101,14 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
 }) => {
   const { items: pricingItems, isLoading: catalogLoading } = usePricingCatalog();
   const { draft, setDraft } = useTrip();
+  const { 
+    isLodgingFavorite, 
+    isActivityFavorite,
+    isArrivalFavorite,
+    toggleLodgingFavorite, 
+    toggleActivityFavorite,
+    toggleArrivalFavorite
+  } = useFavorites();
 
   const getInitialOpenSection = () => {
     if (!parkId) return null;
@@ -245,6 +255,9 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
     );
   };
 
+  const tripTier = draft?.tier || 'standard';
+  const tierInfo = getTripLevelInfo(tripTier);
+
   return (
     <div className="border-2 border-gray-200 rounded-lg p-4 md:p-6 lg:p-8 bg-white shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-6">
@@ -262,7 +275,12 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
             )}
           </div>
         </div>
-        <StatusBadge />
+        <div className="flex items-center gap-2">
+          <span className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">
+            {tierInfo.icon} {tierInfo.label}
+          </span>
+          <StatusBadge />
+        </div>
       </div>
 
       {/* Validation Warnings */}
@@ -367,11 +385,13 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
               <Plane className="w-4 h-4 text-gray-500" />
               Arrival to Park (Flight or Vehicle)
             </label>
-            <AircraftSelector
-              value={arrival}
-              parkId={parkId}
-              direction="arrival"
-              onChange={(pricingItemId) => {
+            <div className="flex gap-2 items-start">
+              <div className="flex-1">
+                <AircraftSelector
+                  value={arrival}
+                  parkId={parkId}
+                  direction="arrival"
+                  onChange={(pricingItemId) => {
                 const nextArrivalItem = pricingItemId
                   ? pricingItems.find((i) => i.id === pricingItemId) || null
                   : null;
@@ -537,6 +557,21 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                 </label>
               </div>
             )}
+              </div>
+              {arrival && parkId && (
+                <button
+                  onClick={() => toggleArrivalFavorite(parkId, arrival)}
+                  className={`p-2.5 rounded-lg transition-all ${
+                    isArrivalFavorite(parkId, arrival)
+                      ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
+                      : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600'
+                  }`}
+                  title={isArrivalFavorite(parkId, arrival) ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  <Star className={`w-5 h-5 ${isArrivalFavorite(parkId, arrival) ? 'fill-current' : ''}`} />
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -564,11 +599,31 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
 
           return (
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                <Bed className="w-4 h-4 text-gray-500" />
-                Lodging
-              </label>
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center justify-between mb-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <Bed className="w-4 h-4 text-gray-500" />
+                  Lodging
+                </label>
+                {!lodging && (
+                  <button
+                    onClick={() => {
+                      const lodgingItems = pricingItems.filter(
+                        item => item.category === 'Lodging' && 
+                        item.parkId === parkId && 
+                        item.active === true
+                      );
+                      const bestLodging = getBestLodgingForTier(lodgingItems, tripTier);
+                      if (bestLodging) {
+                        onUpdate({ lodging: bestLodging.id });
+                      }
+                    }}
+                    className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors font-medium"
+                  >
+                    ✨ Suggest for {tierInfo.label}
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-2 items-start">
                 <div className="flex-1">
                   <SearchablePricingCatalogSelect
                     label=""
@@ -580,10 +635,23 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                     isLoading={catalogLoading}
                   />
                 </div>
+                {lodging && parkId && (
+                  <button
+                    onClick={() => toggleLodgingFavorite(parkId, lodging)}
+                    className={`p-2.5 rounded-lg transition-all h-[42px] flex items-center justify-center ${
+                      isLodgingFavorite(parkId, lodging)
+                        ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
+                        : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600'
+                    }`}
+                    title={isLodgingFavorite(parkId, lodging) ? 'Remove from favorites' : 'Add to favorites'}
+                  >
+                    <Star className={`w-5 h-5 ${isLodgingFavorite(parkId, lodging) ? 'fill-current' : ''}`} />
+                  </button>
+                )}
                 {isHierarchical && metadata && (
                   <button
                     onClick={() => setIsLodgingModalOpen(true)}
-                    className="px-4 py-2.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2 font-medium shadow-sm"
+                    className="px-4 h-[42px] bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center gap-2 font-medium shadow-sm"
                     title="Configure room, season, and occupancy"
                   >
                     <Settings className="w-4 h-4" />
@@ -703,12 +771,53 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
         {/* 4. Activities */}
         {parkId && (
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-              <Activity className="w-4 h-4 text-gray-500" />
-              Activities
-            </label>
-            <PricingCatalogMultiSelect
-              label=""
+            <div className="flex items-center justify-between mb-3">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Activity className="w-4 h-4 text-gray-500" />
+                Activities
+              </label>
+              {(!activities || activities.length === 0) && (
+                <button
+                  onClick={() => {
+                    const activityItems = pricingItems.filter(
+                      item => item.category === 'Activities' && 
+                      item.parkId === parkId && 
+                      item.active === true
+                    );
+                    const recommended = getRecommendedActivitiesForTier(activityItems, tripTier);
+                    const topActivities = recommended.slice(0, 3).map(a => a.id);
+                    if (topActivities.length > 0) {
+                      onUpdate({ activities: topActivities });
+                      
+                      setDraft((prev) => {
+                        if (!prev) return prev;
+                        const nextItemQuantities: Record<string, number> = {
+                          ...(prev.itemQuantities || {}),
+                        };
+                        const nextSources: Record<string, 'auto' | 'manual'> = {
+                          ...(prev.itemQuantitySources || {}),
+                        };
+                        for (const id of topActivities) {
+                          if (nextItemQuantities[id] === undefined) {
+                            nextItemQuantities[id] = 1;
+                            nextSources[id] = 'auto';
+                          }
+                        }
+                        return {
+                          ...prev,
+                          itemQuantities: nextItemQuantities,
+                          itemQuantitySources: nextSources,
+                        };
+                      });
+                    }
+                  }}
+                  className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors font-medium"
+                >
+                  ✨ Suggest for {tierInfo.label}
+                </button>
+              )}
+            </div>
+            <ActivitiesCardSelector
               selectedIds={activities || []}
               onChange={(pricingItemIds) => {
                 onUpdate({ activities: pricingItemIds });
@@ -737,55 +846,29 @@ export const TripDayCard: React.FC<TripDayCardProps> = ({
                   };
                 });
               }}
-              category="Activities"
               parkId={parkId}
               items={pricingItems}
               isLoading={catalogLoading}
+              quantities={draft?.itemQuantities || {}}
+              isActivityFavorite={isActivityFavorite}
+              onToggleFavorite={toggleActivityFavorite}
+              onQuantityChange={(activityId, quantity) => {
+                setDraft((prev) => {
+                  if (!prev) return prev;
+                  return {
+                    ...prev,
+                    itemQuantities: {
+                      ...(prev.itemQuantities || {}),
+                      [activityId]: quantity,
+                    },
+                    itemQuantitySources: {
+                      ...(prev.itemQuantitySources || {}),
+                      [activityId]: 'manual',
+                    },
+                  };
+                });
+              }}
             />
-
-            {(activities || []).length > 0 && (
-              <div className="mt-2 border border-gray-200 rounded-md p-3">
-                <div className="text-sm font-semibold text-brand-dark mb-2">Activity Quantities</div>
-                <div className="space-y-2">
-                  {(activities || []).map((activityId) => {
-                    const item = pricingItems.find((i) => i.id === activityId);
-                    if (!item) return null;
-                    return (
-                      <div key={activityId} className="flex items-center justify-between gap-3">
-                        <div className="text-sm text-gray-700">{item.itemName}</div>
-                        <select
-                          className="px-2 py-1 border border-gray-300 rounded-md text-sm"
-                          value={draft?.itemQuantities?.[activityId] ?? 1}
-                          onChange={(e) => {
-                            const newQty = Number(e.target.value);
-                            setDraft((prev) => {
-                              if (!prev) return prev;
-                              return {
-                                ...prev,
-                                itemQuantities: {
-                                  ...(prev.itemQuantities || {}),
-                                  [activityId]: newQty,
-                                },
-                                itemQuantitySources: {
-                                  ...(prev.itemQuantitySources || {}),
-                                  [activityId]: 'manual',
-                                },
-                              };
-                            });
-                          }}
-                        >
-                          {getQuantityOptions(1).map((n) => (
-                            <option key={n} value={n}>
-                              {n}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
           </div>
         )}
 

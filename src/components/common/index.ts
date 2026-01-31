@@ -11,6 +11,7 @@ export * from './LodgingSelector';
 export * from './LodgingConfigModal';
 export * from './LodgingConfigModalNew';
 export * from './AircraftSelector';
+export * from './ActivitiesCardSelector';
 export * from './VehicleSelector';
 export * from './DomesticFlightSelector';
 export * from './ParksSelector';
