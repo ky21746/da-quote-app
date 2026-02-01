@@ -47,7 +47,8 @@ export const ItineraryPreviewModal: React.FC<ItineraryPreviewModalProps> = ({
         const children = response.quoteData?.travelers?.children || 0;
         const totalTravelers = adults + children;
         const totalDays = response.days?.length || 0;
-        const parks = [...new Set((response.days || []).map((d: any) => d.park?.name).filter(Boolean))];
+        const parkNames = (response.days || []).map((d: any) => d.park?.name).filter(Boolean);
+        const parks = Array.from(new Set(parkNames));
         
         const itineraryContent: any = {
           title: response.tripTitle || response.coverPage?.title || 'Trip Itinerary',
