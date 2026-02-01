@@ -159,7 +159,7 @@ export class ItineraryApiClient {
    * Create a new itinerary
    */
   async createItinerary(request: CreateItineraryRequest): Promise<CreateItineraryResponse> {
-    return this.request<CreateItineraryResponse>('/api/itinerary/create', {
+    return this.request<CreateItineraryResponse>('/createItinerary', {
       method: 'POST',
       body: JSON.stringify(request),
     });
@@ -169,7 +169,7 @@ export class ItineraryApiClient {
    * Get itinerary by ID
    */
   async getItinerary(itineraryId: string): Promise<GetItineraryResponse> {
-    return this.request<GetItineraryResponse>(`/api/itinerary/${itineraryId}`, {
+    return this.request<GetItineraryResponse>(`/getItinerary/${itineraryId}`, {
       method: 'GET',
     });
   }
@@ -181,7 +181,7 @@ export class ItineraryApiClient {
     itineraryId: string,
     request: UpdateItineraryRequest
   ): Promise<UpdateItineraryResponse> {
-    return this.request<UpdateItineraryResponse>(`/api/itinerary/${itineraryId}`, {
+    return this.request<UpdateItineraryResponse>(`/updateItinerary/${itineraryId}`, {
       method: 'PUT',
       body: JSON.stringify(request),
     });
@@ -191,7 +191,7 @@ export class ItineraryApiClient {
    * Delete itinerary
    */
   async deleteItinerary(itineraryId: string): Promise<{ success: boolean }> {
-    return this.request<{ success: boolean }>(`/api/itinerary/${itineraryId}`, {
+    return this.request<{ success: boolean }>(`/deleteItinerary/${itineraryId}`, {
       method: 'DELETE',
     });
   }
@@ -200,7 +200,7 @@ export class ItineraryApiClient {
    * Check API health
    */
   async healthCheck(): Promise<{ status: string; version?: string }> {
-    return this.request<{ status: string; version?: string }>('/api/health', {
+    return this.request<{ status: string; version?: string }>('/health', {
       method: 'GET',
     });
   }
