@@ -99,6 +99,22 @@ export const PricingPage: React.FC = () => {
     try {
       const apiClient = getItineraryApiClient();
       
+      // Helper function to remove undefined values recursively
+      const removeUndefined = (obj: any): any => {
+        if (Array.isArray(obj)) {
+          return obj.map(removeUndefined);
+        }
+        if (obj !== null && typeof obj === 'object') {
+          return Object.entries(obj).reduce((acc, [key, value]) => {
+            if (value !== undefined) {
+              acc[key] = removeUndefined(value);
+            }
+            return acc;
+          }, {} as any);
+        }
+        return obj;
+      };
+      
       // Clean tripData - remove undefined values and keep only essential fields
       const cleanTripData: any = {
         name: draft.name || 'Untitled Trip',
@@ -113,8 +129,8 @@ export const PricingPage: React.FC = () => {
       
       const request: CreateItineraryRequest = {
         tripId,
-        tripData: cleanTripData as any,
-        pricing: basePricingResult,
+        tripData: removeUndefined(cleanTripData) as any,
+        pricing: removeUndefined(basePricingResult),
         metadata: {
           preferences: {
             language: 'en',
@@ -125,6 +141,7 @@ export const PricingPage: React.FC = () => {
         },
       };
 
+      console.log('Sending itinerary request:', JSON.stringify(request, null, 2));
       const response = await apiClient.createItinerary(request);
 
       // Update draft with itinerary info
