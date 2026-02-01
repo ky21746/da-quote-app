@@ -36,7 +36,7 @@ export const ItineraryPreviewModal: React.FC<ItineraryPreviewModalProps> = ({
 
     try {
       const apiClient = getItineraryApiClient();
-      const response = await apiClient.getItinerary(itineraryId);
+      const response: any = await apiClient.getItinerary(itineraryId);
 
       console.log('Itinerary response:', response);
 
