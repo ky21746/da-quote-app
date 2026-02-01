@@ -188,9 +188,20 @@ export const PricingPage: React.FC = () => {
       if (draft.ages) cleanTripData.ages = draft.ages;
 
       // Enrich trip data with full details
-      console.log('🔍 Original tripData:', JSON.stringify(cleanTripData.tripDays?.[0], null, 2));
       const enrichedTripData = await enrichTripData(cleanTripData);
-      console.log('✨ Enriched tripData:', JSON.stringify(enrichedTripData.tripDays?.[0], null, 2));
+      
+      // Show enriched data to user
+      const firstDay = enrichedTripData.tripDays?.[0];
+      if (firstDay) {
+        alert(`Enriched Data Check:\n\n` +
+          `Park ID: ${firstDay.parkId}\n` +
+          `Park Name: ${firstDay.parkName || 'NOT FOUND'}\n\n` +
+          `Lodging: ${typeof firstDay.lodging === 'object' ? 'OBJECT ✅' : 'STRING ❌'}\n` +
+          `Lodging Name: ${firstDay.lodging?.itemName || 'NOT FOUND'}\n\n` +
+          `Activities: ${Array.isArray(firstDay.activities) ? firstDay.activities.length : 0}\n` +
+          `First Activity: ${firstDay.activities?.[0]?.itemName || 'NOT FOUND'}`
+        );
+      }
       
       const request: CreateItineraryRequest = {
         tripId,
@@ -205,8 +216,6 @@ export const PricingPage: React.FC = () => {
           },
         },
       };
-
-      console.log('📤 Sending itinerary request (first day):', JSON.stringify(request.tripData.tripDays?.[0], null, 2));
       const response = await apiClient.createItinerary(request);
 
       // Update draft with itinerary info
