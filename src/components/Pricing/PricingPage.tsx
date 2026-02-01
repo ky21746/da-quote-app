@@ -109,7 +109,7 @@ export const PricingPage: React.FC = () => {
         // Enrich lodging - convert from ID string to full object
         let enrichedLodging = null;
         if (day.lodging && typeof day.lodging === 'string') {
-          const lodgingItem = catalogItems.find(item => item.id === day.lodging);
+          const lodgingItem = pricingItems.find((item: any) => item.id === day.lodging);
           if (lodgingItem) {
             enrichedLodging = {
               itemId: lodgingItem.id,
@@ -121,7 +121,7 @@ export const PricingPage: React.FC = () => {
 
         // Enrich activities - convert from ID strings to full objects
         const enrichedActivities = (day.activities || []).map((activityId: string) => {
-          const activityItem = catalogItems.find(item => item.id === activityId);
+          const activityItem = pricingItems.find((item: any) => item.id === activityId);
           if (activityItem) {
             return {
               itemId: activityItem.id,
@@ -196,8 +196,6 @@ export const PricingPage: React.FC = () => {
         tripData: removeUndefined(enrichedTripData) as any,
         pricing: removeUndefined(basePricingResult),
         metadata: {
-          clientName: draft.clientName || '',
-          agentName: draft.agentName || '',
           preferences: {
             language: 'en',
             includeImages: true,
