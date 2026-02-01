@@ -43,16 +43,28 @@ export const ItineraryPreviewModal: React.FC<ItineraryPreviewModalProps> = ({
       // The API returns the itinerary data directly, not wrapped in content
       if (response.status === 'draft' || response.tripTitle) {
         // Convert API response to ItineraryContent format
+        const adults = response.quoteData?.travelers?.adults || 0;
+        const children = response.quoteData?.travelers?.children || 0;
+        const totalTravelers = adults + children;
+        const totalDays = response.days?.length || 0;
+        const parks = [...new Set((response.days || []).map((d: any) => d.park?.name).filter(Boolean))];
+        
         const itineraryContent: any = {
           title: response.tripTitle || response.coverPage?.title || 'Trip Itinerary',
           subtitle: response.coverPage?.subtitle || '',
+          summary: {
+            travelers: totalTravelers,
+            days: totalDays,
+            nights: Math.max(0, totalDays - 1),
+            parks: parks,
+          },
           tripDates: {
             start: new Date(response.tripDates?.start?._seconds * 1000 || Date.now()).toISOString(),
             end: new Date(response.tripDates?.end?._seconds * 1000 || Date.now()).toISOString(),
           },
           travelers: {
-            adults: response.quoteData?.travelers?.adults || 0,
-            children: response.quoteData?.travelers?.children || 0,
+            adults: adults,
+            children: children,
           },
           days: response.days || [],
           pricing: response.quoteData ? {
