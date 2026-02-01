@@ -17,6 +17,8 @@ import { ItineraryButton } from '../Itinerary/ItineraryButton';
 import { ItineraryPreviewModal } from '../Itinerary/ItineraryPreviewModal';
 import { getItineraryApiClient } from '../../services/itineraryApi';
 import { CreateItineraryRequest } from '../../types/itinerary';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 
 /**
  * Convert PricingResult to CalculationResult format for TripSummaryPage
@@ -87,6 +89,64 @@ export const PricingPage: React.FC = () => {
   const itineraryStatus = draft?.itineraryStatus || 'none';
   const itineraryId = draft?.itineraryId;
 
+  // Helper function to enrich trip data with full details from Firestore
+  const enrichTripData = async (tripData: any) => {
+    const enrichedTripDays = await Promise.all(
+      (tripData.tripDays || []).map(async (day: any) => {
+        // Fetch park name
+        let parkName = '';
+        if (day.parkId) {
+          try {
+            const parkDoc = await getDoc(doc(db, 'parks', day.parkId));
+            if (parkDoc.exists()) {
+              parkName = parkDoc.data().name || '';
+            }
+          } catch (error) {
+            console.error('Failed to fetch park name:', error);
+          }
+        }
+
+        // Enrich lodging - convert from ID string to full object
+        let enrichedLodging = null;
+        if (day.lodging && typeof day.lodging === 'string') {
+          const lodgingItem = catalogItems.find(item => item.id === day.lodging);
+          if (lodgingItem) {
+            enrichedLodging = {
+              itemId: lodgingItem.id,
+              itemName: lodgingItem.itemName,
+              category: lodgingItem.category,
+            };
+          }
+        }
+
+        // Enrich activities - convert from ID strings to full objects
+        const enrichedActivities = (day.activities || []).map((activityId: string) => {
+          const activityItem = catalogItems.find(item => item.id === activityId);
+          if (activityItem) {
+            return {
+              itemId: activityItem.id,
+              itemName: activityItem.itemName,
+              category: activityItem.category,
+            };
+          }
+          return { itemId: activityId, itemName: '', category: '' };
+        });
+
+        return {
+          ...day,
+          parkName,
+          lodging: enrichedLodging || day.lodging,
+          activities: enrichedActivities,
+        };
+      })
+    );
+
+    return {
+      ...tripData,
+      tripDays: enrichedTripDays,
+    };
+  };
+
   // Handle itinerary generation
   const handleGenerateItinerary = async () => {
     if (!draft || !tripId) {
@@ -126,12 +186,18 @@ export const PricingPage: React.FC = () => {
       // Only add optional fields if they're defined
       if (draft.tier) cleanTripData.tier = draft.tier;
       if (draft.ages) cleanTripData.ages = draft.ages;
+
+      // Enrich trip data with full details
+      console.log('Enriching trip data...');
+      const enrichedTripData = await enrichTripData(cleanTripData);
       
       const request: CreateItineraryRequest = {
         tripId,
-        tripData: removeUndefined(cleanTripData) as any,
+        tripData: removeUndefined(enrichedTripData) as any,
         pricing: removeUndefined(basePricingResult),
         metadata: {
+          clientName: draft.clientName || '',
+          agentName: draft.agentName || '',
           preferences: {
             language: 'en',
             includeImages: true,
