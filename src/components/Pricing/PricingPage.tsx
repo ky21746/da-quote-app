@@ -154,6 +154,7 @@ export const PricingPage: React.FC = () => {
       return;
     }
 
+    alert('Starting itinerary generation...');
     setIsGeneratingItinerary(true);
 
     try {
