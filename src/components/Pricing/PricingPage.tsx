@@ -99,9 +99,19 @@ export const PricingPage: React.FC = () => {
     try {
       const apiClient = getItineraryApiClient();
       
+      // Clean tripData - remove undefined values and keep only essential fields
+      const cleanTripData = {
+        name: draft.name || 'Untitled Trip',
+        travelers: draft.travelers || 0,
+        days: draft.days || 0,
+        tripDays: draft.tripDays || [],
+        tier: draft.tier,
+        ages: draft.ages,
+      };
+      
       const request: CreateItineraryRequest = {
         tripId,
-        tripData: draft,
+        tripData: cleanTripData as any,
         pricing: basePricingResult,
         metadata: {
           preferences: {
