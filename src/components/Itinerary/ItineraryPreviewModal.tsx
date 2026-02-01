@@ -38,17 +38,39 @@ export const ItineraryPreviewModal: React.FC<ItineraryPreviewModalProps> = ({
       const apiClient = getItineraryApiClient();
       const response = await apiClient.getItinerary(itineraryId);
 
-      if (response.status === 'completed' && response.content) {
-        setContent(response.content);
-        setDocuments(response.documents || []);
+      console.log('Itinerary response:', response);
+
+      // The API returns the itinerary data directly, not wrapped in content
+      if (response.status === 'draft' || response.tripTitle) {
+        // Convert API response to ItineraryContent format
+        const itineraryContent: ItineraryContent = {
+          title: response.tripTitle || response.coverPage?.title || 'Trip Itinerary',
+          subtitle: response.coverPage?.subtitle || '',
+          tripDates: {
+            start: new Date(response.tripDates?.start?._seconds * 1000 || Date.now()).toISOString(),
+            end: new Date(response.tripDates?.end?._seconds * 1000 || Date.now()).toISOString(),
+          },
+          travelers: {
+            adults: response.quoteData?.travelers?.adults || 0,
+            children: response.quoteData?.travelers?.children || 0,
+          },
+          days: response.days || [],
+          pricing: response.quoteData ? {
+            totalPrice: response.quoteData.totalPrice,
+            perPersonPrice: response.quoteData.perPersonPrice,
+            currency: response.quoteData.currency || 'USD',
+          } : undefined,
+        };
+        setContent(itineraryContent);
+        setDocuments(response.exports ? [response.exports.pdf, response.exports.web].filter(Boolean) : []);
       } else if (response.status === 'failed') {
-        setError(response.error || 'Failed to generate itinerary');
+        setError('Failed to generate itinerary');
       } else if (response.status === 'processing') {
         setError('Itinerary is still being generated. Please wait...');
-        // Poll again in 3 seconds
         setTimeout(loadItinerary, 3000);
       }
     } catch (err: any) {
+      console.error('Failed to load itinerary:', err);
       setError(err.message || 'Failed to load itinerary');
     } finally {
       setIsLoading(false);
