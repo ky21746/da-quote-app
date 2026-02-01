@@ -247,5 +247,5 @@ export function getTripLevelInfo(tier: TripTier): {
     },
   };
 
-  return info[tier];
+  return info[tier] || info['standard'];
 }
