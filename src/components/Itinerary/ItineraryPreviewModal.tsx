@@ -58,6 +58,7 @@ export const ItineraryPreviewModal: React.FC<ItineraryPreviewModalProps> = ({
             days: totalDays,
             nights: Math.max(0, totalDays - 1),
             parks: parks,
+            highlights: [],
           },
           tripDates: {
             start: new Date(response.tripDates?.start?._seconds * 1000 || Date.now()).toISOString(),
@@ -150,7 +151,7 @@ export const ItineraryPreviewModal: React.FC<ItineraryPreviewModalProps> = ({
                   </div>
                 </div>
 
-                {content.summary.highlights.length > 0 && (
+                {content.summary.highlights && content.summary.highlights.length > 0 && (
                   <div className="mt-4">
                     <h3 className="font-semibold text-gray-900 mb-2">Highlights:</h3>
                     <ul className="list-disc list-inside space-y-1">
@@ -180,7 +181,7 @@ export const ItineraryPreviewModal: React.FC<ItineraryPreviewModalProps> = ({
                     <p className="text-gray-700">{day.description}</p>
 
                     {/* Timeline */}
-                    {day.timeline.length > 0 && (
+                    {day.timeline && day.timeline.length > 0 && (
                       <div className="space-y-3">
                         {day.timeline.map((item, idx) => (
                           <div key={idx} className="flex gap-3">
