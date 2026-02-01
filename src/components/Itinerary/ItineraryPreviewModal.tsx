@@ -43,7 +43,7 @@ export const ItineraryPreviewModal: React.FC<ItineraryPreviewModalProps> = ({
       // The API returns the itinerary data directly, not wrapped in content
       if (response.status === 'draft' || response.tripTitle) {
         // Convert API response to ItineraryContent format
-        const itineraryContent: ItineraryContent = {
+        const itineraryContent: any = {
           title: response.tripTitle || response.coverPage?.title || 'Trip Itinerary',
           subtitle: response.coverPage?.subtitle || '',
           tripDates: {
@@ -61,7 +61,7 @@ export const ItineraryPreviewModal: React.FC<ItineraryPreviewModalProps> = ({
             currency: response.quoteData.currency || 'USD',
           } : undefined,
         };
-        setContent(itineraryContent);
+        setContent(itineraryContent as ItineraryContent);
         setDocuments(response.exports ? [response.exports.pdf, response.exports.web].filter(Boolean) : []);
       } else if (response.status === 'failed') {
         setError('Failed to generate itinerary');
