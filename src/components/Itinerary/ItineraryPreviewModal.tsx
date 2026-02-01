@@ -68,7 +68,17 @@ export const ItineraryPreviewModal: React.FC<ItineraryPreviewModalProps> = ({
             adults: adults,
             children: children,
           },
-          days: response.days || [],
+          days: (response.days || []).map((day: any) => ({
+            ...day,
+            date: day.date?._seconds 
+              ? new Date(day.date._seconds * 1000).toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })
+              : undefined,
+          })),
           pricing: response.quoteData ? {
             totalPrice: response.quoteData.totalPrice,
             perPersonPrice: response.quoteData.perPersonPrice,
