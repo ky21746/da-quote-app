@@ -13,7 +13,7 @@ export function createTripDraft(overrides?: Partial<TripDraft>): TripDraft {
     name: 'Test Safari Trip',
     travelers: 4,
     days: 5,
-    tier: 'base',
+    tier: 'budget',
     tripDays: [],
     itemQuantities: {},
     ...overrides,

@@ -4,6 +4,26 @@
 
 This is a trip pricing application built with Clean Architecture principles, designed for Uganda-first travel quotes. The architecture is modular, testable, and UI-agnostic.
 
+## Features
+
+### Leads MVP
+A minimal lead management system integrated into the app:
+- **Create & manage leads** with contact information and status tracking
+- **Bilingual UI** (Hebrew/English) with language toggle
+- **Send to Pricing** - Convert leads to quote drafts with one click
+- **Owner-based access control** - Leads are private per user
+- **Status tracking** - NEW, CONTACTED, QUALIFIED, PROPOSAL_SENT, WON, LOST
+
+**Routes:**
+- `/leads` - Leads list
+- `/leads/new` - Create new lead
+- `/leads/:id` - Lead details with notes and status management
+
+**Integration:**
+- Leads link to quotes via `leadId` field
+- Quote drafts automatically created from lead data
+- Seamless navigation from lead to pricing flow
+
 ## Architecture Layers
 
 ### `/core` - Business Logic Layer

@@ -23,6 +23,7 @@ export const LeadDetailPage: React.FC = () => {
     if (leadId) {
       loadLead();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leadId]);
 
   const loadLead = async () => {
