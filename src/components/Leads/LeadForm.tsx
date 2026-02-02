@@ -19,7 +19,6 @@ export const LeadForm: React.FC<LeadFormProps> = ({ initialData, language, onSub
     language: initialData?.language || language,
     source: initialData?.source || '',
     status: initialData?.status || 'NEW' as LeadStatus,
-    notes: initialData?.notes || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -128,18 +127,6 @@ export const LeadForm: React.FC<LeadFormProps> = ({ initialData, language, onSub
             <option value="LOST">{t('lead.status.LOST', language)}</option>
           </select>
         </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {t('lead.notes', language)}
-        </label>
-        <textarea
-          value={formData.notes}
-          onChange={(e) => handleChange('notes', e.target.value)}
-          rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-olive focus:border-transparent"
-        />
       </div>
 
       <div className="flex gap-3 justify-end">

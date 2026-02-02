@@ -207,21 +207,69 @@ export const LeadDetailPage: React.FC = () => {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           {t('lead.notes', language)}
         </h2>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          rows={6}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-olive focus:border-transparent"
-          placeholder={language === 'he' ? 'הוסף הערות...' : 'Add notes...'}
-        />
-        <div className="mt-4 flex justify-end">
-          <Button
-            variant="primary"
-            onClick={handleSaveNotes}
-            disabled={isSaving}
-          >
-            {isSaving ? (language === 'he' ? 'שומר...' : 'Saving...') : t('lead.save', language)}
-          </Button>
+
+        {/* Add new note form */}
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex items-start gap-3">
+            <textarea
+              value={newNoteText}
+              onChange={(e) => setNewNoteText(e.target.value)}
+              rows={3}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-olive focus:border-transparent"
+              placeholder={language === 'he' ? 'הוסף הערה חדשה...' : 'Add new note...'}
+            />
+            <Button
+              variant="primary"
+              onClick={handleAddNote}
+              disabled={isSaving || !newNoteText.trim()}
+              className="flex items-center gap-2"
+            >
+              <Plus size={16} />
+              {language === 'he' ? 'הוסף' : 'Add'}
+            </Button>
+          </div>
+        </div>
+
+        {/* Notes timeline */}
+        <div className="space-y-4">
+          {lead?.notes && lead.notes.length > 0 ? (
+            [...lead.notes]
+              .sort((a, b) => {
+                const dateA = a.createdAt?.toDate?.() || new Date(a.createdAt);
+                const dateB = b.createdAt?.toDate?.() || new Date(b.createdAt);
+                return dateB.getTime() - dateA.getTime();
+              })
+              .map((note) => {
+                const noteDate = note.createdAt?.toDate?.() || new Date(note.createdAt);
+                return (
+                  <div key={note.id} className="flex gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex-shrink-0 w-12 h-12 bg-brand-olive/10 rounded-full flex items-center justify-center">
+                      <span className="text-brand-olive font-semibold text-sm">
+                        {note.createdBy.substring(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-gray-500">
+                          {noteDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-900 whitespace-pre-wrap">{note.text}</p>
+                    </div>
+                  </div>
+                );
+              })
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              {language === 'he' ? 'אין הערות עדיין' : 'No notes yet'}
+            </div>
+          )}
         </div>
       </div>
     </div>
