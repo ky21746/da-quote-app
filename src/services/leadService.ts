@@ -38,11 +38,12 @@ export const leadService = {
       throw new Error('User must be authenticated to add note');
     }
 
-    const note: Omit<LeadNote, 'createdAt'> & { createdAt: any } = {
+    const now = new Date();
+    const note: LeadNote = {
       id: `note_${Date.now()}`,
       text: noteText,
       createdBy: userId,
-      createdAt: serverTimestamp(),
+      createdAt: now,
     };
 
     const leadRef = doc(db, 'leads', leadId);

@@ -232,8 +232,9 @@ export const LeadDetailPage: React.FC = () => {
 
         {/* Notes timeline */}
         <div className="space-y-4">
-          {lead?.notes && lead.notes.length > 0 ? (
+          {lead?.notes && Array.isArray(lead.notes) && lead.notes.length > 0 ? (
             [...lead.notes]
+              .filter((note) => note && typeof note === 'object' && note.text && note.id)
               .sort((a, b) => {
                 const dateA = a.createdAt?.toDate?.() || new Date(a.createdAt);
                 const dateB = b.createdAt?.toDate?.() || new Date(b.createdAt);
@@ -242,6 +243,8 @@ export const LeadDetailPage: React.FC = () => {
               .map((note) => {
                 const noteDate = note.createdAt?.toDate?.() || new Date(note.createdAt);
                 const userInitials = note.createdBy ? note.createdBy.substring(0, 2).toUpperCase() : '??';
+                const isValidDate = noteDate && !isNaN(noteDate.getTime());
+                
                 return (
                   <div key={note.id} className="flex gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div className="flex-shrink-0 w-12 h-12 bg-brand-olive/10 rounded-full flex items-center justify-center">
@@ -252,13 +255,13 @@ export const LeadDetailPage: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs text-gray-500">
-                          {noteDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', {
+                          {isValidDate ? noteDate.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-US', {
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit',
-                          })}
+                          }) : (language === 'he' ? 'תאריך לא ידוע' : 'Unknown date')}
                         </span>
                       </div>
                       <p className="text-sm text-gray-900 whitespace-pre-wrap">{note.text}</p>
