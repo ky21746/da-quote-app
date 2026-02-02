@@ -9,6 +9,7 @@ export interface SavedQuote {
   status: 'draft' | 'sent' | 'accepted' | 'rejected';
   referenceNumber?: number;
   sourceQuoteId?: string;
+  leadId?: string;
   tripName: string;
   travelers: number;
   days: number;
@@ -36,7 +37,7 @@ function removeUndefined(obj: any): any {
 }
 
 export const quoteService = {
-  async saveQuote(draft: TripDraft, calculation: CalculationResult): Promise<{ id: string; referenceNumber: number }> {
+  async saveQuote(draft: TripDraft, calculation: CalculationResult, leadId?: string): Promise<{ id: string; referenceNumber: number }> {
     const cleanDraft = removeUndefined(draft);
     const cleanCalculation = removeUndefined(calculation);
     
@@ -57,6 +58,7 @@ export const quoteService = {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       status: 'draft',
+      ...(leadId && { leadId }),
       tripName: cleanDraft?.name || 'Untitled Trip',
       travelers: cleanDraft?.travelers || 1,
       days: cleanDraft?.days || 1,
@@ -95,7 +97,8 @@ export const quoteService = {
   async saveFinalQuote(
     draft: TripDraft,
     calculation: CalculationResult,
-    sourceQuoteId?: string
+    sourceQuoteId?: string,
+    leadId?: string
   ): Promise<{ id: string; referenceNumber: number }> {
     const cleanDraft = removeUndefined(draft);
     const cleanCalculation = removeUndefined(calculation);
@@ -117,6 +120,7 @@ export const quoteService = {
       updatedAt: serverTimestamp(),
       status: 'sent',
       sourceQuoteId,
+      ...(leadId && { leadId }),
       tripName: cleanDraft?.name || 'Untitled Trip',
       travelers: cleanDraft?.travelers || 1,
       days: cleanDraft?.days || 1,
@@ -152,7 +156,7 @@ export const quoteService = {
     return { id: quoteRef.id, referenceNumber };
   },
 
-  async saveDraft(draft: TripDraft): Promise<string> {
+  async saveDraft(draft: TripDraft, leadId?: string): Promise<string> {
     const cleanDraft = removeUndefined(draft);
 
     // Get current user ID for ownership
@@ -166,6 +170,7 @@ export const quoteService = {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       status: 'draft',
+      ...(leadId && { leadId }),
       tripName: cleanDraft?.name || 'Untitled Trip',
       travelers: cleanDraft?.travelers || 1,
       days: cleanDraft?.days || 1,

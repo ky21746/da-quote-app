@@ -32,6 +32,17 @@ service cloud.firestore {
                                      resource.data.userId == request.auth.uid;
     }
     
+    // Leads - owner-based access control
+    match /leads/{leadId} {
+      // Create: must be authenticated and set ownerId to own uid
+      allow create: if request.auth != null && 
+                       request.resource.data.ownerId == request.auth.uid;
+      
+      // Read/Update/Delete: must be authenticated and own the lead
+      allow read, update, delete: if request.auth != null && 
+                                     resource.data.ownerId == request.auth.uid;
+    }
+    
     // All other collections - require authentication
     match /{document=**} {
       allow read, write: if request.auth != null;

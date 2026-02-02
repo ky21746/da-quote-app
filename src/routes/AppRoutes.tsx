@@ -12,6 +12,9 @@ import { PricingPage } from '../pages/PricingPage';
 import { PricingCatalogPage } from '../pages/PricingCatalogPage';
 import { SavedProposalsPage } from '../pages/SavedProposalsPage';
 import { ProposalViewPage } from '../pages/ProposalViewPage';
+import { LeadsPage } from '../pages/LeadsPage';
+import { LeadCreatePage } from '../pages/LeadCreatePage';
+import { LeadDetailPage } from '../pages/LeadDetailPage';
 import { AutoTripTestPage } from '../pages/AutoTripTestPage';
 import AutoAgentTestPage from '../pages/AutoAgentTestPage';
 import FirestoreProbe from '../debug/FirestoreProbe';
@@ -30,6 +33,10 @@ export const AppRoutes: React.FC = () => {
       <Route path="/trip/:id/summary" element={<ProtectedRoute><TripSummaryPage /></ProtectedRoute>} />
       <Route path="/proposals" element={<ProtectedRoute><SavedProposalsPage /></ProtectedRoute>} />
       <Route path="/proposals/:id" element={<ProtectedRoute><ProposalViewPage /></ProtectedRoute>} />
+      
+      <Route path="/leads" element={<ProtectedRoute><LeadsPage /></ProtectedRoute>} />
+      <Route path="/leads/new" element={<ProtectedRoute><LeadCreatePage /></ProtectedRoute>} />
+      <Route path="/leads/:leadId" element={<ProtectedRoute><LeadDetailPage /></ProtectedRoute>} />
       
       <Route path="/admin/pricing-catalog" element={<ProtectedRoute requireAdmin><PricingCatalogPage /></ProtectedRoute>} />
       <Route path="/debug/firestore" element={<ProtectedRoute requireAdmin><FirestoreProbe /></ProtectedRoute>} />

@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Settings, FileText } from 'lucide-react';
+import { Settings, FileText, Users } from 'lucide-react';
 import { useTrip } from '../../context/TripContext';
 import { useActiveTripContext } from '../../hooks/useActiveTripContext';
 import { useAuth } from '../../context/AuthContext';
@@ -153,6 +153,15 @@ export default function AppHeader() {
             </div>
           </div>
         )}
+
+        <button
+          onClick={() => navigate('/leads')}
+          className="p-2 rounded hover:bg-brand-olive/10 text-brand-dark transition-colors flex-shrink-0"
+          aria-label="Leads"
+          title="Leads"
+        >
+          <Users size={20} strokeWidth={1.5} className="text-brand-dark" />
+        </button>
 
         <button
           onClick={() => navigate('/proposals')}

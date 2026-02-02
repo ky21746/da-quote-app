@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { TripProvider } from './context/TripContext';
 import { PricingCatalogProvider } from './context/PricingCatalogContext';
 import { ScenarioComparisonProvider } from './context/ScenarioComparisonContext';
+import { LanguageProvider } from './context/LanguageContext';
 import AppHeader from './components/layout/AppHeader';
 import { AppRoutes } from './routes/AppRoutes';
 import VersionBadge from './components/layout/VersionBadge';
@@ -13,15 +14,17 @@ export const App: React.FC = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <TripProvider>
-          <PricingCatalogProvider>
-            <ScenarioComparisonProvider>
-              <AppHeader />
-              <AppRoutes />
-              <VersionBadge />
-            </ScenarioComparisonProvider>
-          </PricingCatalogProvider>
-        </TripProvider>
+        <LanguageProvider>
+          <TripProvider>
+            <PricingCatalogProvider>
+              <ScenarioComparisonProvider>
+                <AppHeader />
+                <AppRoutes />
+                <VersionBadge />
+              </ScenarioComparisonProvider>
+            </PricingCatalogProvider>
+          </TripProvider>
+        </LanguageProvider>
       </AuthProvider>
     </BrowserRouter>
   );
