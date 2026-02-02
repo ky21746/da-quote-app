@@ -4,18 +4,20 @@ import { leadService } from '../services/leadService';
 import { Lead, LeadStatus } from '../types/leads';
 import { LeadStatusBadge } from '../components/Leads/LeadStatusBadge';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { t } from '../utils/i18n';
 import { Button } from '../components/common';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 
 export const LeadDetailPage: React.FC = () => {
   const { leadId } = useParams<{ leadId: string }>();
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const { user } = useAuth();
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notes, setNotes] = useState('');
+  const [newNoteText, setNewNoteText] = useState('');
   const [status, setStatus] = useState<LeadStatus>('NEW');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -34,7 +36,6 @@ export const LeadDetailPage: React.FC = () => {
       const data = await leadService.getLead(leadId);
       if (data) {
         setLead(data);
-        setNotes(data.notes || '');
         setStatus(data.status);
       } else {
         setError('Lead not found');
@@ -46,15 +47,16 @@ export const LeadDetailPage: React.FC = () => {
     }
   };
 
-  const handleSaveNotes = async () => {
-    if (!leadId) return;
+  const handleAddNote = async () => {
+    if (!leadId || !newNoteText.trim() || !user) return;
     
     try {
       setIsSaving(true);
-      await leadService.updateLead(leadId, { notes });
-      alert(language === 'he' ? 'הערות נשמרו' : 'Notes saved');
+      await leadService.addNote(leadId, newNoteText.trim());
+      setNewNoteText('');
+      await loadLead();
     } catch (err: any) {
-      alert(`Failed to save notes: ${err.message}`);
+      alert(`Failed to add note: ${err.message}`);
     } finally {
       setIsSaving(false);
     }

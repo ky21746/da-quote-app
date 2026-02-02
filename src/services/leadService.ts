@@ -1,6 +1,6 @@
-import { collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, serverTimestamp, arrayUnion } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
-import { Lead } from '../types/leads';
+import { Lead, LeadNote } from '../types/leads';
 import { TripDraft } from '../types/ui';
 import { quoteService } from './quoteService';
 
@@ -30,6 +30,27 @@ export const leadService = {
       updatedAt: serverTimestamp(),
       lastActivityAt: serverTimestamp(),
     } as any);
+  },
+
+  async addNote(leadId: string, noteText: string): Promise<void> {
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+      throw new Error('User must be authenticated to add note');
+    }
+
+    const note: Omit<LeadNote, 'createdAt'> & { createdAt: any } = {
+      id: `note_${Date.now()}`,
+      text: noteText,
+      createdBy: userId,
+      createdAt: serverTimestamp(),
+    };
+
+    const leadRef = doc(db, 'leads', leadId);
+    await updateDoc(leadRef, {
+      notes: arrayUnion(note),
+      updatedAt: serverTimestamp(),
+      lastActivityAt: serverTimestamp(),
+    });
   },
 
   async getLead(id: string): Promise<Lead | null> {
