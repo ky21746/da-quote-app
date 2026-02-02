@@ -4,6 +4,7 @@ import { leadService } from '../services/leadService';
 import { Lead } from '../types/leads';
 import { LeadStatusBadge } from '../components/Leads/LeadStatusBadge';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { t } from '../utils/i18n';
 import { Button } from '../components/common';
 import { Plus } from 'lucide-react';
@@ -11,13 +12,16 @@ import { Plus } from 'lucide-react';
 export const LeadsPage: React.FC = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadLeads();
-  }, []);
+    if (!authLoading && user) {
+      loadLeads();
+    }
+  }, [authLoading, user]);
 
   const loadLeads = async () => {
     try {
@@ -48,10 +52,18 @@ export const LeadsPage: React.FC = () => {
     });
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-gray-500">Please log in to view leads</div>
       </div>
     );
   }
