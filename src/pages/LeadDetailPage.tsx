@@ -241,11 +241,12 @@ export const LeadDetailPage: React.FC = () => {
               })
               .map((note) => {
                 const noteDate = note.createdAt?.toDate?.() || new Date(note.createdAt);
+                const userInitials = note.createdBy ? note.createdBy.substring(0, 2).toUpperCase() : '??';
                 return (
                   <div key={note.id} className="flex gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div className="flex-shrink-0 w-12 h-12 bg-brand-olive/10 rounded-full flex items-center justify-center">
                       <span className="text-brand-olive font-semibold text-sm">
-                        {note.createdBy.substring(0, 2).toUpperCase()}
+                        {userInitials}
                       </span>
                     </div>
                     <div className="flex-1">
