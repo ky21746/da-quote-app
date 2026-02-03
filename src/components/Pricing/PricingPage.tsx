@@ -150,7 +150,6 @@ export const PricingPage: React.FC = () => {
       return;
     }
 
-    alert('Starting itinerary generation...');
     setIsGeneratingItinerary(true);
 
     try {
@@ -214,7 +213,6 @@ export const PricingPage: React.FC = () => {
       if (response.status === 'completed') {
         setShowItineraryModal(true);
       } else if (response.status === 'processing') {
-        alert(`Itinerary is being generated. Estimated time: ${response.estimatedTime || 30} seconds`);
         // Poll for completion
         pollItineraryStatus(response.itineraryId);
       }
