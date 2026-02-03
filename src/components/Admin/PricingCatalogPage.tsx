@@ -5,7 +5,6 @@ import { Button, Select } from '../common';
 import { PricingItem } from '../../types/ui';
 import { AddPricingItemModal } from './AddPricingItemModal';
 import { EditHierarchicalPricingModal } from './EditHierarchicalPricingModal';
-import { ExportPricingCatalog } from './ExportPricingCatalog';
 import { getParks } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
 
@@ -136,25 +135,20 @@ export const PricingCatalogPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Export Component */}
-        <ExportPricingCatalog />
-
-        {/* Main Pricing Catalog */}
-        <div className="bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-4">
-              <Button onClick={handleBack} variant="secondary">
-                ← Back
-              </Button>
-              <h1 className="text-2xl font-bold text-gray-800">Admin → Pricing Catalog</h1>
-            </div>
-            <div className="flex gap-2 items-center">
-              <Button onClick={handleAddClick} variant="primary">
-                + Add Pricing Item
-              </Button>
-            </div>
+      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-4">
+            <Button onClick={handleBack} variant="secondary">
+              ← Back
+            </Button>
+            <h1 className="text-2xl font-bold text-gray-800">Admin → Pricing Catalog</h1>
           </div>
+          <div className="flex gap-2 items-center">
+            <Button onClick={handleAddClick} variant="primary">
+              + Add Pricing Item
+            </Button>
+          </div>
+        </div>
 
         {/* Filter Bar */}
         <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 md:p-6 bg-gray-50 rounded-lg">
@@ -311,7 +305,6 @@ export const PricingCatalogPage: React.FC = () => {
             onSave={handleSaveHierarchicalPricing}
           />
         )}
-        </div>
       </div>
     </div>
   );
