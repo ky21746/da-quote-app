@@ -191,19 +191,6 @@ export const PricingPage: React.FC = () => {
       // Enrich trip data with full details
       const enrichedTripData = await enrichTripData(cleanTripData);
       
-      // Show enriched data to user
-      const firstDay = enrichedTripData.tripDays?.[0];
-      if (firstDay) {
-        alert(`Enriched Data Check:\n\n` +
-          `Park ID: ${firstDay.parkId}\n` +
-          `Park Name: ${firstDay.parkName || 'NOT FOUND'}\n\n` +
-          `Lodging: ${typeof firstDay.lodging === 'object' ? 'OBJECT ✅' : 'STRING ❌'}\n` +
-          `Lodging Name: ${firstDay.lodging?.itemName || 'NOT FOUND'}\n\n` +
-          `Activities: ${Array.isArray(firstDay.activities) ? firstDay.activities.length : 0}\n` +
-          `First Activity: ${firstDay.activities?.[0]?.itemName || 'NOT FOUND'}`
-        );
-      }
-      
       const request: CreateItineraryRequest = {
         tripId,
         tripData: removeUndefined(enrichedTripData) as any,
