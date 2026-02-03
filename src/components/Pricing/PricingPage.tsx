@@ -17,8 +17,6 @@ import { ItineraryButton } from '../Itinerary/ItineraryButton';
 import { ItineraryPreviewModal } from '../Itinerary/ItineraryPreviewModal';
 import { getItineraryApiClient } from '../../services/itineraryApi';
 import { CreateItineraryRequest } from '../../types/itinerary';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
 
 /**
  * Convert PricingResult to CalculationResult format for TripSummaryPage
@@ -93,16 +91,14 @@ export const PricingPage: React.FC = () => {
   const enrichTripData = async (tripData: any) => {
     const enrichedTripDays = await Promise.all(
       (tripData.tripDays || []).map(async (day: any) => {
-        // Fetch park name
+        // Fetch park name from pricingCatalog
         let parkName = '';
         if (day.parkId) {
-          try {
-            const parkDoc = await getDoc(doc(db, 'parks', day.parkId));
-            if (parkDoc.exists()) {
-              parkName = parkDoc.data().name || '';
-            }
-          } catch (error) {
-            console.error('Failed to fetch park name:', error);
+          const parkItem = pricingItems.find((item: any) => 
+            item.id === day.parkId && item.category === 'Parks'
+          );
+          if (parkItem) {
+            parkName = parkItem.itemName || '';
           }
         }
 
