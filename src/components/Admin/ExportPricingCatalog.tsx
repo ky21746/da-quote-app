@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { usePricingCatalog } from '../../context/PricingCatalogContext';
 import { Button } from '../common';
 import { Download } from 'lucide-react';
+import { getParks } from '../../utils/parks';
 
 export const ExportPricingCatalog: React.FC = () => {
   const { items } = usePricingCatalog();
@@ -21,9 +22,25 @@ export const ExportPricingCatalog: React.FC = () => {
         parkFees: [],
         permits: [],
         extras: [],
+        logistics: [],
         other: []
       };
 
+      // Add parks from parks.ts
+      const parks = getParks();
+      parks.forEach(park => {
+        grouped.parks.push({
+          id: park.id,
+          name: park.label,
+          category: 'Parks',
+          parkId: null,
+          appliesTo: 'Global',
+          active: true,
+          sku: null
+        });
+      });
+
+      // Add items from pricingCatalog
       items.forEach(item => {
         const entry = {
           id: item.id,
@@ -37,9 +54,6 @@ export const ExportPricingCatalog: React.FC = () => {
 
         const category = item.category as string;
         switch (category) {
-          case 'Parks':
-            grouped.parks.push(entry);
-            break;
           case 'Lodging':
             grouped.lodges.push(entry);
             break;
@@ -61,6 +75,9 @@ export const ExportPricingCatalog: React.FC = () => {
           case 'Extras':
             grouped.extras.push(entry);
             break;
+          case 'Logistics':
+            grouped.logistics.push(entry);
+            break;
           default:
             grouped.other.push(entry);
         }
@@ -81,8 +98,12 @@ export const ExportPricingCatalog: React.FC = () => {
       URL.revokeObjectURL(url);
 
       // Show summary
+      const totalItems = grouped.parks.length + grouped.lodges.length + grouped.activities.length + 
+                        grouped.vehicles.length + grouped.aviation.length + grouped.parkFees.length + 
+                        grouped.permits.length + grouped.extras.length + grouped.logistics.length + grouped.other.length;
+      
       const summary = `
-Exported ${items.length} total items:
+Exported ${totalItems} total items:
 - Parks: ${grouped.parks.length}
 - Lodges: ${grouped.lodges.length}
 - Activities: ${grouped.activities.length}
@@ -91,6 +112,7 @@ Exported ${items.length} total items:
 - Park Fees: ${grouped.parkFees.length}
 - Permits: ${grouped.permits.length}
 - Extras: ${grouped.extras.length}
+- Logistics: ${grouped.logistics.length}
 - Other: ${grouped.other.length}
       `.trim();
 
