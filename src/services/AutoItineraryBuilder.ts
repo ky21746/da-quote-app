@@ -224,16 +224,18 @@ function hasUnderageForActivity(ages: number[], minAge?: number): boolean {
   return ages.some(age => age < minAge);
 }
 
-/**
- * Generate a unique ID for auto-generated items
- */
-function generateAutoId(prefix: string, index: number): string {
-  return `auto_generated_${prefix}_${index}_${Date.now()}`;
-}
-
 // ============================================================================
 // MAIN GENERATOR FUNCTION
 // ============================================================================
+
+/**
+ * Auto Itinerary Builder Service
+ * 
+ * Generates complete trip itineraries based on high-level user requirements.
+ * This service bridges the gap between user intent and the detailed TripDraft structure.
+ */
+
+import type { TripDraft, DayDraft, TripTier, PricingItem } from '../types/ui';
 
 /**
  * Generate a complete trip itinerary based on high-level requirements

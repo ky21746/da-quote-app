@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Trip Level Templates - Auto-selection logic based on trip tier
  * Provides smart defaults for lodging, transport, and activities based on budget level

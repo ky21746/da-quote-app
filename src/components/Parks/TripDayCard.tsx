@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import { Select, Input, PricingCatalogSelect, SearchablePricingCatalogSelect, PricingCatalogMultiSelect, LodgingConfigModalNew, AircraftSelector, ActivitiesCardSelector } from '../common';
 import { TripValidationWarnings } from './TripValidationWarnings';

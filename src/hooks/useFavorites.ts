@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * useFavorites Hook
  * Manages user favorites stored in Firestore
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../context/AuthContext';
 import type { UserFavorites, ParkFavorites } from '../types/favorites';

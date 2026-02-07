@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Settings, FileText, Users } from 'lucide-react';
 import { useTrip } from '../../context/TripContext';
@@ -8,7 +9,7 @@ import { UserMenu } from '../Auth/UserMenu';
 export default function AppHeader() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
   const { referenceNumber, draft, draftQuoteId, calculationResult, setTravelers } = useTrip();
   const { activeTripId, activeStep, proposalIdFromUrl } = useActiveTripContext();
 

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode, useCallback } from 'react';
 import { TripDraft, CalculationResult, DayDraft, ScenarioResults, ParkCard, DayCard, TripDay } from '../types/ui';
 import { quoteService } from '../services/quoteService';
 

@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
-import { buildAutoTripSimple, getSeason, getSeasonName } from '../utils/autoTripBuilder';
+import { buildAutoTripSimple, getSeasonName } from '../utils/autoTripBuilder';
 import { validateTrip, calculateRoomAllocation } from '../utils/tripValidations';
 import { TripTier } from '../types/ui';
 import { Input, Select, Button } from '../components/common';

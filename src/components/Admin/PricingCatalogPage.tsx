@@ -5,9 +5,6 @@ import { Button, Select } from '../common';
 import { PricingItem } from '../../types/ui';
 import { AddPricingItemModal } from './AddPricingItemModal';
 import { EditHierarchicalPricingModal } from './EditHierarchicalPricingModal';
-import { ExportPricingCatalog } from './ExportPricingCatalog';
-import { ExportCatalogButton } from './ExportCatalogButton';
-import { ApplySkuMigrationButton } from './ApplySkuMigrationButton';
 import { getParks } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
 import { notifyItineraryBuilder } from '../../services/catalogWebhook';
@@ -154,16 +151,7 @@ export const PricingCatalogPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* SKU Migration */}
-        <ApplySkuMigrationButton />
-
-        {/* Export Component - New Full Export */}
-        <ExportCatalogButton />
-        
-        {/* Export Component - Legacy */}
-        <ExportPricingCatalog />
-
+      <div className="mx-auto space-y-6">
         {/* Main Pricing Catalog */}
         <div className="bg-white rounded-lg shadow-md p-6 md:p-8 lg:p-10">
           <div className="flex justify-between items-center mb-6">
