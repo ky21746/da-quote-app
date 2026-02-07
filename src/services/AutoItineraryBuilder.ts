@@ -229,15 +229,6 @@ function hasUnderageForActivity(ages: number[], minAge?: number): boolean {
 // ============================================================================
 
 /**
- * Auto Itinerary Builder Service
- * 
- * Generates complete trip itineraries based on high-level user requirements.
- * This service bridges the gap between user intent and the detailed TripDraft structure.
- */
-
-import type { TripDraft, DayDraft, TripTier, PricingItem } from '../types/ui';
-
-/**
  * Generate a complete trip itinerary based on high-level requirements
  * 
  * @param request - User requirements (travelers, duration, budget, focus)

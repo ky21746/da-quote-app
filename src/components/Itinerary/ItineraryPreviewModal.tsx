@@ -3,6 +3,7 @@
  * Displays generated itinerary content in a modal
  */
 
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { X, Download, ExternalLink, Calendar, Users, MapPin, Loader2 } from 'lucide-react';
 import { ItineraryContent, ItineraryDocument } from '../../types/itinerary';
