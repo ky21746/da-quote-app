@@ -1,0 +1,1163 @@
+[
+  {
+    "documentId": "main",
+    "itemName": "",
+    "category": "",
+    "parkId": "GLOBAL",
+    "oldSku": null,
+    "newSku": "__DELETE__",
+    "action": "DELETE"
+  },
+  {
+    "documentId": "BBugKCWUwSavFXj6VKai",
+    "itemName": "RZR full day trip",
+    "category": "Activities",
+    "parkId": "GLOBAL",
+    "oldSku": "RZR-FUL-DAY",
+    "newSku": "GLOBAL_ACT_RZR_FULL_DAY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "OcYJMKNVYDxFeGCWeqhI",
+    "itemName": "Archery (5 rounds)",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_ARCHERY_5RND",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "ZpjJ0Qh8PV0ISqa4ivQJ",
+    "itemName": "Bungee Trampoline – Adult",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_BUNGEE_ADULT",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "ynavfUph0LwPWaoQiyZm",
+    "itemName": "Bungee Trampoline – Child",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_BUNGEE_CHILD",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "F10qvootVZ7xJWK7gFgH",
+    "itemName": "Cornhole – 6 rounds",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_CORNHOLE_6RND",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "1m1KmatbqhXH5rd1j1cn",
+    "itemName": "Darts – 1 hour",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_DARTS_1HR",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "VajsIZUkERarG6ZpClpq",
+    "itemName": "Electric Bikes – 1 hour",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_EBIKE_1HR",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "u7pE91ol0OvBpUOMrHnh",
+    "itemName": "Electric Bikes – 2 hours",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_EBIKE_2HR",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "HUWRRUGCkKI9IiEFQIOT",
+    "itemName": "Electric Bikes – 20 min",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_EBIKE_20MIN",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "3nHCeuJCUezd2d6Sotw7",
+    "itemName": "Extreme Combat – 20 min",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_COMBAT_20MIN",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "64tyHzavSWYjK5VG04eA",
+    "itemName": "Extreme Combat – 30 min",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_COMBAT_30MIN",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "KOf6HagOndwpCasY7wvn",
+    "itemName": "Extreme Combat – 45 min",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_COMBAT_45MIN",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "BdSVjY9jfjM3fbSg6Kub",
+    "itemName": "Go Karts – 10 min",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_GO_KARTS_10MIN",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "V5MsUE8jQlIG7KP46n0g",
+    "itemName": "Go Karts – 30 min",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_GO_KARTS_30MIN",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "VIeGPC8bHBp0HqLUhPoV",
+    "itemName": "High Ropes & Zipline – Adult",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_ROPES_ZIPLINE_ADULT",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "xqT8oDddY9i2Kbzwus2l",
+    "itemName": "High Ropes & Zipline – Child",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_ROPES_ZIPLINE_CHILD",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "CfKXoT5441GkxeXFk5PF",
+    "itemName": "Independent Zipline – Adult",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_ZIPLINE_ADULT",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "B9djk2d50I5inQgZESeT",
+    "itemName": "Independent Zipline – Child",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_ZIPLINE_CHILD",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "5vXAhxziaNiNn4x41bRs",
+    "itemName": "Low Ropes",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_LOW_ROPES",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "EkzuC4PYWXWi39qo6zno",
+    "itemName": "Ludo – 1 hour",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_LUDO_1HR",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "9rMpaNKy8U4wjv2NQ4zh",
+    "itemName": "Omweso – 1 hour",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_OMWESO_1HR",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "GrqdtH7GAbUkK8X0IRbD",
+    "itemName": "Paint Ball – Adult",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_PAINTBALL_ADULT",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "i9Mm5gVBTlvxybMLcuSG",
+    "itemName": "Paint Ball – Child",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_PAINTBALL_CHILD",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "sViGIFjZtAsuy3Fhlx30",
+    "itemName": "Playing Cards – 1 hour",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_CARDS_1HR",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "lShF6uw35dTHBqQhsw0g",
+    "itemName": "Quad Biking – 1 hour",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_QUAD_1HR",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "sWL3Zbhv4JW07FiG9HZ7",
+    "itemName": "Quad Biking – 2 hours",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_QUAD_2HR",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "wsXkZ0A1yBU2JsBD1TQW",
+    "itemName": "Quad Biking – 20 min",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_QUAD_20MIN",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "kPafqp5i7Uzij7Xcc8ZD",
+    "itemName": "Swimming – Adult",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_SWIMMING_ADULT",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "3xXiQPmcPzDq9wZRxevi",
+    "itemName": "Swimming – Child",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_SWIMMING_CHILD",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "ZnuIysaxlhAARJtNNkYD",
+    "itemName": "Target Shooting",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_SHOOTING",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "WLBvmp6C6O6DAgNPFIMv",
+    "itemName": "Virtual Car Racing – 20 min",
+    "category": "Activities",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_ACT_VR_RACING_20MIN",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "SgEVlG8ds5xXU9ZFSsvx",
+    "itemName": "Bird Watching & Nature Walk",
+    "category": "Activities",
+    "parkId": "BWINDI",
+    "oldSku": null,
+    "newSku": "BWINDI_ACT_BIRD_WALK",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "vJNdQT1sQpZy0DlGiLJe",
+    "itemName": "Guided Long Walk – Rushaga to Nyabaremura",
+    "category": "Activities",
+    "parkId": "BWINDI",
+    "oldSku": null,
+    "newSku": "BWINDI_ACT_WALK_RUSHAGA",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "sFUZYOYQtyVXvMzEKz3g",
+    "itemName": "Long Walk – Buhoma to Nkuringo",
+    "category": "Activities",
+    "parkId": "BWINDI",
+    "oldSku": null,
+    "newSku": "BWINDI_ACT_WALK_BUHOMA",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "4zj4RhaVPlGTKUNNbasF",
+    "itemName": "Bird Watching & Nature Walk",
+    "category": "Activities",
+    "parkId": "KIBALE",
+    "oldSku": null,
+    "newSku": "KIBALE_ACT_BIRD_WALK",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "qrfWCbaJaRT6vRyNr9OP",
+    "itemName": "Bird Watching & Nature Walk",
+    "category": "Activities",
+    "parkId": "KIDEPO",
+    "oldSku": null,
+    "newSku": "KIDEPO_ACT_BIRD_WALK",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "L0970bYQKpnYlDNCTygF",
+    "itemName": "Game Drive – Day (with UWA Guide)",
+    "category": "Activities",
+    "parkId": "KIDEPO",
+    "oldSku": null,
+    "newSku": "KIDEPO_ACT_GAME_DRIVE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "WOHvyAtDZHtpClM3ZKvT",
+    "itemName": "Game Drive – Night",
+    "category": "Activities",
+    "parkId": "KIDEPO",
+    "oldSku": null,
+    "newSku": "KIDEPO_ACT_NIGHT_DRIVE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "ufnuDZDwwJXUfmTJw0tJ",
+    "itemName": "Boat Ride",
+    "category": "Activities",
+    "parkId": "LAKE_MBURO",
+    "oldSku": null,
+    "newSku": "MBURO_ACT_BOAT_RIDE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "YZJMEmNeJbQgP1inEcHI",
+    "itemName": "Cycling Activity",
+    "category": "Activities",
+    "parkId": "LAKE_MBURO",
+    "oldSku": null,
+    "newSku": "MBURO_ACT_CYCLING",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "luHc9Raa8dwplwBsLyyJ",
+    "itemName": "Game Drive – Day",
+    "category": "Activities",
+    "parkId": "LAKE_MBURO",
+    "oldSku": null,
+    "newSku": "MBURO_ACT_GAME_DRIVE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "tq8IBBcf8plzgzCyuj55",
+    "itemName": "Night Game Drive",
+    "category": "Activities",
+    "parkId": "LAKE_MBURO",
+    "oldSku": null,
+    "newSku": "MBURO_ACT_NIGHT_DRIVE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "5qXHR6jp6zwYoX00mJi0",
+    "itemName": "Bird Watching & Nature Walk",
+    "category": "Activities",
+    "parkId": "MT_ELGON",
+    "oldSku": null,
+    "newSku": "ELGON_ACT_BIRD_WALK",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "Spy9LQ6ELQhY54zbIKzs",
+    "itemName": "Mountain Hiking",
+    "category": "Activities",
+    "parkId": "MT_ELGON",
+    "oldSku": null,
+    "newSku": "ELGON_ACT_HIKING",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "EfTs4PQDkg817PrSaQEI",
+    "itemName": "Boat Safari / Launch Cruise",
+    "category": "Activities",
+    "parkId": "MURCHISON",
+    "oldSku": "ACT-BOAT-CRUISE",
+    "newSku": "MURCHISON_ACT_BOAT_CRUISE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "yChReVjPba6T526cSUMC",
+    "itemName": "Game Drive – Day (with UWA Guide)",
+    "category": "Activities",
+    "parkId": "MURCHISON",
+    "oldSku": null,
+    "newSku": "MURCHISON_ACT_GAME_DRIVE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "MhTScRCzUrJpXEjWAzxs",
+    "itemName": "Game Drive – Night",
+    "category": "Activities",
+    "parkId": "MURCHISON",
+    "oldSku": "ACT-GAME-NIGHT",
+    "newSku": "MURCHISON_ACT_NIGHT_DRIVE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "ZQ9sxinvMiVJ42ggjTKU",
+    "itemName": "Hiking to Top of the Falls",
+    "category": "Activities",
+    "parkId": "MURCHISON",
+    "oldSku": null,
+    "newSku": "MURCHISON_ACT_TOP_OF_FALLS",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "DavNwUAbyzLLdDInrN7t",
+    "itemName": "Safari RZR",
+    "category": "Activities",
+    "parkId": "MURCHISON",
+    "oldSku": "ACT-RZR",
+    "newSku": "MURCHISON_ACT_SAFARI_RZR",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "K2zI86sWW5IQYAiJFQUh",
+    "itemName": "White Water Rafting",
+    "category": "Activities",
+    "parkId": "MURCHISON",
+    "oldSku": "ACT-RAFTING",
+    "newSku": "MURCHISON_ACT_RAFTING",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "9nUwsVyWRdMzlU4w6A69",
+    "itemName": "Boat Safari / Launch Cruise",
+    "category": "Activities",
+    "parkId": "QUEEN_ELIZABETH",
+    "oldSku": null,
+    "newSku": "QE_ACT_BOAT_CRUISE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "TJI7gxzhuAcjW7TIUb8q",
+    "itemName": "Game Drive – Day (with UWA Guide)",
+    "category": "Activities",
+    "parkId": "QUEEN_ELIZABETH",
+    "oldSku": null,
+    "newSku": "QE_ACT_GAME_DRIVE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "1lLkRa74Xkymr0l52aJe",
+    "itemName": "Hippo Census Experience",
+    "category": "Activities",
+    "parkId": "QUEEN_ELIZABETH",
+    "oldSku": null,
+    "newSku": "QE_ACT_HIPPO_CENSUS",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "1khEaCS4I6oufSLZSkIH",
+    "itemName": "Lion Tracking Experience",
+    "category": "Activities",
+    "parkId": "QUEEN_ELIZABETH",
+    "oldSku": null,
+    "newSku": "QE_ACT_LION_TRACKING",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "JyqLisKxxMkBPrjhfO52",
+    "itemName": "Bird Watching & Nature Walk",
+    "category": "Activities",
+    "parkId": "RWENZORI",
+    "oldSku": null,
+    "newSku": "RWENZORI_ACT_BIRD_WALK",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "6qElwrsz0IO4deHeww8w",
+    "itemName": "Mountain Hiking",
+    "category": "Activities",
+    "parkId": "RWENZORI",
+    "oldSku": null,
+    "newSku": "RWENZORI_ACT_HIKING",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "FacuetFPYI5zcqWhNRF3",
+    "itemName": "Bird Watching & Nature Walk",
+    "category": "Activities",
+    "parkId": "SEMULIKI",
+    "oldSku": null,
+    "newSku": "SEMULIKI_ACT_BIRD_WALK",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "0OS1w1oH7w2tcLrExd1e",
+    "itemName": "Shoebill Viewing by Boat",
+    "category": "Activities",
+    "parkId": "SEMULIKI",
+    "oldSku": "SHO-BOA-SNP",
+    "newSku": "SEMULIKI_ACT_SHOEBILL_BOAT",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "4PmR96VE7wmSgMRzB8sD",
+    "itemName": "Fixed Wing Charter – D1900 – Bubungu to EBB",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "ARR-GLO-BBE",
+    "newSku": "GLOBAL_AVN_D1900_BUB_EBB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "GbRGVzTpOqdepwxVk9JI",
+    "itemName": "Fixed Wing Charter – D1900 – EBB to Kihihi",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "ARR-GLO-EKI",
+    "newSku": "GLOBAL_AVN_D1900_EBB_KIH",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "qxn0BCMk2Jk1SpCZbgPq",
+    "itemName": "Fixed Wing Charter – D1900 – Kihihi to Bubungu",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "ARR-GLO-KBU",
+    "newSku": "GLOBAL_AVN_D1900_KIH_BUB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "ipDgw1LQiaK9xhW9JwQQ",
+    "itemName": "Fixed Wing Charter – D1900 – Kihihi to Mbarara",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": null,
+    "newSku": "GLOBAL_AVN_D1900_KIH_MBA",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "MIMRiytO3SBGpgUV3dVY",
+    "itemName": "Fixed Wing Charter – D1900 Mbarara-Jinja-Ebb",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "Mba-Jinja-Ebb",
+    "newSku": "GLOBAL_AVN_D1900_MBA_JIN_EBB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "D5Mjf6wyf534eWt0z2qV",
+    "itemName": "Fixed Wing Charter – PC12 – Bubungu -Jinja - Ebb",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": null,
+    "newSku": "GLOBAL_AVN_PC12_BUB_JIN_EBB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "XRlIr0zhqPuQcIWdqbA3",
+    "itemName": "Fixed Wing Charter – PC12 – Bubungu to Kihihi",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "P12-BUB-KIH",
+    "newSku": "GLOBAL_AVN_PC12_BUB_KIH",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "MyAZSlRBaS4dTcsb3iZE",
+    "itemName": "Fixed Wing Charter – PC12 – EBB to Bubungu",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": null,
+    "newSku": "GLOBAL_AVN_PC12_EBB_BUB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "L6abUNYKoa4EoFMplp2x",
+    "itemName": "Fixed Wing Charter – PC12 – Kihihi to EBB",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "P12-KIH-EBB",
+    "newSku": "GLOBAL_AVN_PC12_KIH_EBB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "8Uai9eLxxQxTwDbHqxwu",
+    "itemName": "Fixed Wing Charter – PC12 – Kihihi to Mbarara",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": null,
+    "newSku": "GLOBAL_AVN_PC12_KIH_MBA",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "f6TkZLeeu1ti50C97ftt",
+    "itemName": "Fixed Wing Charter – PC12 Mbarara -Jinja-Ebb",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "Mra -Jinja-Ebb",
+    "newSku": "GLOBAL_AVN_PC12_MBA_JIN_EBB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "jS2ok4J155vYfUivG8f4",
+    "itemName": "Helicopter Charter – Bell 412 – Buhoma to Nile Safari Lodge",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "ARR-GLO-BNS",
+    "newSku": "GLOBAL_AVN_B412_BUH_LOD",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "5DRI2aqKhjKyrTgehgNt",
+    "itemName": "Helicopter Charter – Bell 412 – EBB to Buhoma Community School",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "ARR-GLO-EBU",
+    "newSku": "GLOBAL_AVN_B412_EBB_SCH",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "LlpukBxuOeExGN01vzVw",
+    "itemName": "Helicopter Charter – Bell 412 – Nile Safari Lodge to EBB",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "ARR-GLO-NSE",
+    "newSku": "GLOBAL_AVN_B412_NSL_EBB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "GaGe1t1AkDQ9qgQpUElJ",
+    "itemName": "Helicopter Charter – Bell 502 – Bubungu to Kihihi",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "502-BUB-KIH",
+    "newSku": "GLOBAL_AVN_B502_BUB_KIH",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "jlvdMDlHYVpOa6dx7Fkz",
+    "itemName": "Helicopter Charter – Bell 502 – Buhoma to EBB",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "502-BUH-EBB",
+    "newSku": "GLOBAL_AVN_B502_BUH_EBB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "olofl2gbdHxEg2iIYT0D",
+    "itemName": "Helicopter Charter – Bell 502 – Buyonyi to Jinja",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "502-BUY-JIN",
+    "newSku": "GLOBAL_AVN_B502_BUY_JIN",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "HFnWM58RuFN4luWCKE8g",
+    "itemName": "Helicopter Charter – Bell 502 – EBB to Bubungu",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "502-EBB-BUB",
+    "newSku": "GLOBAL_AVN_B502_EBB_BUB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "G5xQ4y1vwFvq1oxGcSl4",
+    "itemName": "Helicopter Charter – Bell 502 – Jinja to EBB",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "502-JIN-EBB",
+    "newSku": "GLOBAL_AVN_B502_JIN_EBB",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "tTpSGKAqjrWpZrzfbYa9",
+    "itemName": "Helicopter Charter – Bell 502 – Kihih to Buyonyi",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": "502-KIH-BUY",
+    "newSku": "GLOBAL_AVN_B502_KIH_BUY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "6J341VNESObqH6A9WnLf",
+    "itemName": "Safari vehicle hire with guide/driver, per person",
+    "category": "Aviation",
+    "parkId": "GLOBAL",
+    "oldSku": null,
+    "newSku": "GLOBAL_AVN_SAFARI_VEH_PP",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "dqmnLkb0Kn69spkZiejv",
+    "itemName": "EAP activities, food and drinks",
+    "category": "Extras",
+    "parkId": "BUSIKA",
+    "oldSku": "EAP-AFD-EXT",
+    "newSku": "BUSIKA_EXT_EAP_ALL_INCLUSIVE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "p3vLHFad9dl9gYa7XlDc",
+    "itemName": "Gorilla Trekking Service/Handling Fee",
+    "category": "Extras",
+    "parkId": "BWINDI",
+    "oldSku": "BWINDI-SVC-FEE",
+    "newSku": "BWINDI_EXT_GORILLA_SVC_FEE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "C8YM37W52mRQLsEcMzUE",
+    "itemName": "Lemala Wildwaters Lodge - Room Fees",
+    "category": "Extras",
+    "parkId": "JINJA",
+    "oldSku": "LWL-FEES",
+    "newSku": "JINJA_EXT_WILDWATERS_FEES",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "nFSeN4KEwGL9ZIYafhjP",
+    "itemName": "Extreme Adventure Park – Lodging (Full Board)",
+    "category": "Lodging",
+    "parkId": "BUSIKA",
+    "oldSku": null,
+    "newSku": "BUSIKA_LODGE_EAP",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "iMHaucwRKmuogniqYpat",
+    "itemName": "Buhoma Lodge – Full Board",
+    "category": "Lodging",
+    "parkId": "BWINDI",
+    "oldSku": null,
+    "newSku": "BWINDI_LODGE_BUHOMA_LODGE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "BXT0pmy1ohuTl7THYW8t",
+    "itemName": "Clouds Gorilla Lodge – Full Board",
+    "category": "Lodging",
+    "parkId": "BWINDI",
+    "oldSku": null,
+    "newSku": "BWINDI_LODGE_CLOUDS_GORILLA",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "wIw9lwmyyoYrF551LdcQ",
+    "itemName": "Clouds Mountain Gorilla Lodge",
+    "category": "Lodging",
+    "parkId": "BWINDI",
+    "oldSku": "CMGL-HIER",
+    "newSku": "BWINDI_LODGE_CLOUDS",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "tzAIjUJcwmfcyJoA6vQ3",
+    "itemName": "Gorilla Forest Lodge (A&K Sanctuary) – Full Board",
+    "category": "Lodging",
+    "parkId": "BWINDI",
+    "oldSku": null,
+    "newSku": "BWINDI_LODGE_GORILLA_FOREST_AK",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "0nq9SBkqxto8dHmyYt3B",
+    "itemName": "Nkuringo Bwindi Gorilla Lodge – Full Board",
+    "category": "Lodging",
+    "parkId": "BWINDI",
+    "oldSku": null,
+    "newSku": "BWINDI_LODGE_NKURINGO",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "euKVn7RZq6vFeF5uL0Kj",
+    "itemName": "Silverback Lodge – Full Board",
+    "category": "Lodging",
+    "parkId": "BWINDI",
+    "oldSku": null,
+    "newSku": "BWINDI_LODGE_SILVERBACK",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "WrBnC2wsvE1e29YksNUk",
+    "itemName": "Mirembe Villas – Full Board",
+    "category": "Lodging",
+    "parkId": "ENTEBBE",
+    "oldSku": null,
+    "newSku": "ENTEBBE_LODGE_MIREMBE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "odycDqpCXBYKi0xSIAhV",
+    "itemName": "Lemala Wildwaters Lodge",
+    "category": "Lodging",
+    "parkId": "JINJA",
+    "oldSku": "LWL-HIER",
+    "newSku": "JINJA_LODGE_WILDWATERS",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "MT18uJT94pnpHVQiiVPk",
+    "itemName": "Acadia Lodge",
+    "category": "Lodging",
+    "parkId": "LAKE_BUNYONYI",
+    "oldSku": null,
+    "newSku": "BUNYONYI_LODGE_ACADIA_LODGE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "qAH6euwzQLqmjjTGWqW5",
+    "itemName": "Bird Nest Lodge",
+    "category": "Lodging",
+    "parkId": "LAKE_BUNYONYI",
+    "oldSku": null,
+    "newSku": "BUNYONYI_LODGE_BIRD_NEST_LODGE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "1VtS61vZ3GkzjRiRKxa0",
+    "itemName": "Entikko Lodge",
+    "category": "Lodging",
+    "parkId": "MURCHISON",
+    "oldSku": "ENT-HIER",
+    "newSku": "MURCHISON_LODGE_ENTIKKO_LODGE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "QX6v181qgujb2Zt7Lg8Z",
+    "itemName": "Nile Safari Lodge",
+    "category": "Lodging",
+    "parkId": "MURCHISON",
+    "oldSku": "NSL-HIER",
+    "newSku": "MURCHISON_LODGE_NILE_SAFARI_LODGE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "iPT0HtNEeQn9dh1ilR2u",
+    "itemName": "Para Safari Lodge",
+    "category": "Lodging",
+    "parkId": "MURCHISON",
+    "oldSku": "PSL-HIER",
+    "newSku": "MURCHISON_LODGE_PARA_SAFARI_LODGE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "Y7P5DtjXJe7Qrsakihwl",
+    "itemName": "Ishasha Wilderness Camp – Full Board",
+    "category": "Lodging",
+    "parkId": "QUEEN_ELIZABETH",
+    "oldSku": null,
+    "newSku": "QE_LODGE_ISHASHA_CAMP",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "lvilRJ574donvP5cYby5",
+    "itemName": "Mweya Lodge – Full Board",
+    "category": "Lodging",
+    "parkId": "QUEEN_ELIZABETH",
+    "oldSku": null,
+    "newSku": "QE_LODGE_MWEYA_LODGE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "cMuzDNxcMLggU61ggJ5S",
+    "itemName": "Aircraft Landing Fee - Fix Wing",
+    "category": "Logistics",
+    "parkId": "GLOBAL",
+    "oldSku": "LOG-GLO-FIX",
+    "newSku": "GLOBAL_LOG_LANDING_FEE_FW",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "RyZdHZPx6zSKb8B1rcid",
+    "itemName": "Aircraft Landing Fee – 15–20 Seats",
+    "category": "Logistics",
+    "parkId": "GLOBAL",
+    "oldSku": "LOG-GLO-L20",
+    "newSku": "GLOBAL_LOG_LANDING_FEE_LARGE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "BGhURh2bWjEd3jXFfNXv",
+    "itemName": "Aircraft Landing Fee – 7–14 Seats",
+    "category": "Logistics",
+    "parkId": "GLOBAL",
+    "oldSku": "LOG-GLO-L14",
+    "newSku": "GLOBAL_LOG_LANDING_FEE_MEDIUM",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "tDXBnTRaocHowY4IdlnI",
+    "itemName": "Aircraft Landing Fee – Helicopter",
+    "category": "Logistics",
+    "parkId": "GLOBAL",
+    "oldSku": "LOG-GLO-HEL",
+    "newSku": "GLOBAL_LOG_LANDING_FEE_HELI",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "vMs8mBK9WjO63NsbtrrR",
+    "itemName": "Boat Entry – Over 15 Seats",
+    "category": "Logistics",
+    "parkId": "GLOBAL",
+    "oldSku": "LOG-GLO-BO5",
+    "newSku": "GLOBAL_LOG_BOAT_ENTRY_LARGE",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "XXPx8rL7oqCpqQCt6Gy1",
+    "itemName": "Boat Entry – Up to 15 Seats",
+    "category": "Logistics",
+    "parkId": "GLOBAL",
+    "oldSku": "LOG-GLO-B15",
+    "newSku": "GLOBAL_LOG_BOAT_ENTRY_SMALL",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "amGRv5Kt5wZcFGXVFjbP",
+    "itemName": "Vehicle Entry – 4x4 / Tour Vehicle (Foreign Registered)",
+    "category": "Logistics",
+    "parkId": "GLOBAL",
+    "oldSku": "LOG-GLO-4X4",
+    "newSku": "GLOBAL_LOG_VEHICLE_ENTRY_4X4",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "GwKlDowqcagc5WmfsX2C",
+    "itemName": "Vehicle Entry – Overlander / Bus",
+    "category": "Logistics",
+    "parkId": "GLOBAL",
+    "oldSku": "LOG-GLO-BUS",
+    "newSku": "GLOBAL_LOG_VEHICLE_ENTRY_BUS",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "rPofw61Xhydzg6wvNRmM",
+    "itemName": "Vehicle Entry – Saloon Car (Foreign Registered)",
+    "category": "Logistics",
+    "parkId": "GLOBAL",
+    "oldSku": "LOG-GLO-SAL",
+    "newSku": "GLOBAL_LOG_VEHICLE_ENTRY_SALOON",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "KuGkv8mzqX1EGH6BFqWF",
+    "itemName": "Transportation from Kampala",
+    "category": "Logistics",
+    "parkId": "BUSIKA",
+    "oldSku": "LOG-BUS-KLA",
+    "newSku": "BUSIKA_LOG_TRANSFER_KAMPALA",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "T2wmqNpDNdZSbXTcM3kd",
+    "itemName": "Busika Entrance Fee – Adult",
+    "category": "Park Fees",
+    "parkId": "BUSIKA",
+    "oldSku": "FEE-BUS-ADT",
+    "newSku": "BUSIKA_FEE_ENTRY_ADULT",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "jhOFo7b8bDjl9jmeX9Ec",
+    "itemName": "Busika Entrance Fee – Child",
+    "category": "Park Fees",
+    "parkId": "BUSIKA",
+    "oldSku": "FEE-BUS-CHD",
+    "newSku": "BUSIKA_FEE_ENTRY_CHILD",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "RJAP6ZjqxCUe57xBQysG",
+    "itemName": "Bwindi Park Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "BWINDI",
+    "oldSku": "FEE-BWI-FNR",
+    "newSku": "BWINDI_FEE_PARK_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "sDCUE3fhguU46MKHl4zc",
+    "itemName": "Kibale Park Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "KIBALE",
+    "oldSku": "FEE-KIB-FNR",
+    "newSku": "KIBALE_FEE_PARK_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "8rabgQxHpDwn396KKX9w",
+    "itemName": "Kidepo Park Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "KIDEPO",
+    "oldSku": "FEE-KID-FNR",
+    "newSku": "KIDEPO_FEE_PARK_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "zaMjl5FcsNd2GWF8KOEf",
+    "itemName": "Lake Mburo Park Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "LAKE_MBURO",
+    "oldSku": "FEE-MBU-FNR",
+    "newSku": "MBURO_FEE_PARK_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "hur9quCBTVYBL3ndTzDO",
+    "itemName": "Mgahinga Park Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "MGAHINGA",
+    "oldSku": "FEE-MGA-FNR",
+    "newSku": "MGAHINGA_FEE_PARK_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "NQqy1VmV9ORCjWr8HyPg",
+    "itemName": "Mt Elgon Park Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "MT_ELGON",
+    "oldSku": "FEE-ELG-FNR",
+    "newSku": "ELGON_FEE_PARK_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "vRLZDWhCwVyW2JXPNAg8",
+    "itemName": "Murchison Park Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "MURCHISON",
+    "oldSku": "FEE-MUR-FNR",
+    "newSku": "MURCHISON_FEE_PARK_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "PUFdQpg9WPMO21bWO9u4",
+    "itemName": "Queen Elizabeth Park Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "QUEEN_ELIZABETH",
+    "oldSku": "FEE-QEN-FNR",
+    "newSku": "QE_FEE_PARK_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "QWY2zm8Qg72IwzoFvXZs",
+    "itemName": "Rwenzori Park Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "RWENZORI",
+    "oldSku": "FEE-RWN-FNR",
+    "newSku": "RWENZORI_FEE_PARK_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "yY01R8YZ0Q7wWuh87FNy",
+    "itemName": "Semuliki Park Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "SEMULIKI",
+    "oldSku": "FEE-SEM-FNR",
+    "newSku": "SEMULIKI_FEE_PARK_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "MoK855DejEnGU41F9kk5",
+    "itemName": "Ziwa Rhino Sanctuary Entry Fee (FNR)",
+    "category": "Park Fees",
+    "parkId": "ZIWA",
+    "oldSku": "FEE-ZIW-FNR",
+    "newSku": "ZIWA_FEE_ENTRY",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "uQb5xGK52sA5toJCHwuO",
+    "itemName": "Gorilla Habituation Permit (FNR)",
+    "category": "Permits",
+    "parkId": "BWINDI",
+    "oldSku": null,
+    "newSku": "BWINDI_PERMIT_GORILLA_HABIT",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "BWZPaHhrjmJaSJTbmwul",
+    "itemName": "Gorilla Tracking Permit (FNR)",
+    "category": "Permits",
+    "parkId": "BWINDI",
+    "oldSku": null,
+    "newSku": "BWINDI_PERMIT_GORILLA_TRACK",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "PtvFhzl6Xucn4nMJkZlI",
+    "itemName": "Chimpanzee Habituation Permit (FNR)",
+    "category": "Permits",
+    "parkId": "KIBALE",
+    "oldSku": null,
+    "newSku": "KIBALE_PERMIT_CHIMP_HABIT",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "3FHpFM0At9PFkLqHD9oy",
+    "itemName": "Chimpanzee Tracking Permit (FNR)",
+    "category": "Permits",
+    "parkId": "KIBALE",
+    "oldSku": null,
+    "newSku": "KIBALE_PERMIT_CHIMP_TRACK",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "t5SZb6xm2s690RlCo6oD",
+    "itemName": "Chimpanzee Tracking Permit – Kyambura Gorge (FNR)",
+    "category": "Permits",
+    "parkId": "QUEEN_ELIZABETH",
+    "oldSku": null,
+    "newSku": "QE_PERMIT_CHIMP_TRACK_KYAMBURA",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "TPlj3wF73Q3wzJHIsy1u",
+    "itemName": "Safari vehicle hire with guide/driver, fuel included",
+    "category": "Vehicle",
+    "parkId": "GLOBAL",
+    "oldSku": "VEH-SAF-FUEL-INC",
+    "newSku": "GLOBAL_VEH_SAFARI_FUEL_INC",
+    "action": "UPDATE"
+  },
+  {
+    "documentId": "e3nCi8qqZS4UcQ7jnfIV",
+    "itemName": "Safari vehicle hire with guide/driver, fuel not included",
+    "category": "Vehicle",
+    "parkId": "GLOBAL",
+    "oldSku": "VEH-SAF-NO-FUEL",
+    "newSku": "GLOBAL_VEH_SAFARI_NO_FUEL",
+    "action": "UPDATE"
+  }
+]

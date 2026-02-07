@@ -1,0 +1,653 @@
+{
+  "timestamp": "2026-02-07T06:33:10.884Z",
+  "totalUpdated": 0,
+  "totalDeleted": 0,
+  "totalFailed": 129,
+  "errors": [
+    {
+      "documentId": "main",
+      "itemName": "",
+      "error": "Missing or insufficient permissions."
+    },
+    {
+      "documentId": "BBugKCWUwSavFXj6VKai",
+      "itemName": "RZR full day trip",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "OcYJMKNVYDxFeGCWeqhI",
+      "itemName": "Archery (5 rounds)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "ZpjJ0Qh8PV0ISqa4ivQJ",
+      "itemName": "Bungee Trampoline – Adult",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "ynavfUph0LwPWaoQiyZm",
+      "itemName": "Bungee Trampoline – Child",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "F10qvootVZ7xJWK7gFgH",
+      "itemName": "Cornhole – 6 rounds",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "1m1KmatbqhXH5rd1j1cn",
+      "itemName": "Darts – 1 hour",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "VajsIZUkERarG6ZpClpq",
+      "itemName": "Electric Bikes – 1 hour",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "u7pE91ol0OvBpUOMrHnh",
+      "itemName": "Electric Bikes – 2 hours",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "HUWRRUGCkKI9IiEFQIOT",
+      "itemName": "Electric Bikes – 20 min",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "3nHCeuJCUezd2d6Sotw7",
+      "itemName": "Extreme Combat – 20 min",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "64tyHzavSWYjK5VG04eA",
+      "itemName": "Extreme Combat – 30 min",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "KOf6HagOndwpCasY7wvn",
+      "itemName": "Extreme Combat – 45 min",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "BdSVjY9jfjM3fbSg6Kub",
+      "itemName": "Go Karts – 10 min",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "V5MsUE8jQlIG7KP46n0g",
+      "itemName": "Go Karts – 30 min",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "VIeGPC8bHBp0HqLUhPoV",
+      "itemName": "High Ropes & Zipline – Adult",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "xqT8oDddY9i2Kbzwus2l",
+      "itemName": "High Ropes & Zipline – Child",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "CfKXoT5441GkxeXFk5PF",
+      "itemName": "Independent Zipline – Adult",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "B9djk2d50I5inQgZESeT",
+      "itemName": "Independent Zipline – Child",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "5vXAhxziaNiNn4x41bRs",
+      "itemName": "Low Ropes",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "EkzuC4PYWXWi39qo6zno",
+      "itemName": "Ludo – 1 hour",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "9rMpaNKy8U4wjv2NQ4zh",
+      "itemName": "Omweso – 1 hour",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "GrqdtH7GAbUkK8X0IRbD",
+      "itemName": "Paint Ball – Adult",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "i9Mm5gVBTlvxybMLcuSG",
+      "itemName": "Paint Ball – Child",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "sViGIFjZtAsuy3Fhlx30",
+      "itemName": "Playing Cards – 1 hour",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "lShF6uw35dTHBqQhsw0g",
+      "itemName": "Quad Biking – 1 hour",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "sWL3Zbhv4JW07FiG9HZ7",
+      "itemName": "Quad Biking – 2 hours",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "wsXkZ0A1yBU2JsBD1TQW",
+      "itemName": "Quad Biking – 20 min",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "kPafqp5i7Uzij7Xcc8ZD",
+      "itemName": "Swimming – Adult",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "3xXiQPmcPzDq9wZRxevi",
+      "itemName": "Swimming – Child",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "ZnuIysaxlhAARJtNNkYD",
+      "itemName": "Target Shooting",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "WLBvmp6C6O6DAgNPFIMv",
+      "itemName": "Virtual Car Racing – 20 min",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "SgEVlG8ds5xXU9ZFSsvx",
+      "itemName": "Bird Watching & Nature Walk",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "vJNdQT1sQpZy0DlGiLJe",
+      "itemName": "Guided Long Walk – Rushaga to Nyabaremura",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "sFUZYOYQtyVXvMzEKz3g",
+      "itemName": "Long Walk – Buhoma to Nkuringo",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "4zj4RhaVPlGTKUNNbasF",
+      "itemName": "Bird Watching & Nature Walk",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "qrfWCbaJaRT6vRyNr9OP",
+      "itemName": "Bird Watching & Nature Walk",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "L0970bYQKpnYlDNCTygF",
+      "itemName": "Game Drive – Day (with UWA Guide)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "WOHvyAtDZHtpClM3ZKvT",
+      "itemName": "Game Drive – Night",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "ufnuDZDwwJXUfmTJw0tJ",
+      "itemName": "Boat Ride",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "YZJMEmNeJbQgP1inEcHI",
+      "itemName": "Cycling Activity",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "luHc9Raa8dwplwBsLyyJ",
+      "itemName": "Game Drive – Day",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "tq8IBBcf8plzgzCyuj55",
+      "itemName": "Night Game Drive",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "5qXHR6jp6zwYoX00mJi0",
+      "itemName": "Bird Watching & Nature Walk",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "Spy9LQ6ELQhY54zbIKzs",
+      "itemName": "Mountain Hiking",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "EfTs4PQDkg817PrSaQEI",
+      "itemName": "Boat Safari / Launch Cruise",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "yChReVjPba6T526cSUMC",
+      "itemName": "Game Drive – Day (with UWA Guide)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "MhTScRCzUrJpXEjWAzxs",
+      "itemName": "Game Drive – Night",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "ZQ9sxinvMiVJ42ggjTKU",
+      "itemName": "Hiking to Top of the Falls",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "DavNwUAbyzLLdDInrN7t",
+      "itemName": "Safari RZR",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "K2zI86sWW5IQYAiJFQUh",
+      "itemName": "White Water Rafting",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "9nUwsVyWRdMzlU4w6A69",
+      "itemName": "Boat Safari / Launch Cruise",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "TJI7gxzhuAcjW7TIUb8q",
+      "itemName": "Game Drive – Day (with UWA Guide)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "1lLkRa74Xkymr0l52aJe",
+      "itemName": "Hippo Census Experience",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "1khEaCS4I6oufSLZSkIH",
+      "itemName": "Lion Tracking Experience",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "JyqLisKxxMkBPrjhfO52",
+      "itemName": "Bird Watching & Nature Walk",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "6qElwrsz0IO4deHeww8w",
+      "itemName": "Mountain Hiking",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "FacuetFPYI5zcqWhNRF3",
+      "itemName": "Bird Watching & Nature Walk",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "0OS1w1oH7w2tcLrExd1e",
+      "itemName": "Shoebill Viewing by Boat",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "4PmR96VE7wmSgMRzB8sD",
+      "itemName": "Fixed Wing Charter – D1900 – Bubungu to EBB",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "GbRGVzTpOqdepwxVk9JI",
+      "itemName": "Fixed Wing Charter – D1900 – EBB to Kihihi",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "qxn0BCMk2Jk1SpCZbgPq",
+      "itemName": "Fixed Wing Charter – D1900 – Kihihi to Bubungu",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "ipDgw1LQiaK9xhW9JwQQ",
+      "itemName": "Fixed Wing Charter – D1900 – Kihihi to Mbarara",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "MIMRiytO3SBGpgUV3dVY",
+      "itemName": "Fixed Wing Charter – D1900 Mbarara-Jinja-Ebb",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "D5Mjf6wyf534eWt0z2qV",
+      "itemName": "Fixed Wing Charter – PC12 – Bubungu -Jinja - Ebb",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "XRlIr0zhqPuQcIWdqbA3",
+      "itemName": "Fixed Wing Charter – PC12 – Bubungu to Kihihi",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "MyAZSlRBaS4dTcsb3iZE",
+      "itemName": "Fixed Wing Charter – PC12 – EBB to Bubungu",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "L6abUNYKoa4EoFMplp2x",
+      "itemName": "Fixed Wing Charter – PC12 – Kihihi to EBB",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "8Uai9eLxxQxTwDbHqxwu",
+      "itemName": "Fixed Wing Charter – PC12 – Kihihi to Mbarara",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "f6TkZLeeu1ti50C97ftt",
+      "itemName": "Fixed Wing Charter – PC12 Mbarara -Jinja-Ebb",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "jS2ok4J155vYfUivG8f4",
+      "itemName": "Helicopter Charter – Bell 412 – Buhoma to Nile Safari Lodge",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "5DRI2aqKhjKyrTgehgNt",
+      "itemName": "Helicopter Charter – Bell 412 – EBB to Buhoma Community School",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "LlpukBxuOeExGN01vzVw",
+      "itemName": "Helicopter Charter – Bell 412 – Nile Safari Lodge to EBB",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "GaGe1t1AkDQ9qgQpUElJ",
+      "itemName": "Helicopter Charter – Bell 502 – Bubungu to Kihihi",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "jlvdMDlHYVpOa6dx7Fkz",
+      "itemName": "Helicopter Charter – Bell 502 – Buhoma to EBB",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "olofl2gbdHxEg2iIYT0D",
+      "itemName": "Helicopter Charter – Bell 502 – Buyonyi to Jinja",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "HFnWM58RuFN4luWCKE8g",
+      "itemName": "Helicopter Charter – Bell 502 – EBB to Bubungu",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "G5xQ4y1vwFvq1oxGcSl4",
+      "itemName": "Helicopter Charter – Bell 502 – Jinja to EBB",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "tTpSGKAqjrWpZrzfbYa9",
+      "itemName": "Helicopter Charter – Bell 502 – Kihih to Buyonyi",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "6J341VNESObqH6A9WnLf",
+      "itemName": "Safari vehicle hire with guide/driver, per person",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "dqmnLkb0Kn69spkZiejv",
+      "itemName": "EAP activities, food and drinks",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "p3vLHFad9dl9gYa7XlDc",
+      "itemName": "Gorilla Trekking Service/Handling Fee",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "C8YM37W52mRQLsEcMzUE",
+      "itemName": "Lemala Wildwaters Lodge - Room Fees",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "nFSeN4KEwGL9ZIYafhjP",
+      "itemName": "Extreme Adventure Park – Lodging (Full Board)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "iMHaucwRKmuogniqYpat",
+      "itemName": "Buhoma Lodge – Full Board",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "BXT0pmy1ohuTl7THYW8t",
+      "itemName": "Clouds Gorilla Lodge – Full Board",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "wIw9lwmyyoYrF551LdcQ",
+      "itemName": "Clouds Mountain Gorilla Lodge",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "tzAIjUJcwmfcyJoA6vQ3",
+      "itemName": "Gorilla Forest Lodge (A&K Sanctuary) – Full Board",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "0nq9SBkqxto8dHmyYt3B",
+      "itemName": "Nkuringo Bwindi Gorilla Lodge – Full Board",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "euKVn7RZq6vFeF5uL0Kj",
+      "itemName": "Silverback Lodge – Full Board",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "WrBnC2wsvE1e29YksNUk",
+      "itemName": "Mirembe Villas – Full Board",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "odycDqpCXBYKi0xSIAhV",
+      "itemName": "Lemala Wildwaters Lodge",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "MT18uJT94pnpHVQiiVPk",
+      "itemName": "Acadia Lodge",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "qAH6euwzQLqmjjTGWqW5",
+      "itemName": "Bird Nest Lodge",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "1VtS61vZ3GkzjRiRKxa0",
+      "itemName": "Entikko Lodge",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "QX6v181qgujb2Zt7Lg8Z",
+      "itemName": "Nile Safari Lodge",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "iPT0HtNEeQn9dh1ilR2u",
+      "itemName": "Para Safari Lodge",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "Y7P5DtjXJe7Qrsakihwl",
+      "itemName": "Ishasha Wilderness Camp – Full Board",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "lvilRJ574donvP5cYby5",
+      "itemName": "Mweya Lodge – Full Board",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "cMuzDNxcMLggU61ggJ5S",
+      "itemName": "Aircraft Landing Fee - Fix Wing",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "RyZdHZPx6zSKb8B1rcid",
+      "itemName": "Aircraft Landing Fee – 15–20 Seats",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "BGhURh2bWjEd3jXFfNXv",
+      "itemName": "Aircraft Landing Fee – 7–14 Seats",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "tDXBnTRaocHowY4IdlnI",
+      "itemName": "Aircraft Landing Fee – Helicopter",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "vMs8mBK9WjO63NsbtrrR",
+      "itemName": "Boat Entry – Over 15 Seats",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "XXPx8rL7oqCpqQCt6Gy1",
+      "itemName": "Boat Entry – Up to 15 Seats",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "amGRv5Kt5wZcFGXVFjbP",
+      "itemName": "Vehicle Entry – 4x4 / Tour Vehicle (Foreign Registered)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "GwKlDowqcagc5WmfsX2C",
+      "itemName": "Vehicle Entry – Overlander / Bus",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "rPofw61Xhydzg6wvNRmM",
+      "itemName": "Vehicle Entry – Saloon Car (Foreign Registered)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "KuGkv8mzqX1EGH6BFqWF",
+      "itemName": "Transportation from Kampala",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "T2wmqNpDNdZSbXTcM3kd",
+      "itemName": "Busika Entrance Fee – Adult",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "jhOFo7b8bDjl9jmeX9Ec",
+      "itemName": "Busika Entrance Fee – Child",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "RJAP6ZjqxCUe57xBQysG",
+      "itemName": "Bwindi Park Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "sDCUE3fhguU46MKHl4zc",
+      "itemName": "Kibale Park Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "8rabgQxHpDwn396KKX9w",
+      "itemName": "Kidepo Park Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "zaMjl5FcsNd2GWF8KOEf",
+      "itemName": "Lake Mburo Park Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "hur9quCBTVYBL3ndTzDO",
+      "itemName": "Mgahinga Park Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "NQqy1VmV9ORCjWr8HyPg",
+      "itemName": "Mt Elgon Park Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "vRLZDWhCwVyW2JXPNAg8",
+      "itemName": "Murchison Park Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "PUFdQpg9WPMO21bWO9u4",
+      "itemName": "Queen Elizabeth Park Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "QWY2zm8Qg72IwzoFvXZs",
+      "itemName": "Rwenzori Park Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "yY01R8YZ0Q7wWuh87FNy",
+      "itemName": "Semuliki Park Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "MoK855DejEnGU41F9kk5",
+      "itemName": "Ziwa Rhino Sanctuary Entry Fee (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "uQb5xGK52sA5toJCHwuO",
+      "itemName": "Gorilla Habituation Permit (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "BWZPaHhrjmJaSJTbmwul",
+      "itemName": "Gorilla Tracking Permit (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "PtvFhzl6Xucn4nMJkZlI",
+      "itemName": "Chimpanzee Habituation Permit (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "3FHpFM0At9PFkLqHD9oy",
+      "itemName": "Chimpanzee Tracking Permit (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "t5SZb6xm2s690RlCo6oD",
+      "itemName": "Chimpanzee Tracking Permit – Kyambura Gorge (FNR)",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "TPlj3wF73Q3wzJHIsy1u",
+      "itemName": "Safari vehicle hire with guide/driver, fuel included",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    },
+    {
+      "documentId": "e3nCi8qqZS4UcQ7jnfIV",
+      "itemName": "Safari vehicle hire with guide/driver, fuel not included",
+      "error": "7 PERMISSION_DENIED: Missing or insufficient permissions."
+    }
+  ]
+}

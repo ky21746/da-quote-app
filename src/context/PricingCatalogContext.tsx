@@ -6,7 +6,7 @@ import { PricingItem } from '../types/ui';
 interface PricingCatalogContextType {
   items: PricingItem[];
   isLoading: boolean;
-  addItem: (item: Omit<PricingItem, 'id'>) => void;
+  addItem: (item: Omit<PricingItem, 'id'>) => Promise<any>;
   updateItem: (id: string, updates: Partial<PricingItem>) => void;
   deleteItem: (id: string) => void;
 }

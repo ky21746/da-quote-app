@@ -6,8 +6,11 @@ import { PricingItem } from '../../types/ui';
 import { AddPricingItemModal } from './AddPricingItemModal';
 import { EditHierarchicalPricingModal } from './EditHierarchicalPricingModal';
 import { ExportPricingCatalog } from './ExportPricingCatalog';
+import { ExportCatalogButton } from './ExportCatalogButton';
+import { ApplySkuMigrationButton } from './ApplySkuMigrationButton';
 import { getParks } from '../../utils/parks';
 import { formatCurrency } from '../../utils/currencyFormatter';
+import { notifyItineraryBuilder } from '../../services/catalogWebhook';
 
 
 export const PricingCatalogPage: React.FC = () => {
@@ -72,15 +75,30 @@ export const PricingCatalogPage: React.FC = () => {
   const handleSave = async (itemData: Omit<PricingItem, 'id'>) => {
     console.log('💾 handleSave called with:', itemData);
     try {
+      let savedItem: PricingItem;
+      
       if (editingItem) {
         console.log('📝 Updating item:', editingItem.id);
         await updateItem(editingItem.id, itemData);
+        savedItem = { ...itemData, id: editingItem.id } as PricingItem;
         console.log('✅ Item updated successfully');
+        
+        // Notify Itinerary Builder if SKU changed
+        if (itemData.sku && itemData.sku !== editingItem.sku) {
+          notifyItineraryBuilder(savedItem);
+        }
       } else {
         console.log('➕ Adding new item');
-        await addItem(itemData);
+        const docRef = await addItem(itemData);
+        savedItem = { ...itemData, id: docRef.id } as PricingItem;
         console.log('✅ Item added successfully');
+        
+        // Notify Itinerary Builder about new item
+        if (itemData.sku) {
+          notifyItineraryBuilder(savedItem);
+        }
       }
+      
       setIsModalOpen(false);
       setEditingItem(null);
     } catch (error) {
@@ -137,7 +155,13 @@ export const PricingCatalogPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Export Component */}
+        {/* SKU Migration */}
+        <ApplySkuMigrationButton />
+
+        {/* Export Component - New Full Export */}
+        <ExportCatalogButton />
+        
+        {/* Export Component - Legacy */}
         <ExportPricingCatalog />
 
         {/* Main Pricing Catalog */}
