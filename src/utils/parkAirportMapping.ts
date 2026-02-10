@@ -72,29 +72,49 @@ export function isRouteRelevantForPark(
 
   const lowerRouteName = routeName.toLowerCase();
   
-  // Parse route: "EBB to Kihihi" -> from: "EBB", to: "Kihihi"
-  const routeParts = lowerRouteName.split(' to ').map(p => p.trim());
-  const from = routeParts[0] || '';
-  const to = routeParts[1] || '';
+  // Parse route - support both formats:
+  // 1. "EBB to Kihihi" -> from: "EBB", to: "Kihihi"
+  // 2. "Bubungu-Jinja-EBB" -> from: "Bubungu", stops: ["Jinja"], to: "EBB"
+  let from = '';
+  let to = '';
+  let stops: string[] = [];
   
-  // Check if destination or origin matches park's airports/keywords
-  const destinationMatches = mapping.airports.some(airport => to.includes(airport.toLowerCase())) ||
-                            mapping.keywords.some(keyword => to.includes(keyword.toLowerCase()));
+  if (lowerRouteName.includes(' to ')) {
+    // Format: "A to B"
+    const routeParts = lowerRouteName.split(' to ').map(p => p.trim());
+    from = routeParts[0] || '';
+    to = routeParts[1] || '';
+  } else if (lowerRouteName.includes('-')) {
+    // Format: "A-B-C" (multi-stop route)
+    const routeParts = lowerRouteName.split('-').map(p => p.trim());
+    if (routeParts.length >= 2) {
+      from = routeParts[0];
+      to = routeParts[routeParts.length - 1];
+      stops = routeParts.slice(1, -1); // Middle stops
+    }
+  }
   
-  const originMatches = mapping.airports.some(airport => from.includes(airport.toLowerCase())) ||
-                       mapping.keywords.some(keyword => from.includes(keyword.toLowerCase()));
+  // Check if any part of the route matches park's airports/keywords
+  const checkMatch = (location: string) => {
+    return mapping.airports.some(airport => location.includes(airport.toLowerCase())) ||
+           mapping.keywords.some(keyword => location.includes(keyword.toLowerCase()));
+  };
+  
+  const destinationMatches = checkMatch(to);
+  const originMatches = checkMatch(from);
+  const stopsMatch = stops.some(stop => checkMatch(stop));
   
   // Apply direction filtering if specified
   if (direction === 'arrival') {
-    // For arrival: destination must match park
-    return destinationMatches;
+    // For arrival: destination OR any stop must match park
+    return destinationMatches || stopsMatch;
   } else if (direction === 'departure') {
-    // For departure: origin must match park
-    return originMatches;
+    // For departure: origin OR any stop must match park
+    return originMatches || stopsMatch;
   }
   
-  // No direction specified: show if either origin or destination matches
-  return destinationMatches || originMatches;
+  // No direction specified: show if origin, destination, or any stop matches
+  return destinationMatches || originMatches || stopsMatch;
 }
 
 /**
