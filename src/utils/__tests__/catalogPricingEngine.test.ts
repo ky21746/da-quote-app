@@ -113,11 +113,10 @@ describe('catalogPricingEngine', () => {
 
       const result = calculatePricingFromCatalog(trip, [lodging]);
 
-      // 2 nights × 200 × 4 travelers = 1600 per night
-      // But each day is calculated separately, so 200 × 4 = 800 per day
-      expect(result.breakdown).toHaveLength(2);
-      expect(result.breakdown[0].calculatedTotal).toBe(800);
-      expect(result.breakdown[1].calculatedTotal).toBe(800);
+      // 2 nights × 200 × 4 travelers = 1600
+      // Lodging is now calculated once per park with total nights
+      expect(result.breakdown).toHaveLength(1);
+      expect(result.breakdown[0].calculatedTotal).toBe(1600);
       expect(result.totals.grandTotal).toBe(1600);
     });
 
@@ -633,10 +632,11 @@ describe('catalogPricingEngine', () => {
 
       const result = calculatePricingFromCatalog(trip, [activity1, activity2, lodging]);
 
-      // Day 1: activity1 (50×2=100) + lodging (200×2=400) = 500
-      // Day 2: activity2 (75×2=150) + lodging (200×2=400) = 550
-      // Total: 1050
-      expect(result.breakdown).toHaveLength(4);
+      // Day 1: activity1 (50×2=100)
+      // Day 2: activity2 (75×2=150)
+      // Lodging: 200×2 travelers×2 nights = 800 (calculated once per park)
+      // Total: 100 + 150 + 800 = 1050
+      expect(result.breakdown).toHaveLength(3);
       expect(result.totals.grandTotal).toBe(1050);
     });
   });

@@ -50,6 +50,9 @@ export function calculatePricingFromCatalog(
       }
     }
 
+    // Track processed lodging to avoid duplicates
+    const processedLodging = new Set<string>();
+
     for (const day of tripDays) {
       if (!day.parkId) continue;
 
@@ -109,11 +112,15 @@ export function calculatePricingFromCatalog(
         }
       }
 
-      // Lodging
+      // Lodging - only process once per park
       if (day.lodging) {
-        const item = getPricingItemById(pricingItems, day.lodging);
-        if (item) {
-          // Check if this is hierarchical lodging with multiple allocations
+        const lodgingKey = `${day.parkId}_${day.lodging}`;
+        if (!processedLodging.has(lodgingKey)) {
+          processedLodging.add(lodgingKey);
+          
+          const item = getPricingItemById(pricingItems, day.lodging);
+          if (item) {
+            // Check if this is hierarchical lodging with multiple allocations
           if (item.costType === 'hierarchical_lodging' && day.lodgingAllocations && day.lodgingAllocations.length > 0) {
             // NEW: Multiple room allocations (e.g., parents in suite + kids in separate rooms)
             day.lodgingAllocations.forEach((allocation, idx) => {
@@ -187,7 +194,7 @@ export function calculatePricingFromCatalog(
             });
           } else {
             // Regular lodging calculation
-            const { total, explanation } = calculateItemTotal(item, travelers, days, 1, itemQuantities);
+            const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights, itemQuantities);
             breakdown.push({
               id: `line_day${day.dayNumber}_lodging`,
               park: parkName,
@@ -199,6 +206,7 @@ export function calculatePricingFromCatalog(
               perPerson: travelers > 0 ? total / travelers : 0,
               calculationExplanation: explanation,
             });
+          }
           }
         }
       }
