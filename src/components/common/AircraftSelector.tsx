@@ -57,9 +57,22 @@ export const AircraftSelector: React.FC<AircraftSelectorProps> = ({
     const model = parts[1] || 'Standard';
     const route = parts[2] || name;
     
-    const routeParts = route.split(' to ').map(p => p.trim());
-    const from = routeParts[0] || '';
-    const to = routeParts[1] || '';
+    // Support both "A to B" and "A-B-C" formats
+    let from = '';
+    let to = '';
+    
+    if (route.includes(' to ')) {
+      const routeParts = route.split(' to ').map(p => p.trim());
+      from = routeParts[0] || '';
+      to = routeParts[1] || '';
+    } else if (route.includes('-')) {
+      const routeParts = route.split('-').map(p => p.trim());
+      from = routeParts[0] || '';
+      to = routeParts[routeParts.length - 1] || '';
+    } else {
+      from = route;
+      to = route;
+    }
 
     return { type, model, route, from, to };
   };
