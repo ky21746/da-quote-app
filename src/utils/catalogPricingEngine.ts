@@ -193,8 +193,8 @@ export function calculatePricingFromCatalog(
               calculationExplanation: explanation,
             });
           } else {
-            // Regular lodging calculation
-            const { total, explanation } = calculateItemTotal(item, travelers, days, parkNights, itemQuantities);
+            // Regular lodging calculation - pass 1 for days since lodging uses nights
+            const { total, explanation } = calculateItemTotal(item, travelers, 1, parkNights, itemQuantities);
             breakdown.push({
               id: `line_day${day.dayNumber}_lodging`,
               park: parkName,
