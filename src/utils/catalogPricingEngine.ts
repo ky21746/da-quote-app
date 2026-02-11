@@ -133,15 +133,15 @@ export function calculatePricingFromCatalog(
               let explanation = '';
               
               if (allocation.priceType === 'perRoom' || allocation.priceType === 'perVilla') {
-                total = configuredPrice * quantity * parkNights;
+                total = configuredPrice * quantity;
                 explanation = quantity > 1
-                  ? `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${allocation.priceType === 'perVilla' ? 'per villa' : 'per room'} × ${quantity} × ${parkNights} nights (${guests} guests)`
-                  : `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${allocation.priceType === 'perVilla' ? 'per villa' : 'per room'} × ${parkNights} nights (${guests} guests)`;
+                  ? `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${allocation.priceType === 'perVilla' ? 'per villa' : 'per room'} × ${quantity} (${guests} guests)`
+                  : `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${allocation.priceType === 'perVilla' ? 'per villa' : 'per room'} (${guests} guests)`;
               } else if (allocation.priceType === 'perPerson') {
-                total = configuredPrice * guests * quantity * parkNights;
+                total = configuredPrice * guests * quantity;
                 explanation = quantity > 1
-                  ? `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${guests} guests × ${quantity} × ${parkNights} nights`
-                  : `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${guests} guests × ${parkNights} nights`;
+                  ? `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${guests} guests × ${quantity}`
+                  : `${allocation.roomTypeName}, ${allocation.seasonName}, ${allocation.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${guests} guests`;
               }
               
               breakdown.push({
@@ -170,15 +170,15 @@ export function calculatePricingFromCatalog(
             let explanation = '';
             
             if (config.priceType === 'perRoom' || config.priceType === 'perVilla') {
-              total = configuredPrice * quantity * parkNights;
+              total = configuredPrice * quantity;
               explanation = quantity > 1
-                ? `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${config.priceType === 'perVilla' ? 'per villa' : 'per room'} × ${quantity} × ${parkNights} nights`
-                : `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${config.priceType === 'perVilla' ? 'per villa' : 'per room'} × ${parkNights} nights`;
+                ? `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${config.priceType === 'perVilla' ? 'per villa' : 'per room'} × ${quantity}`
+                : `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} ${config.priceType === 'perVilla' ? 'per villa' : 'per room'}`;
             } else if (config.priceType === 'perPerson') {
-              total = configuredPrice * travelers * quantity * parkNights;
+              total = configuredPrice * travelers * quantity;
               explanation = quantity > 1
-                ? `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${travelers} travelers × ${quantity} × ${parkNights} nights`
-                : `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${travelers} travelers × ${parkNights} nights`;
+                ? `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${travelers} travelers × ${quantity}`
+                : `${config.roomTypeName}, ${config.seasonName}, ${config.occupancy.replace(/_/g, ' ')} - ${configuredPrice} × ${travelers} travelers`;
             }
             
             breakdown.push({
